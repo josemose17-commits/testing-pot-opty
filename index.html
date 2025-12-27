@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haikyu!! Fly High Potential Optimizer</title>
+    <title>Haikyu!! Fly High Team Optimizer</title>
     <style>
-        :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; }
+        :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; --hq-blue: #0056b3; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--hq-gray); color: var(--hq-black); padding: 20px; max-width: 1200px; margin: 0 auto; }
         
-        /* Layout Grid */
+        /* Layout */
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
         
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h1, h2 { color: var(--hq-orange); margin-top: 0; }
+        h1, h2, h3 { color: var(--hq-orange); margin-top: 0; }
         
-        /* Inputs */
+        /* Inputs & Interactive */
         label { display: block; font-weight: bold; margin-top: 10px; font-size: 0.9em; }
         input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .hint { font-size: 0.8em; color: #666; font-style: italic; margin-top: 2px; }
@@ -24,7 +24,17 @@
         .btn { width: 100%; padding: 12px; background: var(--hq-orange); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
         .btn:hover { background: #e65c00; }
         .btn-secondary { background: #444; }
-        .btn-delete { background: #cc0000; width: auto; padding: 4px 8px; font-size: 0.8em; float: right; color: white; border: none; cursor: pointer; }
+        .btn-delete { background: #cc0000; padding: 4px 8px; font-size: 0.8em; color: white; border: none; cursor: pointer; float: right; }
+
+        /* Team Section Styles - UPDATED FOR 7 SLOTS */
+        .team-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
+        .team-slot { 
+            background: #eee; border: 2px solid #ccc; border-radius: 8px; padding: 10px 5px; text-align: center; cursor: pointer; transition: 0.2s; 
+        }
+        .team-slot:hover { border-color: var(--hq-orange); }
+        .team-slot.active { border-color: var(--hq-orange); background: #fff5eb; box-shadow: 0 0 8px rgba(255, 107, 0, 0.4); }
+        .slot-role { font-size: 0.75em; color: #666; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .slot-name { font-weight: bold; font-size: 0.85em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         /* Inventory List */
         .item-box { border-left: 4px solid var(--hq-orange); background: #fff5eb; padding: 10px; margin-bottom: 8px; font-size: 0.9em; }
@@ -35,37 +45,88 @@
 </head>
 <body>
 
-<h1>🏐 Haikyu!! Fly High Potential Optimizer</h1>
+<h1>🏐 Haikyu!! Fly High Team Optimizer</h1>
+
+<div class="card">
+    <h2>1. Team Roster (7 Players)</h2>
+    <p class="hint">Click a slot to select/edit that character. The optimizer will run for the <strong>Active (Orange)</strong> character.</p>
+    
+    <div class="team-row">
+        <div class="team-slot active" onclick="selectSlot(1)" id="slot1">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name1">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(2)" id="slot2">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name2">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(3)" id="slot3">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name3">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(4)" id="slot4">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name4">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(5)" id="slot5">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name5">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(6)" id="slot6">
+            <span class="slot-role">WS/MB/S</span>
+            <span class="slot-name" id="name6">Empty</span>
+        </div>
+        <div class="team-slot" onclick="selectSlot(7)" id="slot7" style="border-color: #0056b3; background: #eef6ff;">
+            <span class="slot-role" style="color:#0056b3; font-weight:bold;">LIBERO</span>
+            <span class="slot-name" id="name7">Empty</span>
+        </div>
+    </div>
+
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+        <label>Assign Character to Active Slot:</label>
+        <select id="charSelector" onchange="assignCharacter()">
+            <option value="">-- Select Character --</option>
+            <option value="komori">Motoya Komori (Li)</option>
+            <option value="sakusa">Kiyoomi Sakusa (WS)</option>
+            <option value="hinata">Shoyo Hinata (MB)</option>
+            <option value="kageyama">Tobio Kageyama (S)</option>
+            <option value="generic">Generic Player (Template)</option>
+        </select>
+    </div>
+</div>
 
 <div class="grid-container">
     
     <div>
         <div class="card">
-            <h2>1. Character Base Stats</h2>
-            <p class="hint">Enter stats WITHOUT Potentials equipped.</p>
+            <h2>2. Active Character Stats</h2>
+            <p class="hint">These are the Base Stats for the selected character. You can edit them manually if your level is different.</p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label>Spike (Power/Quick)</label><input type="number" id="base_spike" value="1579"></div>
-                <div><label>Receive</label><input type="number" id="base_receive" value="2012"></div>
-                <div><label>Serve</label><input type="number" id="base_serve" value="1580"></div>
-                <div><label>Block</label><input type="number" id="base_block" value="1580"></div>
-                <div><label>Set</label><input type="number" id="base_set" value="1904"></div>
-                <div><label>Awareness</label><input type="number" id="base_aware" value="150"></div>
+                <div><label>Spike</label><input type="number" id="base_spike" value="0"></div>
+                <div><label>Receive</label><input type="number" id="base_receive" value="0"></div>
+                <div><label>Serve</label><input type="number" id="base_serve" value="0"></div>
+                <div><label>Block</label><input type="number" id="base_block" value="0"></div>
+                <div><label>Set</label><input type="number" id="base_set" value="0"></div>
+                <div><label>Awareness</label><input type="number" id="base_aware" value="0"></div>
+                <div><label>Strength</label><input type="number" id="base_str" value="0"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>3. Optimize</h2>
+            <h2>4. Optimizer</h2>
             <label>Target Stat to Maximize:</label>
             <select id="targetStat">
-                <option value="receive">Receive (Komori/Defense)</option>
-                <option value="spike">Spike Power (Wing Spiker)</option>
-                <option value="set">Setting Power (Setter)</option>
+                <option value="receive">Receive</option>
+                <option value="spike">Spike Power</option>
+                <option value="set">Setting Power</option>
                 <option value="serve">Serve</option>
+                <option value="block">Block</option>
             </select>
-            <button class="btn" onclick="runOptimizer()">Find Best Potential Combination</button>
+            
+            <button class="btn" onclick="runOptimizer()">Find Best Potential Build</button>
             
             <div id="output" class="result-box" style="display:none;">
-                <h3>🏆 Best Build Found</h3>
+                <h3>🏆 Best Build</h3>
                 <div id="resultDetails"></div>
             </div>
         </div>
@@ -73,76 +134,94 @@
 
     <div>
         <div class="card">
-            <h2>2. Add Potential</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div>
-                    <label>Set Name</label>
-                    <select id="pot_set">
-                        <option value="Power Vibe">Power Vibe</option>
-                        <option value="Assist Receive">Assist Receive</option>
-                        <option value="Supreme Receive">Supreme Receive</option>
-                        <option value="Precise Set">Precise Set</option>
-                        <option value="Rapid Attack">Rapid Attack</option>
-                        <option value="Sharp Sense">Sharp Sense</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Slot (1-6)</label>
-                    <select id="pot_slot" onchange="updateHint()">
-                        <option value="1">Slot 1 (Fixed)</option>
-                        <option value="2">Slot 2 (Random)</option>
-                        <option value="3">Slot 3 (Fixed)</option>
-                        <option value="4">Slot 4 (Random)</option>
-                        <option value="5">Slot 5 (Fixed)</option>
-                        <option value="6">Slot 6 (Random)</option>
-                    </select>
+            <h2>3. Potential Inventory</h2>
+            <div style="border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 15px;">
+                <label>Set Name</label>
+                <select id="pot_set">
+                    <option value="Power Vibe">Power Vibe</option>
+                    <option value="Assist Receive">Assist Receive</option>
+                    <option value="Supreme Receive">Supreme Receive</option>
+                    <option value="Precise Set">Precise Set</option>
+                    <option value="Rapid Attack">Rapid Attack</option>
+                    <option value="Sharp Sense">Sharp Sense</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Slot</label>
+                        <select id="pot_slot">
+                            <option value="1">Slot 1</option>
+                            <option value="2">Slot 2</option>
+                            <option value="3">Slot 3</option>
+                            <option value="4">Slot 4</option>
+                            <option value="5">Slot 5</option>
+                            <option value="6">Slot 6</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Main Stat</label>
+                        <select id="pot_main_type">
+                            <option value="receive">Receive</option>
+                            <option value="spike">Spike</option>
+                            <option value="serve">Serve</option>
+                            <option value="set">Set</option>
+                            <option value="block">Block</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div>
-                    <label>Main Stat Type</label>
-                    <select id="pot_main_type">
-                        <option value="receive">Receive</option>
-                        <option value="spike">Spike (P.Atk/Q.Atk)</option>
-                        <option value="serve">Serve</option>
-                        <option value="set">Set</option>
-                        <option value="block">Block</option>
-                        <option value="aware">Awareness</option>
-                    </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Main Value</label>
+                        <input type="number" id="pot_main_val" placeholder="Val">
+                    </div>
+                    <div style="margin-top: 35px;">
+                        <label style="display:inline;"><input type="checkbox" id="pot_main_is_percent"> Is %?</label>
+                    </div>
                 </div>
-                <div>
-                    <label>Main Value</label>
-                    <input type="number" id="pot_main_val" placeholder="e.g. 300 or 15">
+
+                <label>Substats (Raw)</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                    <input type="number" id="sub_receive" placeholder="Rec +">
+                    <input type="number" id="sub_spike" placeholder="Spk +">
                 </div>
-                <div style="grid-column: span 2">
-                    <label><input type="checkbox" id="pot_main_is_percent"> Is this value a %? (Check for Slots 2, 4, 6)</label>
-                    <div id="slotHint" class="hint">Slot 1 is usually Flat (+300)</div>
-                </div>
+
+                <button class="btn btn-secondary" onclick="addPotential()">+ Add Item</button>
             </div>
 
-            <label>Sub-Potential Stats (Raw Values)</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                <input type="number" id="sub_receive" placeholder="Receive +">
-                <input type="number" id="sub_spike" placeholder="Spike +">
-                <input type="number" id="sub_aware" placeholder="Awareness +">
-                <input type="number" id="sub_tech" placeholder="Atk Tech +">
-            </div>
-
-            <button class="btn btn-secondary" onclick="addPotential()">+ Add to Inventory</button>
-        </div>
-
-        <div class="card">
-            <h2>Inventory (<span id="count">0</span>)</h2>
-            <div id="inventoryList" style="max-height: 300px; overflow-y: auto;">
-                </div>
+            <h3>Saved Items (<span id="count">0</span>)</h3>
+            <div id="inventoryList" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. DATA & STATE ---
-    let inventory = [];
-    let idCounter = 0;
+    // --- 1. DATABASES ---
+    
+    // Character Database (Add more characters here later)
+    const characterDB = {
+        "komori": { 
+            name: "Motoya Komori", 
+            stats: { spike: 1579, receive: 2012, serve: 1580, block: 1580, set: 1904, aware: 150, str: 100 } 
+        },
+        "sakusa": { 
+            name: "Kiyoomi Sakusa", 
+            stats: { spike: 2200, receive: 1400, serve: 1800, block: 1300, set: 1100, aware: 200, str: 180 } 
+        },
+        "hinata": { 
+            name: "Shoyo Hinata", 
+            stats: { spike: 1800, receive: 1200, serve: 1100, block: 1300, set: 900, aware: 250, str: 120 } 
+        },
+        "kageyama": { 
+            name: "Tobio Kageyama", 
+            stats: { spike: 1600, receive: 1600, serve: 1900, block: 1700, set: 2300, aware: 220, str: 140 } 
+        },
+        "generic": { 
+            name: "Generic Player", 
+            stats: { spike: 1000, receive: 1000, serve: 1000, block: 1000, set: 1000, aware: 100, str: 100 } 
+        }
+    };
 
     // Set Bonuses (Based on provided PDF)
     const setBonuses = {
@@ -154,21 +233,59 @@
         "Sharp Sense": { 2: {stat: "spike", val: 0.15} }
     };
 
-    function updateHint() {
-        const s = document.getElementById('pot_slot').value;
-        const h = document.getElementById('slotHint');
-        const check = document.getElementById('pot_main_is_percent');
+    // --- 2. STATE MANAGEMENT ---
+    let activeSlot = 1;
+    // Updated to 7 slots (Index 0-6)
+    let teamRoster = [null, null, null, null, null, null, null]; 
+    let inventory = [];
+    let idCounter = 0;
+
+    // --- 3. UI FUNCTIONS ---
+
+    function selectSlot(slotNum) {
+        // Update UI visuals
+        document.querySelectorAll('.team-slot').forEach(el => el.classList.remove('active'));
+        document.getElementById(`slot${slotNum}`).classList.add('active');
         
-        if (["1","3","5"].includes(s)) {
-            h.innerText = "Slots 1, 3, 5 are usually FLAT stats (+300). Uncheck box.";
-            check.checked = false;
+        // Update State
+        activeSlot = slotNum;
+        
+        // Load stats for the character in this slot (if any)
+        const charKey = teamRoster[slotNum - 1];
+        if (charKey) {
+            document.getElementById('charSelector').value = charKey;
+            loadStatsToInputs(characterDB[charKey].stats);
         } else {
-            h.innerText = "Slots 2, 4, 6 are usually PERCENT (%). Check box.";
-            check.checked = true;
+            document.getElementById('charSelector').value = "";
+            loadStatsToInputs({spike:0, receive:0, serve:0, block:0, set:0, aware:0, str:0});
         }
     }
 
-    // --- 2. INVENTORY FUNCTIONS ---
+    function assignCharacter() {
+        const charKey = document.getElementById('charSelector').value;
+        if (!charKey) return;
+
+        // 1. Update Roster State
+        teamRoster[activeSlot - 1] = charKey;
+        
+        // 2. Update Slot UI Name
+        document.getElementById(`name${activeSlot}`).innerText = characterDB[charKey].name;
+
+        // 3. Load Stats into Input Fields
+        loadStatsToInputs(characterDB[charKey].stats);
+    }
+
+    function loadStatsToInputs(stats) {
+        document.getElementById('base_spike').value = stats.spike;
+        document.getElementById('base_receive').value = stats.receive;
+        document.getElementById('base_serve').value = stats.serve;
+        document.getElementById('base_block').value = stats.block;
+        document.getElementById('base_set').value = stats.set;
+        document.getElementById('base_aware').value = stats.aware;
+        document.getElementById('base_str').value = stats.str;
+    }
+
+    // --- 4. INVENTORY FUNCTIONS ---
     function addPotential() {
         const item = {
             id: idCounter++,
@@ -181,12 +298,9 @@
             },
             subs: {
                 receive: parseFloat(document.getElementById('sub_receive').value) || 0,
-                spike: parseFloat(document.getElementById('sub_spike').value) || 0,
-                aware: parseFloat(document.getElementById('sub_aware').value) || 0,
-                tech: parseFloat(document.getElementById('sub_tech').value) || 0
+                spike: parseFloat(document.getElementById('sub_spike').value) || 0
             }
         };
-
         inventory.push(item);
         renderInventory();
     }
@@ -195,15 +309,13 @@
         const list = document.getElementById('inventoryList');
         document.getElementById('count').innerText = inventory.length;
         list.innerHTML = "";
-        
         inventory.forEach(item => {
             const div = document.createElement('div');
             div.className = 'item-box';
             div.innerHTML = `
-                <button class="btn-delete" onclick="deleteItem(${item.id})">Delete</button>
+                <button class="btn-delete" onclick="deleteItem(${item.id})">Del</button>
                 <strong>${item.set}</strong> (Slot ${item.slot})<br>
-                Main: ${item.main.val}${item.main.isPercent ? '%' : ''} ${item.main.type}<br>
-                Subs: Rec:${item.subs.receive}, Spk:${item.subs.spike}
+                Main: ${item.main.val}${item.main.isPercent ? '%' : ''} ${item.main.type}
             `;
             list.appendChild(div);
         });
@@ -214,31 +326,48 @@
         renderInventory();
     }
 
-    // --- 3. OPTIMIZATION LOGIC ---
+    // --- 5. OPTIMIZER & TEAM BUFF LOGIC ---
+
+    function calculateTeamBuffs(baseStats) {
+        // --- TEAM BUFFS SECTION ---
+        // This is where you will add logic later.
+        // Example: "If Komori is on team, add 5% to everyone's Receive"
+        
+        let buffMultiplier = 1.0; 
+
+        // Example Logic (Commented out):
+        // if (teamRoster.includes('komori') && teamRoster.includes('sakusa')) {
+        //     console.log("Bond Skill Active!");
+        //     buffMultiplier += 0.05; 
+        // }
+
+        return buffMultiplier;
+    }
+
     function runOptimizer() {
-        // A. Get Base Stats
+        // A. Get Base Stats from Inputs (User might have edited them)
         const base = {
             receive: parseFloat(document.getElementById('base_receive').value) || 0,
             spike: parseFloat(document.getElementById('base_spike').value) || 0,
             set: parseFloat(document.getElementById('base_set').value) || 0,
             serve: parseFloat(document.getElementById('base_serve').value) || 0,
+            block: parseFloat(document.getElementById('base_block').value) || 0
         };
         const target = document.getElementById('targetStat').value;
 
-        // B. Group Inventory by Slot
+        // B. Apply Team Buffs (Currently just placeholder)
+        const teamBuff = calculateTeamBuffs(base);
+
+        // C. Group Inventory
         const slots = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
         inventory.forEach(i => slots[i.slot].push(i));
-
-        // Use dummy if slot is empty
         const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{receive:0,spike:0}};
-        for(let k=1; k<=6; k++) {
-            if(slots[k].length === 0) slots[k].push(dummy);
-        }
+        for(let k=1; k<=6; k++) if(slots[k].length === 0) slots[k].push(dummy);
 
         let bestVal = -1;
         let bestBuild = null;
 
-        // C. The Loop (Cartesian Product)
+        // D. Loop
         for(let s1 of slots[1]) {
         for(let s2 of slots[2]) {
         for(let s3 of slots[3]) {
@@ -246,80 +375,70 @@
         for(let s5 of slots[5]) {
         for(let s6 of slots[6]) {
             const build = [s1, s2, s3, s4, s5, s6];
-            const stats = calculateStats(base, build, target);
-            
+            const stats = calculateStats(base, build, target, teamBuff);
             if(stats.final > bestVal) {
                 bestVal = stats.final;
                 bestBuild = { build, stats };
             }
         }}}}}}
 
-        // D. Display Result
+        // E. Display
         const out = document.getElementById('output');
         const det = document.getElementById('resultDetails');
         out.style.display = 'block';
         
         if(!bestBuild) {
-            det.innerHTML = "Not enough Potentials to make a build.";
-            return;
+            det.innerHTML = "Not enough items."; return;
         }
 
         let html = `<div style="font-size:1.5em; color:#ff6b00; margin-bottom:10px;">
             Total ${target.toUpperCase()}: ${bestBuild.stats.final.toFixed(0)}
             </div>`;
         
-        html += `<strong>Active Set Bonuses:</strong> ${bestBuild.stats.activeSets.join(', ') || "None"}<br><br>`;
+        html += `<strong>Active Sets:</strong> ${bestBuild.stats.activeSets.join(', ') || "None"}<br>`;
+        html += `<em>(Team Buffs Applied: x${teamBuff})</em><br><br>`;
         
         bestBuild.build.forEach(item => {
             if(item.set === "None") return;
             html += `<div class="item-box">
                 Slot ${item.slot}: <strong>${item.set}</strong> 
-                (Main: ${item.main.val}${item.main.isPercent?'%':''})
+                (${item.main.val}${item.main.isPercent?'%':''} ${item.main.type})
             </div>`;
         });
-
         det.innerHTML = html;
     }
 
-    function calculateStats(base, items, targetStat) {
+    function calculateStats(base, items, targetStat, teamBuff) {
         let totalFlat = 0;
         let totalPercent = 0;
-        
-        // 1. Tally Item Stats
         let setCounts = {};
         
         items.forEach(item => {
-            if(item.set !== "None") {
-                setCounts[item.set] = (setCounts[item.set] || 0) + 1;
-            }
+            if(item.set !== "None") setCounts[item.set] = (setCounts[item.set] || 0) + 1;
             
-            // Add Main Stat
             if(item.main.type === targetStat) {
                 if(item.main.isPercent) totalPercent += item.main.val;
                 else totalFlat += item.main.val;
             }
-            
-            // Add Sub Stats (Only checking target for now)
             if(targetStat === 'receive') totalFlat += (item.subs.receive || 0);
             if(targetStat === 'spike') totalFlat += (item.subs.spike || 0);
         });
 
-        // 2. Check Set Bonuses (2pc only for this demo)
+        // Set Bonuses
         let activeSets = [];
         for(let [setName, count] of Object.entries(setCounts)) {
-            if(setBonuses[setName]) {
-                if(count >= 2) {
-                    const bonus = setBonuses[setName][2];
-                    if(bonus.stat === targetStat) {
-                        totalPercent += (bonus.val * 100);
-                        activeSets.push(`${setName} (2pc)`);
-                    }
+            if(setBonuses[setName] && count >= 2) {
+                const bonus = setBonuses[setName][2];
+                if(bonus.stat === targetStat) {
+                    totalPercent += (bonus.val * 100);
+                    activeSets.push(`${setName} (2pc)`);
                 }
             }
         }
 
-        // 3. Final Formula: Base * (1 + %) + Flat
-        const final = (base[targetStat] * (1 + (totalPercent/100))) + totalFlat;
+        // Formula: (Base * TeamBuffs * (1 + %)) + Flat
+        // Note: Team Buffs usually multiply base stats before Potentials
+        const final = (base[targetStat] * teamBuff * (1 + (totalPercent/100))) + totalFlat;
         
         return { final, activeSets };
     }
