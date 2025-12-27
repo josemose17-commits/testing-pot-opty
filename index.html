@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haikyu!! Fly High Team Optimizer</title>
+    <title>Haikyu!! Fly High Ultimate Optimizer</title>
     <style>
-        :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; --hq-blue: #0056b3; }
+        :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; --hq-blue: #0056b3; --hq-purple: #6f42c1; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--hq-gray); color: var(--hq-black); padding: 20px; max-width: 1200px; margin: 0 auto; }
         
         /* Layout */
@@ -15,7 +15,7 @@
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
         h1, h2, h3 { color: var(--hq-orange); margin-top: 0; }
         
-        /* Inputs & Interactive */
+        /* Inputs */
         label { display: block; font-weight: bold; margin-top: 10px; font-size: 0.9em; }
         input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .hint { font-size: 0.8em; color: #666; font-style: italic; margin-top: 2px; }
@@ -23,108 +23,123 @@
         /* Buttons */
         .btn { width: 100%; padding: 12px; background: var(--hq-orange); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
         .btn:hover { background: #e65c00; }
-        .btn-secondary { background: #444; }
+        .btn-green { background: #28a745; } .btn-green:hover { background: #218838; }
         .btn-delete { background: #cc0000; padding: 4px 8px; font-size: 0.8em; color: white; border: none; cursor: pointer; float: right; }
 
-        /* Team Section Styles - UPDATED FOR 7 SLOTS */
-        .team-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
-        .team-slot { 
-            background: #eee; border: 2px solid #ccc; border-radius: 8px; padding: 10px 5px; text-align: center; cursor: pointer; transition: 0.2s; 
-        }
+        /* Team Styles */
+        .team-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+        .team-slot { background: #eee; border: 2px solid #ccc; border-radius: 8px; padding: 8px 2px; text-align: center; cursor: pointer; transition: 0.2s; }
         .team-slot:hover { border-color: var(--hq-orange); }
         .team-slot.active { border-color: var(--hq-orange); background: #fff5eb; box-shadow: 0 0 8px rgba(255, 107, 0, 0.4); }
-        .slot-role { font-size: 0.75em; color: #666; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .slot-name { font-weight: bold; font-size: 0.85em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .slot-role { font-size: 0.7em; color: #666; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .slot-name { font-weight: bold; font-size: 0.8em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Inventory List */
+        /* Buff Panel */
+        .buff-panel { background: #eef6ff; padding: 15px; border-radius: 8px; border: 1px solid #0056b3; }
+        .buff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* Memory Panel */
+        .memory-panel { background: #f3e5f5; padding: 15px; border-radius: 8px; border: 1px solid var(--hq-purple); margin-bottom: 15px; }
+        .memory-desc { font-size: 0.9em; color: #4a148c; margin-top: 5px; font-style: italic; }
+
+        /* Inventory & Results */
         .item-box { border-left: 4px solid var(--hq-orange); background: #fff5eb; padding: 10px; margin-bottom: 8px; font-size: 0.9em; }
-        
-        /* Results */
         .result-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        
+        .creator-section { border-top: 2px dashed #ccc; margin-top: 20px; padding-top: 20px; }
     </style>
 </head>
 <body>
 
-<h1>🏐 Haikyu!! Fly High Team Optimizer</h1>
+<h1>🏐 Haikyu!! Fly High Ultimate Optimizer</h1>
 
 <div class="card">
     <h2>1. Team Roster (7 Players)</h2>
-    <p class="hint">Click a slot to select/edit that character. The optimizer will run for the <strong>Active (Orange)</strong> character.</p>
+    <p class="hint">Select a character to Optimize.</p>
     
     <div class="team-row">
-        <div class="team-slot active" onclick="selectSlot(1)" id="slot1">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name1">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(2)" id="slot2">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name2">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(3)" id="slot3">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name3">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(4)" id="slot4">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name4">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(5)" id="slot5">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name5">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(6)" id="slot6">
-            <span class="slot-role">WS/MB/S</span>
-            <span class="slot-name" id="name6">Empty</span>
-        </div>
-        <div class="team-slot" onclick="selectSlot(7)" id="slot7" style="border-color: #0056b3; background: #eef6ff;">
-            <span class="slot-role" style="color:#0056b3; font-weight:bold;">LIBERO</span>
-            <span class="slot-name" id="name7">Empty</span>
-        </div>
+        <div class="team-slot active" onclick="selectSlot(1)" id="slot1"><span class="slot-role">Slot 1</span><span class="slot-name" id="name1">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(2)" id="slot2"><span class="slot-role">Slot 2</span><span class="slot-name" id="name2">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(3)" id="slot3"><span class="slot-role">Slot 3</span><span class="slot-name" id="name3">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(4)" id="slot4"><span class="slot-role">Slot 4</span><span class="slot-name" id="name4">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(5)" id="slot5"><span class="slot-role">Slot 5</span><span class="slot-name" id="name5">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(6)" id="slot6"><span class="slot-role">Slot 6</span><span class="slot-name" id="name6">Empty</span></div>
+        <div class="team-slot" onclick="selectSlot(7)" id="slot7" style="border-color: #0056b3; background: #eef6ff;"><span class="slot-role" style="color:#0056b3;">LIBERO</span><span class="slot-name" id="name7">Empty</span></div>
     </div>
 
     <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
         <label>Assign Character to Active Slot:</label>
         <select id="charSelector" onchange="assignCharacter()">
             <option value="">-- Select Character --</option>
-            <option value="komori">Motoya Komori (Li)</option>
-            <option value="sakusa">Kiyoomi Sakusa (WS)</option>
-            <option value="hinata">Shoyo Hinata (MB)</option>
-            <option value="kageyama">Tobio Kageyama (S)</option>
-            <option value="generic">Generic Player (Template)</option>
-        </select>
+            </select>
+    </div>
+
+    <div class="creator-section">
+        <h3>➕ Add Custom Character</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <div style="grid-column: span 3;"><label>Name</label><input type="text" id="new_name" placeholder="Name"></div>
+            <div><label>Spike</label><input type="number" id="new_spike" placeholder="0"></div>
+            <div><label>Receive</label><input type="number" id="new_receive" placeholder="0"></div>
+            <div><label>Serve</label><input type="number" id="new_serve" placeholder="0"></div>
+            <div><label>Block</label><input type="number" id="new_block" placeholder="0"></div>
+            <div><label>Set</label><input type="number" id="new_set" placeholder="0"></div>
+            <div><label>Aware</label><input type="number" id="new_aware" placeholder="0"></div>
+            <div><label>Strength</label><input type="number" id="new_str" placeholder="0"></div>
+        </div>
+        <button class="btn btn-green" onclick="saveCustomCharacter()">Save Character</button>
     </div>
 </div>
 
 <div class="grid-container">
-    
     <div>
         <div class="card">
-            <h2>2. Active Character Stats</h2>
-            <p class="hint">These are the Base Stats for the selected character. You can edit them manually if your level is different.</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <h2>2. Stats & Conditions</h2>
+            
+            <p class="hint">Base Stats (Editable):</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 15px;">
                 <div><label>Spike</label><input type="number" id="base_spike" value="0"></div>
                 <div><label>Receive</label><input type="number" id="base_receive" value="0"></div>
                 <div><label>Serve</label><input type="number" id="base_serve" value="0"></div>
                 <div><label>Block</label><input type="number" id="base_block" value="0"></div>
                 <div><label>Set</label><input type="number" id="base_set" value="0"></div>
-                <div><label>Awareness</label><input type="number" id="base_aware" value="0"></div>
+                <div><label>Aware</label><input type="number" id="base_aware" value="0"></div>
                 <div><label>Strength</label><input type="number" id="base_str" value="0"></div>
+            </div>
+
+            <div class="memory-panel">
+                <h3 style="color:var(--hq-purple); margin:0;">🧠 Equip Memory</h3>
+                <label>Select Memory:</label>
+                <select id="memorySelector" onchange="updateMemoryDesc()">
+                    <option value="">-- None --</option>
+                    </select>
+                <div id="memoryDesc" class="memory-desc"></div>
+            </div>
+
+            <div class="buff-panel">
+                <h3>⚔️ Battle Conditions (Buffs)</h3>
+                <p class="hint">Total Buffs (Skills + Memory + Passives)</p>
+                <div class="buff-grid">
+                    <div><label>Spike Buff %</label><input type="number" id="buff_spike" placeholder="0"></div>
+                    <div><label>Block Buff %</label><input type="number" id="buff_block" placeholder="0"></div>
+                    <div><label>Rec Buff %</label><input type="number" id="buff_receive" placeholder="0"></div>
+                    <div><label>Serve Buff %</label><input type="number" id="buff_serve" placeholder="0"></div>
+                    <div><label>Aware Buff %</label><input type="number" id="buff_aware" placeholder="0"></div>
+                    <div><label>Team Mult</label><input type="number" id="buff_team" placeholder="1.0" value="1.0"></div>
+                </div>
             </div>
         </div>
 
         <div class="card">
             <h2>4. Optimizer</h2>
-            <label>Target Stat to Maximize:</label>
+            <label>Target Stat:</label>
             <select id="targetStat">
-                <option value="receive">Receive</option>
                 <option value="spike">Spike Power</option>
-                <option value="set">Setting Power</option>
-                <option value="serve">Serve</option>
                 <option value="block">Block</option>
+                <option value="receive">Receive</option>
+                <option value="serve">Serve</option>
+                <option value="set">Setting Power</option>
             </select>
-            
-            <button class="btn" onclick="runOptimizer()">Find Best Potential Build</button>
-            
+            <button class="btn" onclick="runOptimizer()">Find Best Build</button>
             <div id="output" class="result-box" style="display:none;">
                 <h3>🏆 Best Build</h3>
                 <div id="resultDetails"></div>
@@ -144,115 +159,157 @@
                     <option value="Precise Set">Precise Set</option>
                     <option value="Rapid Attack">Rapid Attack</option>
                     <option value="Sharp Sense">Sharp Sense</option>
+                    <option value="Precise Block">Precise Block</option>
+                    <option value="Block Movement">Block Movement</option>
                     <option value="Other">Other</option>
                 </select>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div>
-                        <label>Slot</label>
-                        <select id="pot_slot">
-                            <option value="1">Slot 1</option>
-                            <option value="2">Slot 2</option>
-                            <option value="3">Slot 3</option>
-                            <option value="4">Slot 4</option>
-                            <option value="5">Slot 5</option>
-                            <option value="6">Slot 6</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Main Stat</label>
-                        <select id="pot_main_type">
-                            <option value="receive">Receive</option>
-                            <option value="spike">Spike</option>
-                            <option value="serve">Serve</option>
-                            <option value="set">Set</option>
-                            <option value="block">Block</option>
-                        </select>
-                    </div>
+                    <div><label>Slot</label><select id="pot_slot"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
+                    <div><label>Main Type</label><select id="pot_main_type"><option value="spike">Spike</option><option value="block">Block</option><option value="receive">Rec</option><option value="serve">Srv</option><option value="set">Set</option><option value="aware">Aware</option></select></div>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div>
-                        <label>Main Value</label>
-                        <input type="number" id="pot_main_val" placeholder="Val">
-                    </div>
-                    <div style="margin-top: 35px;">
-                        <label style="display:inline;"><input type="checkbox" id="pot_main_is_percent"> Is %?</label>
-                    </div>
+                    <div><label>Main Val</label><input type="number" id="pot_main_val" placeholder="300"></div>
+                    <div style="margin-top: 35px;"><label><input type="checkbox" id="pot_main_is_percent"> Is %?</label></div>
                 </div>
 
                 <label>Substats (Raw)</label>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <input type="number" id="sub_receive" placeholder="Rec +">
                     <input type="number" id="sub_spike" placeholder="Spk +">
+                    <input type="number" id="sub_block" placeholder="Blk +">
+                    <input type="number" id="sub_receive" placeholder="Rec +">
+                    <input type="number" id="sub_aware" placeholder="Awr +">
                 </div>
-
-                <button class="btn btn-secondary" onclick="addPotential()">+ Add Item</button>
+                <button class="btn btn-secondary" onclick="addPotential()">+ Add Potential</button>
             </div>
 
-            <h3>Saved Items (<span id="count">0</span>)</h3>
+            <h3>Inventory (<span id="count">0</span>)</h3>
             <div id="inventoryList" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. DATABASES ---
+    // --- 1. DATA & DEFAULTS ---
     
-    // Character Database (Add more characters here later)
-    const characterDB = {
-        "komori": { 
-            name: "Motoya Komori", 
-            stats: { spike: 1579, receive: 2012, serve: 1580, block: 1580, set: 1904, aware: 150, str: 100 } 
+    // Character DB
+    let characterDB = {
+        "komori": { name: "Motoya Komori", stats: { spike: 1579, receive: 2012, serve: 1580, block: 1580, set: 1904, aware: 150, str: 100 } },
+        "sakusa": { name: "Kiyoomi Sakusa", stats: { spike: 2200, receive: 1400, serve: 1800, block: 1300, set: 1100, aware: 200, str: 180 } },
+        "tsukishima_hanabi": { name: "Tsukishima (Hanabi)", stats: { spike: 1948, receive: 1661, serve: 1668, block: 1769, set: 1579, aware: 200, str: 150 } }
+    };
+
+    // Memory DB (Examples provided)
+    // Format: "key": { name: "Display Name", desc: "Effect Text", buffs: { stat: val } }
+    let memoryDB = {
+        "mem_example": { 
+            name: "Example Memory", 
+            desc: "Increases Quick Attack by 24%.", 
+            buffs: { spike: 24 } 
         },
-        "sakusa": { 
-            name: "Kiyoomi Sakusa", 
-            stats: { spike: 2200, receive: 1400, serve: 1800, block: 1300, set: 1100, aware: 200, str: 180 } 
-        },
-        "hinata": { 
-            name: "Shoyo Hinata", 
-            stats: { spike: 1800, receive: 1200, serve: 1100, block: 1300, set: 900, aware: 250, str: 120 } 
-        },
-        "kageyama": { 
-            name: "Tobio Kageyama", 
-            stats: { spike: 1600, receive: 1600, serve: 1900, block: 1700, set: 2300, aware: 220, str: 140 } 
-        },
-        "generic": { 
-            name: "Generic Player", 
-            stats: { spike: 1000, receive: 1000, serve: 1000, block: 1000, set: 1000, aware: 100, str: 100 } 
+         "mem_complex": { 
+            name: "Complex Memory", 
+            desc: "If making a good play, Block +9%. (Manual: Add 9 to Block Buff).", 
+            buffs: {} // No static buff, user must add manually
         }
     };
 
-    // Set Bonuses (Based on provided PDF)
+    // Set Bonuses 
     const setBonuses = {
         "Power Vibe": { 2: {stat: "spike", val: 0.15} }, 
         "Assist Receive": { 2: {stat: "receive", val: 0.15} }, 
         "Supreme Receive": { 2: {stat: "receive", val: 0.15} },
         "Precise Set": { 2: {stat: "set", val: 0.15} },
         "Rapid Attack": { 2: {stat: "spike", val: 0.15} },
-        "Sharp Sense": { 2: {stat: "spike", val: 0.15} }
+        "Sharp Sense": { 2: {stat: "spike", val: 0.15} },
+        "Precise Block": { 2: {stat: "block", val: 0.15} },
+        "Block Movement": { 2: {stat: "block", val: 0.15} }
     };
 
-    // --- 2. STATE MANAGEMENT ---
+    // --- 2. STATE ---
     let activeSlot = 1;
-    // Updated to 7 slots (Index 0-6)
     let teamRoster = [null, null, null, null, null, null, null]; 
     let inventory = [];
     let idCounter = 0;
 
-    // --- 3. UI FUNCTIONS ---
+    // --- 3. INITIALIZATION ---
+    window.onload = function() {
+        loadCustomChars();
+        updateCharDropdown();
+        updateMemoryDropdown();
+        loadInventory();
+    };
+
+    // --- 4. CHARACTER & MEMORY LOGIC ---
+    function saveCustomCharacter() {
+        const name = document.getElementById('new_name').value;
+        if(!name) return alert("Please enter a name");
+        const id = name.toLowerCase().replace(/\s+/g, '_');
+        const newChar = {
+            name: name,
+            stats: {
+                spike: parseFloat(document.getElementById('new_spike').value) || 0,
+                receive: parseFloat(document.getElementById('new_receive').value) || 0,
+                serve: parseFloat(document.getElementById('new_serve').value) || 0,
+                block: parseFloat(document.getElementById('new_block').value) || 0,
+                set: parseFloat(document.getElementById('new_set').value) || 0,
+                aware: parseFloat(document.getElementById('new_aware').value) || 0,
+                str: parseFloat(document.getElementById('new_str').value) || 0
+            }
+        };
+        characterDB[id] = newChar;
+        let savedChars = JSON.parse(localStorage.getItem('hq_custom_chars')) || {};
+        savedChars[id] = newChar;
+        localStorage.setItem('hq_custom_chars', JSON.stringify(savedChars));
+        updateCharDropdown();
+        alert("Character Saved!");
+    }
+
+    function loadCustomChars() {
+        let savedChars = JSON.parse(localStorage.getItem('hq_custom_chars')) || {};
+        Object.assign(characterDB, savedChars);
+    }
+
+    function updateCharDropdown() {
+        const sel = document.getElementById('charSelector');
+        sel.innerHTML = '<option value="">-- Select Character --</option>';
+        for (let key in characterDB) {
+            let opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = characterDB[key].name;
+            sel.appendChild(opt);
+        }
+    }
+
+    function updateMemoryDropdown() {
+        const sel = document.getElementById('memorySelector');
+        sel.innerHTML = '<option value="">-- None --</option>';
+        for (let key in memoryDB) {
+            let opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = memoryDB[key].name;
+            sel.appendChild(opt);
+        }
+    }
+
+    function updateMemoryDesc() {
+        const key = document.getElementById('memorySelector').value;
+        const box = document.getElementById('memoryDesc');
+        if(key && memoryDB[key]) {
+            box.innerText = "Effect: " + memoryDB[key].desc;
+            // Auto-fill buffs if static (optional feature, currently just visual)
+        } else {
+            box.innerText = "";
+        }
+    }
 
     function selectSlot(slotNum) {
-        // Update UI visuals
         document.querySelectorAll('.team-slot').forEach(el => el.classList.remove('active'));
         document.getElementById(`slot${slotNum}`).classList.add('active');
-        
-        // Update State
         activeSlot = slotNum;
-        
-        // Load stats for the character in this slot (if any)
         const charKey = teamRoster[slotNum - 1];
-        if (charKey) {
+        if (charKey && characterDB[charKey]) {
             document.getElementById('charSelector').value = charKey;
             loadStatsToInputs(characterDB[charKey].stats);
         } else {
@@ -264,14 +321,8 @@
     function assignCharacter() {
         const charKey = document.getElementById('charSelector').value;
         if (!charKey) return;
-
-        // 1. Update Roster State
         teamRoster[activeSlot - 1] = charKey;
-        
-        // 2. Update Slot UI Name
         document.getElementById(`name${activeSlot}`).innerText = characterDB[charKey].name;
-
-        // 3. Load Stats into Input Fields
         loadStatsToInputs(characterDB[charKey].stats);
     }
 
@@ -285,7 +336,7 @@
         document.getElementById('base_str').value = stats.str;
     }
 
-    // --- 4. INVENTORY FUNCTIONS ---
+    // --- 5. INVENTORY LOGIC ---
     function addPotential() {
         const item = {
             id: idCounter++,
@@ -297,14 +348,26 @@
                 isPercent: document.getElementById('pot_main_is_percent').checked
             },
             subs: {
+                spike: parseFloat(document.getElementById('sub_spike').value) || 0,
+                block: parseFloat(document.getElementById('sub_block').value) || 0,
                 receive: parseFloat(document.getElementById('sub_receive').value) || 0,
-                spike: parseFloat(document.getElementById('sub_spike').value) || 0
+                aware: parseFloat(document.getElementById('sub_aware').value) || 0
             }
         };
         inventory.push(item);
+        saveInventory();
         renderInventory();
     }
 
+    function saveInventory() { localStorage.setItem('hq_inventory', JSON.stringify(inventory)); }
+    function loadInventory() {
+        const saved = localStorage.getItem('hq_inventory');
+        if(saved) {
+            inventory = JSON.parse(saved);
+            if(inventory.length > 0) idCounter = Math.max(...inventory.map(i => i.id)) + 1;
+            renderInventory();
+        }
+    }
     function renderInventory() {
         const list = document.getElementById('inventoryList');
         document.getElementById('count').innerText = inventory.length;
@@ -320,54 +383,57 @@
             list.appendChild(div);
         });
     }
-
     function deleteItem(id) {
         inventory = inventory.filter(i => i.id !== id);
+        saveInventory();
         renderInventory();
     }
 
-    // --- 5. OPTIMIZER & TEAM BUFF LOGIC ---
+    // --- 6. OPTIMIZER LOGIC ---
 
-    function calculateTeamBuffs(baseStats) {
-        // --- TEAM BUFFS SECTION ---
-        // This is where you will add logic later.
-        // Example: "If Komori is on team, add 5% to everyone's Receive"
-        
-        let buffMultiplier = 1.0; 
+    function getBattleBuffs() {
+        // Reads manual inputs
+        const buffs = {
+            spike: parseFloat(document.getElementById('buff_spike').value) || 0,
+            block: parseFloat(document.getElementById('buff_block').value) || 0,
+            receive: parseFloat(document.getElementById('buff_receive').value) || 0,
+            serve: parseFloat(document.getElementById('buff_serve').value) || 0,
+            aware: parseFloat(document.getElementById('buff_aware').value) || 0,
+            teamMult: parseFloat(document.getElementById('buff_team').value) || 1.0
+        };
 
-        // Example Logic (Commented out):
-        // if (teamRoster.includes('komori') && teamRoster.includes('sakusa')) {
-        //     console.log("Bond Skill Active!");
-        //     buffMultiplier += 0.05; 
-        // }
+        // Add Memory Static Buffs (if any)
+        const memKey = document.getElementById('memorySelector').value;
+        if(memKey && memoryDB[memKey] && memoryDB[memKey].buffs) {
+            const mBuffs = memoryDB[memKey].buffs;
+            if(mBuffs.spike) buffs.spike += mBuffs.spike;
+            if(mBuffs.block) buffs.block += mBuffs.block;
+            if(mBuffs.receive) buffs.receive += mBuffs.receive;
+        }
 
-        return buffMultiplier;
+        return buffs;
     }
 
     function runOptimizer() {
-        // A. Get Base Stats from Inputs (User might have edited them)
         const base = {
-            receive: parseFloat(document.getElementById('base_receive').value) || 0,
             spike: parseFloat(document.getElementById('base_spike').value) || 0,
-            set: parseFloat(document.getElementById('base_set').value) || 0,
+            block: parseFloat(document.getElementById('base_block').value) || 0,
+            receive: parseFloat(document.getElementById('base_receive').value) || 0,
             serve: parseFloat(document.getElementById('base_serve').value) || 0,
-            block: parseFloat(document.getElementById('base_block').value) || 0
+            set: parseFloat(document.getElementById('base_set').value) || 0,
+            aware: parseFloat(document.getElementById('base_aware').value) || 0
         };
         const target = document.getElementById('targetStat').value;
+        const manualBuffs = getBattleBuffs();
 
-        // B. Apply Team Buffs (Currently just placeholder)
-        const teamBuff = calculateTeamBuffs(base);
-
-        // C. Group Inventory
         const slots = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
         inventory.forEach(i => slots[i.slot].push(i));
-        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{receive:0,spike:0}};
+        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{spike:0,block:0,receive:0,aware:0}};
         for(let k=1; k<=6; k++) if(slots[k].length === 0) slots[k].push(dummy);
 
         let bestVal = -1;
         let bestBuild = null;
 
-        // D. Loop
         for(let s1 of slots[1]) {
         for(let s2 of slots[2]) {
         for(let s3 of slots[3]) {
@@ -375,44 +441,40 @@
         for(let s5 of slots[5]) {
         for(let s6 of slots[6]) {
             const build = [s1, s2, s3, s4, s5, s6];
-            const stats = calculateStats(base, build, target, teamBuff);
+            const stats = calculateStats(base, build, target, manualBuffs);
             if(stats.final > bestVal) {
                 bestVal = stats.final;
                 bestBuild = { build, stats };
             }
         }}}}}}
 
-        // E. Display
         const out = document.getElementById('output');
         const det = document.getElementById('resultDetails');
         out.style.display = 'block';
         
-        if(!bestBuild) {
-            det.innerHTML = "Not enough items."; return;
-        }
+        if(!bestBuild) { det.innerHTML = "Not enough items."; return; }
 
-        let html = `<div style="font-size:1.5em; color:#ff6b00; margin-bottom:10px;">
-            Total ${target.toUpperCase()}: ${bestBuild.stats.final.toFixed(0)}
-            </div>`;
-        
-        html += `<strong>Active Sets:</strong> ${bestBuild.stats.activeSets.join(', ') || "None"}<br>`;
-        html += `<em>(Team Buffs Applied: x${teamBuff})</em><br><br>`;
+        let html = `<div style="font-size:1.5em; color:#ff6b00; margin-bottom:10px;">Total ${target.toUpperCase()}: ${bestBuild.stats.final.toFixed(0)}</div>`;
+        html += `<strong>Active Sets:</strong> ${bestBuild.stats.activeSets.join(', ') || "None"}<br>
+                 <em>(Includes ${manualBuffs[target]}% Battle/Memory Buffs)</em><br><br>`;
         
         bestBuild.build.forEach(item => {
             if(item.set === "None") return;
-            html += `<div class="item-box">
-                Slot ${item.slot}: <strong>${item.set}</strong> 
-                (${item.main.val}${item.main.isPercent?'%':''} ${item.main.type})
-            </div>`;
+            html += `<div class="item-box">Slot ${item.slot}: <strong>${item.set}</strong> (${item.main.val}${item.main.isPercent?'%':''} ${item.main.type})</div>`;
         });
         det.innerHTML = html;
     }
 
-    function calculateStats(base, items, targetStat, teamBuff) {
+    function calculateStats(base, items, targetStat, manualBuffs) {
         let totalFlat = 0;
         let totalPercent = 0;
         let setCounts = {};
         
+        // Add Buffs
+        if(targetStat in manualBuffs) {
+            totalPercent += manualBuffs[targetStat];
+        }
+
         items.forEach(item => {
             if(item.set !== "None") setCounts[item.set] = (setCounts[item.set] || 0) + 1;
             
@@ -420,11 +482,11 @@
                 if(item.main.isPercent) totalPercent += item.main.val;
                 else totalFlat += item.main.val;
             }
-            if(targetStat === 'receive') totalFlat += (item.subs.receive || 0);
             if(targetStat === 'spike') totalFlat += (item.subs.spike || 0);
+            if(targetStat === 'block') totalFlat += (item.subs.block || 0);
+            if(targetStat === 'receive') totalFlat += (item.subs.receive || 0);
         });
 
-        // Set Bonuses
         let activeSets = [];
         for(let [setName, count] of Object.entries(setCounts)) {
             if(setBonuses[setName] && count >= 2) {
@@ -435,11 +497,7 @@
                 }
             }
         }
-
-        // Formula: (Base * TeamBuffs * (1 + %)) + Flat
-        // Note: Team Buffs usually multiply base stats before Potentials
-        const final = (base[targetStat] * teamBuff * (1 + (totalPercent/100))) + totalFlat;
-        
+        const final = (base[targetStat] * manualBuffs.teamMult * (1 + (totalPercent/100))) + totalFlat;
         return { final, activeSets };
     }
 </script>
