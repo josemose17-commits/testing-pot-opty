@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haikyu!! Ultimate Optimizer + Analyzer</title>
+    <title>Haikyu!! Ultimate Optimizer (Auto-SR Stats)</title>
     <style>
         :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; --hq-blue: #0056b3; --hq-purple: #6f42c1; --hq-green: #28a745; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--hq-gray); color: var(--hq-black); padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -20,8 +20,10 @@
         input, select, textarea { width: 100%; padding: 6px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9em; }
         .hint { font-size: 0.8em; color: #666; font-style: italic; margin-top: 2px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; align-items: end; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .sub-grid label { margin-top:0; font-size: 0.75em; }
+        
+        .sub-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 5px; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 4px; }
+        .sub-grid label { margin-top:0; font-size: 0.85em; }
+        .sub-header { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 5px; font-weight: bold; font-size: 0.8em; color: var(--hq-orange); margin-bottom: 5px; }
 
         /* Buttons */
         .btn { width: 100%; padding: 12px; background: var(--hq-orange); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
@@ -39,26 +41,22 @@
         .slot-name { font-weight: bold; font-size: 0.75em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         /* Panels */
-        .buff-panel { background: #eef6ff; padding: 15px; border-radius: 8px; border: 1px solid #0056b3; }
-        .memory-panel { background: #f3e5f5; padding: 15px; border-radius: 8px; border: 1px solid var(--hq-purple); margin-bottom: 15px; }
-        .ref-panel { background: #fff8e1; padding: 10px; border: 1px solid #ffc107; font-size: 0.8em; margin-bottom: 15px; border-radius: 6px;}
-        .io-panel { background: #e2e6ea; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #adb5bd; }
-        
-        /* Items & Analyzer */
+        .synergy-panel { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .synergy-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #c3e6cb; }
+        .synergy-title { font-weight: bold; display: block; }
+
         .item-box { border-left: 4px solid #ccc; background: #fff; padding: 10px; margin-bottom: 8px; font-size: 0.85em; position: relative; }
-        .item-box.high-potential { border-left-color: var(--hq-green); background: #f0fff4; } /* Good potential */
-        .item-box.low-potential { border-left-color: #dc3545; background: #fff5f5; } /* Bad potential */
+        .item-box.high-potential { border-left-color: var(--hq-green); background: #f0fff4; } 
+        .item-box.low-potential { border-left-color: #dc3545; background: #fff5f5; } 
         
-        .potential-stats { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 5px; 
-            margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ccc; 
-            font-size: 0.9em; color: #333;
-        }
+        .potential-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ccc; font-size: 0.9em; color: #333; }
         .pot-score { color: var(--hq-green); font-weight: bold; }
         .pot-chance { color: var(--hq-blue); font-weight: bold; }
 
         .result-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .creator-section { border-top: 2px dashed #ccc; margin-top: 20px; padding-top: 20px; }
+        .ref-panel { background: #fff8e1; padding: 10px; border: 1px solid #ffc107; font-size: 0.8em; margin-bottom: 15px; border-radius: 6px;}
+        .io-panel { background: #e2e6ea; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #adb5bd; }
     </style>
 </head>
 <body>
@@ -66,7 +64,7 @@
 <h1>🏐 Haikyu!! Ultimate Optimizer</h1>
 
 <div class="card">
-    <h2>1. Team Roster</h2>
+    <h2>1. Team Roster & Synergy</h2>
     <div class="team-row">
         <div class="team-slot active" onclick="selectSlot(1)" id="slot1"><span class="slot-role">Slot 1</span><span class="slot-name" id="name1">Empty</span></div>
         <div class="team-slot" onclick="selectSlot(2)" id="slot2"><span class="slot-role">Slot 2</span><span class="slot-name" id="name2">Empty</span></div>
@@ -76,16 +74,35 @@
         <div class="team-slot" onclick="selectSlot(6)" id="slot6"><span class="slot-role">Slot 6</span><span class="slot-name" id="name6">Empty</span></div>
         <div class="team-slot" onclick="selectSlot(7)" id="slot7" style="border-color: #0056b3; background: #eef6ff;"><span class="slot-role" style="color:#0056b3;">LIBERO</span><span class="slot-name" id="name7">Empty</span></div>
     </div>
-    <div style="background: #f9f9f9; padding: 10px; border-radius: 8px;">
-        <label>Assign Character:</label>
-        <select id="charSelector" onchange="assignCharacter()"><option value="">-- Select --</option></select>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+        <div>
+            <label>Active Character:</label>
+            <select id="charSelector" onchange="assignCharacter()"><option value="">-- Select --</option></select>
+        </div>
+        <div>
+            <label>Target SR Level:</label>
+            <select id="srSelector" onchange="updateSynergyDisplay()">
+                <option value="0">SR 0 (Base)</option>
+                <option value="1">SR 1 (+13% Base)</option>
+                <option value="2">SR 2 (Skill)</option>
+                <option value="3">SR 3 (+26% Base)</option>
+                <option value="4">SR 4 (Passive)</option>
+                <option value="5">SR 5 (+39% Base)</option>
+            </select>
+        </div>
+    </div>
+    
+    <div id="synergyPanel" class="synergy-panel" style="display:none;">
+        <h3>✅ Active Synergy & Skills</h3>
+        <div id="synergyContent"></div>
     </div>
 
     <div class="creator-section">
         <h3>➕ Add Custom Character</h3>
         <div class="stat-grid">
             <div style="grid-column: span 3;"><input type="text" id="new_name" placeholder="Name"></div>
-            <div><input type="number" id="new_spike" placeholder="Spike"></div>
+            <div><input type="number" id="new_spike" placeholder="Spike (Base)"></div>
             <div><input type="number" id="new_block" placeholder="Block"></div>
             <div><input type="number" id="new_receive" placeholder="Rec"></div>
             <div><input type="number" id="new_serve" placeholder="Serve"></div>
@@ -94,7 +111,7 @@
             <div><input type="number" id="new_aware" placeholder="Aware"></div>
             <div><input type="number" id="new_reflex" placeholder="Reflex"></div>
             <div><input type="number" id="new_spirit" placeholder="Spirit"></div>
-            <div><input type="number" id="new_str" placeholder="Str"></div>
+            <div><input type="number" id="new_str" placeholder="Strength"></div>
             <div><input type="number" id="new_atech" placeholder="Atk Tech"></div>
             <div><input type="number" id="new_dtech" placeholder="Def Tech"></div>
         </div>
@@ -106,7 +123,19 @@
     <div>
         <div class="card">
             <h2>2. Stats & Conditions</h2>
-            <p class="hint">Base Stats (Editable):</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <p class="hint" style="margin:0;">Base Stats (Input values):</p>
+                <div style="font-size:0.8em;">
+                    <label style="display:inline;">Input Stats are at SR:</label>
+                    <select id="inputSR" style="width:auto; padding:2px;" onchange="updateSynergyDisplay()">
+                        <option value="0">SR 0 (Raw)</option>
+                        <option value="1" selected>SR 1 (Default)</option>
+                        <option value="3">SR 3</option>
+                        <option value="5">SR 5</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="stat-grid" style="margin-bottom: 15px;">
                 <div><label>Spike</label><input type="number" id="base_spike" value="0"></div>
                 <div><label>Block</label><input type="number" id="base_block" value="0"></div>
@@ -122,17 +151,17 @@
                 <div><label>Def Tech</label><input type="number" id="base_dtech" value="0"></div>
             </div>
 
-            <div class="memory-panel">
+            <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; border: 1px solid var(--hq-purple); margin-bottom:15px;">
                 <h3 style="color:var(--hq-purple); margin:0;">🧠 Equip Memory</h3>
                 <select id="memorySelector" onchange="updateMemoryDesc()"><option value="">-- None --</option></select>
                 <div id="memoryDesc" style="font-size:0.85em; margin-top:5px; font-style:italic;"></div>
             </div>
 
-            <div class="buff-panel">
+            <div style="background: #eef6ff; padding: 15px; border-radius: 8px; border: 1px solid #0056b3;">
                 <h3>⚔️ Battle Conditions</h3>
-                <p class="hint">Add % buffs from Skills/Passives (e.g. Mode Changes).</p>
+                <p class="hint"><strong>Manually add</strong> calculated buffs from Synergy box above.</p>
                 <div class="stat-grid">
-                    <div><label>Spike %</label><input type="number" id="buff_spike" placeholder="0"></div>
+                    <div><label>Atk %</label><input type="number" id="buff_spike" placeholder="0"></div>
                     <div><label>Block %</label><input type="number" id="buff_block" placeholder="0"></div>
                     <div><label>Rec %</label><input type="number" id="buff_receive" placeholder="0"></div>
                     <div><label>Serve %</label><input type="number" id="buff_serve" placeholder="0"></div>
@@ -145,9 +174,10 @@
 
         <div class="card">
             <h2>4. Optimizer</h2>
-            <label>Target Stat to Optimize For:</label>
+            <label>Target Stat:</label>
             <select id="targetStat" onchange="refreshInventoryDisplay()">
-                <option value="spike">Spike Power</option>
+                <option value="quick">Quick Attack (MB)</option>
+                <option value="power">Power Attack (WS/OP)</option>
                 <option value="block">Block</option>
                 <option value="receive">Receive</option>
                 <option value="serve">Serve</option>
@@ -167,7 +197,9 @@
             <h2>3. Potential Inventory</h2>
             
             <div class="ref-panel">
-                <strong>Growth Rates:</strong> Flat +24 | % +2% | Spirit/Str +3.2% | Reflex/Awar +1.6% | Techs +1.2%
+                <strong>Growth Rates:</strong><br>
+                Flat +24 | % +2% (Power/Quick/Blk/Rec/Srv/Set/Save)<br>
+                Spirit/Str +3.2% | Reflex/Awar +1.6% | Techs +1.2%
             </div>
 
             <div style="border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 15px;">
@@ -186,7 +218,21 @@
 
                 <div class="stat-grid" style="grid-template-columns: 1fr 1fr;">
                     <div><label>Slot</label><select id="pot_slot" onchange="updateSlotHint()"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
-                    <div><label>Main Type</label><select id="pot_main_type"><option value="spike">Spike</option><option value="block">Block</option><option value="receive">Rec</option><option value="serve">Srv</option><option value="set">Set</option><option value="aware">Aware</option><option value="reflex">Reflex</option><option value="spirit">Spirit</option><option value="str">Str</option><option value="atech">Atk Tech</option><option value="dtech">Def Tech</option><option value="save">Save</option></select></div>
+                    <div><label>Main Type</label><select id="pot_main_type">
+                        <option value="quick">Quick Atk</option>
+                        <option value="power">Power Atk</option>
+                        <option value="block">Block</option>
+                        <option value="receive">Receive</option>
+                        <option value="serve">Serve</option>
+                        <option value="set">Set</option>
+                        <option value="save">Save</option>
+                        <option value="aware">Aware</option>
+                        <option value="reflex">Reflex</option>
+                        <option value="spirit">Spirit</option>
+                        <option value="str">Strength</option>
+                        <option value="atech">Atk Tech</option>
+                        <option value="dtech">Def Tech</option>
+                    </select></div>
                 </div>
 
                 <div class="stat-grid" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -195,7 +241,7 @@
                 </div>
                 
                 <div style="background: #fff3cd; padding:5px; margin-top:5px; border-radius:4px;">
-                    <label>Current Level (Remaining Upgrades)</label>
+                    <label>Current Level</label>
                     <select id="pot_level">
                         <option value="0">Lv 0 (4 Upgrades Left)</option>
                         <option value="3">Lv 3 (3 Upgrades Left)</option>
@@ -204,26 +250,27 @@
                         <option value="12">Lv 12 (Maxed)</option>
                     </select>
                 </div>
-                
                 <div id="slotHint" class="hint" style="color:#d32f2f; margin-bottom:10px;"></div>
 
-                <label>Substats (Split Flat and %)</label>
+                <div class="sub-header"><div>Stat</div><div>Flat</div><div>%</div></div>
                 <div class="sub-grid">
-                    <div><strong>Stat</strong></div><div><strong>Flat</strong></div><div><strong>%</strong></div>
-                    <label>Spike</label> <input type="number" id="sub_spike_flat" placeholder="24"> <input type="number" id="sub_spike_pct" placeholder="2">
+                    <label>Quick Atk</label> <input type="number" id="sub_quick_flat" placeholder="24"> <input type="number" id="sub_quick_pct" placeholder="2">
+                    <label>Power Atk</label> <input type="number" id="sub_power_flat" placeholder="0"> <input type="number" id="sub_power_pct" placeholder="0">
                     <label>Block</label> <input type="number" id="sub_block_flat" placeholder="0"> <input type="number" id="sub_block_pct" placeholder="0">
                     <label>Receive</label> <input type="number" id="sub_receive_flat" placeholder="0"> <input type="number" id="sub_receive_pct" placeholder="0">
                     <label>Serve</label> <input type="number" id="sub_serve_flat" placeholder="0"> <input type="number" id="sub_serve_pct" placeholder="0">
                     <label>Set</label> <input type="number" id="sub_set_flat" placeholder="0"> <input type="number" id="sub_set_pct" placeholder="0">
-                    <label>Aware</label> <input type="number" id="sub_aware_flat" placeholder="0"> <input type="number" id="sub_aware_pct" placeholder="0">
-                    <label>Reflex</label> <input type="number" id="sub_reflex_flat" placeholder="0"> <input type="number" id="sub_reflex_pct" placeholder="0">
+                    <label>Save</label> <input type="number" id="sub_save_flat" placeholder="0"> <input type="number" id="sub_save_pct" placeholder="0">
+                    <label>Strength</label> <input disabled style="background:#eee"> <input type="number" id="sub_str_pct" placeholder="3.2">
+                    <label>Spirit</label> <input disabled style="background:#eee"> <input type="number" id="sub_spirit_pct" placeholder="3.2">
+                    <label>Aware</label> <input disabled style="background:#eee"> <input type="number" id="sub_aware_pct" placeholder="1.6">
+                    <label>Reflex</label> <input disabled style="background:#eee"> <input type="number" id="sub_reflex_pct" placeholder="1.6">
                 </div>
                 
                 <button class="btn btn-secondary" onclick="addPotential()">+ Add Potential</button>
             </div>
 
             <h3>Inventory (<span id="count">0</span>)</h3>
-            <p class="hint">Growth calculated for current Target Stat.</p>
             <div id="inventoryList" style="max-height: 400px; overflow-y: auto;"></div>
             
             <div class="io-panel">
@@ -239,322 +286,301 @@
 </div>
 
 <script>
-    // --- GROWTH CONSTANTS ---
+    // --- CONSTANTS ---
     const GROWTH = {
-        flat: 24,       // Spike, Block, Receive, Serve, Set, Save
-        pct: 2.0,       // Spike%, Block%, etc.
-        spirit: 3.2,    // Spirit, Strength
-        str: 3.2,
-        reflex: 1.6,    // Reflex, Awareness
-        aware: 1.6,
-        atech: 1.2,     // Techs
-        dtech: 1.2
+        flat: 24, // Quick, Power, Block, Rec, Srv, Set, Save
+        pct: 2.0,
+        high_pct: 3.2, // Spirit, Strength
+        mid_pct: 1.6,  // Reflex, Aware
+        low_pct: 1.2   // Techs
     };
 
     // --- DATA ---
     let characterDB = {
         "tsukishima_sp": { 
             name: "Tsukishima SP (MB)", 
-            stats: { spike: 1948, receive: 1661, serve: 1668, block: 1769, set: 1579, save: 1753, aware: 0, reflex:0, spirit:0, str: 0, atech:0, dtech:0 } 
-        }
+            stats: { spike: 1948, receive: 1661, serve: 1668, block: 1769, set: 1579, save: 1753, aware: 0, reflex:0, spirit:0, str: 0, atech:0, dtech:0 },
+            bonds: [
+                { partner: "hinata_sp", name: "Sun vs Moon", desc: "Awareness +X% when Hinata Quick Crits." },
+                { partner: "kuroo_sp", name: "Hanabi Festival", desc: "Basic Stats Increased. Rage debuff on enemy." }
+            ],
+            sr: {
+                2: "Atk Mode: +15% Atk Tech, +20% Def Tech. Def Mode: +15% Def Tech, +20% Atk Tech.",
+                4: "Spirit & Strength +40%. Criticals boost power."
+            }
+        },
+        "hinata_sp": { name: "Hinata SP (MB)", stats: { spike: 1800 }, bonds: [] },
+        "kuroo_sp": { name: "Kuroo SP (MB)", stats: { block: 1800 }, bonds: [] }
     };
+    
     let memoryDB = {
-        "mem_tsuki_sp": { name: "Tsukishima SP Memory", desc: "Quick Atk +24%. Good Play = Block +9% (Stack x3).", buffs: { spike: 24 } },
+        "mem_tsuki_sp": { name: "Tsukishima SP Memory", desc: "Quick Atk +24%. Good Play = Block +9% (Stack x3).", buffs: { quick: 24 } },
         "mem_generic": { name: "Generic Memory", desc: "No base buffs.", buffs: {} }
     };
+    
     const setBonuses = {
-        "Power Vibe": { 2: {stat: "spike", val: 0.15} }, "Assist Receive": { 2: {stat: "receive", val: 0.15} }, 
+        "Power Vibe": { 2: {stat: "power", val: 0.15} }, "Assist Receive": { 2: {stat: "receive", val: 0.15} }, 
         "Supreme Receive": { 2: {stat: "receive", val: 0.15} }, "Precise Set": { 2: {stat: "set", val: 0.15} },
-        "Rapid Attack": { 2: {stat: "spike", val: 0.15} }, "Sharp Sense": { 2: {stat: "spike", val: 0.15} },
+        "Rapid Attack": { 2: {stat: "quick", val: 0.15} }, "Sharp Sense": { 2: {stat: "quick", val: 0.15} },
         "Precise Block": { 2: {stat: "block", val: 0.15} }, "Block Movement": { 2: {stat: "block", val: 0.15} }
     };
 
     // --- STATE ---
     let activeSlot = 1;
     let teamRoster = Array(7).fill(null); 
+    let teamSR = Array(7).fill(1); // Default SR1
     let inventory = [];
     let idCounter = 0;
 
-    // --- INIT ---
     window.onload = function() {
-        loadCustomChars();
-        updateCharDropdown();
-        updateMemoryDropdown();
-        loadInventory();
-        updateSlotHint();
+        loadCustomChars(); updateCharDropdown(); updateMemoryDropdown(); loadInventory(); updateSlotHint();
+        // Set default SR to 1
+        document.getElementById('srSelector').value = "1";
     };
 
-    // --- GROWTH LOGIC ---
+    // --- ANALYZER (No changes, same as before) ---
     function analyzePotential(item, targetStat) {
-        // 1. Calculate Rolls Remaining
         const level = item.level || 0;
         const rollsLeft = 4 - Math.floor(level / 3);
         if (rollsLeft <= 0) return { chance: 0, avgGain: 0, label: "Maxed" };
 
-        // 2. Identify "Hit" Stats (Stats that help the Target)
-        // Mapping Target -> Relevant Substats
-        // For simplicity: If Target is Spike, then SpikeFlat, Spike%, Str, Aware, AtkTech are "Hits".
-        let hitStats = [];
         let hitCount = 0;
-        let totalLines = 4; // Assume 4 lines unlocked for projection simplicity
-
-        // Helper to check if item has a substat
-        const hasSub = (key, type) => (item.subs[key] && (type === 'flat' ? item.subs[key].flat > 0 : item.subs[key].pct > 0));
-
-        // Define what helps what
-        const relevant = {
-            'spike': ['spike','str','aware','atech'],
+        const map = {
+            'quick': ['quick','str','aware','atech'],
+            'power': ['power','str','aware','atech'],
             'block': ['block','spirit','reflex','dtech'],
             'receive': ['receive','spirit','reflex','dtech'],
             'serve': ['serve','str','aware','atech'],
             'set': ['set','aware','atech'],
             'save': ['save','reflex','dtech']
         };
+        const targets = map[targetStat] || [targetStat];
 
-        const targetRelevant = relevant[targetStat] || [targetStat];
-
-        // Calculate "Hit Chance" based on current lines
-        // If I have Spike Flat and Str, that's 2 hits available.
-        // NOTE: The game adds random lines. But for "Upgrading", we care about hitting EXISTING good lines.
-        // Assuming equal weight for landing on any of the 4 lines.
-        
         let avgGainPerRoll = 0;
-        
-        // Check all 4 potential lines (simplified: iterate keys we track)
         for (let key in item.subs) {
-            // Check Flat
-            if (item.subs[key].flat > 0) {
-                if (targetRelevant.includes(key) || key === targetStat) {
-                    hitCount++;
-                    // Add Weighted Gain (Chance is 1/4)
-                    let val = GROWTH.flat; // Default flat
-                    avgGainPerRoll += (val / 4);
-                }
+            let isHit = false;
+            let val = 0;
+            if (item.subs[key].flat > 0 && targets.includes(key)) { isHit=true; val=GROWTH.flat; }
+            if (item.subs[key].pct > 0 && targets.includes(key)) {
+                isHit = true; 
+                if(['str','spirit'].includes(key)) val = GROWTH.high_pct * 15;
+                else if(['aware','reflex'].includes(key)) val = GROWTH.mid_pct * 15;
+                else val = GROWTH.pct * 15;
             }
-            // Check Pct
-            if (item.subs[key].pct > 0) {
-                if (targetRelevant.includes(key) || key === targetStat) {
-                    hitCount++;
-                    let val = GROWTH[key] || GROWTH.pct; // Specific pct growth
-                    // Convert % to Flat for Score? No, keep as arbitrary "Score" or just display raw %
-                    // For "Avg Increase", let's use a Score approximation: 1% ~= 10 Flat (Just for sorting)
-                    // ACTUALLY: Let's just return the raw stats gained.
-                    
-                    // Simple logic: We return a "Score" where Flat = 1, % = BaseStat * %. 
-                    // Since we don't know BaseStat in this function easily without context, let's use generic weighting.
-                    // 1% approx 15 stat points.
-                    let scoreVal = val * 15; 
-                    avgGainPerRoll += (scoreVal / 4);
-                }
-            }
+            if(isHit) { hitCount++; avgGainPerRoll += (val / 4); }
         }
 
         let chance = (hitCount / 4) * 100;
-        let totalAvgGain = avgGainPerRoll * rollsLeft; // Approximate "Stat Score" gain
-
-        return { 
-            chance: chance, 
-            avgGain: totalAvgGain,
-            label: `${chance.toFixed(0)}% Chance`,
-            css: chance >= 50 ? "high-potential" : (chance > 0 ? "" : "low-potential")
-        };
+        let totalGain = avgGainPerRoll * rollsLeft;
+        return { chance, avgGain: totalGain, label: `${chance.toFixed(0)}% Chance`, css: chance >= 50 ? "high-potential" : "low-potential" };
     }
 
-    function refreshInventoryDisplay() { renderInv(); }
-
-    // --- UI HELPERS ---
+    // --- UI & SYNERGY ---
     function updateSlotHint() {
         const s = document.getElementById('pot_slot').value;
         const h = document.getElementById('slotHint');
         const c = document.getElementById('pot_main_is_percent');
-        
-        if(s === "2") { h.innerText = "Max: 35% (Set/Atk/Srv) OR 20% (Aware/Str)"; c.checked = true; } 
+        if(s === "2") { h.innerText = "Max: 35% (Set/Power/Quick/Srv) OR 20% (Aware/Str)"; c.checked = true; } 
         else if(s === "4") { h.innerText = "Max: 35% (Blk/Rec) OR 20% (Reflex/Spirit)"; c.checked = true; } 
-        else if(s === "6") { h.innerText = "Max: 35% (Main Stats) OR 15% (Techs)"; c.checked = true; } 
+        else if(s === "6") { h.innerText = "Max: 35% (Main) OR 15% (Techs)"; c.checked = true; } 
         else { h.innerText = "Usually Flat Stats (+300)"; c.checked = false; }
     }
 
-    function saveCustomCharacter() {
-        // ... (Same as before, abbreviated for length) ...
-        const name = document.getElementById('new_name').value;
-        if(!name) return alert("Enter Name");
-        const id = name.toLowerCase().replace(/\s+/g, '_');
-        const newChar = { name: name, stats: {
-            spike: parseFloat(document.getElementById('new_spike').value)||0,
-            block: parseFloat(document.getElementById('new_block').value)||0,
-            receive: parseFloat(document.getElementById('new_receive').value)||0,
-            serve: parseFloat(document.getElementById('new_serve').value)||0,
-            set: parseFloat(document.getElementById('new_set').value)||0,
-            save: parseFloat(document.getElementById('new_save').value)||0,
-            aware: parseFloat(document.getElementById('new_aware').value)||0,
-            reflex: parseFloat(document.getElementById('new_reflex').value)||0,
-            spirit: parseFloat(document.getElementById('new_spirit').value)||0,
-            str: parseFloat(document.getElementById('new_str').value)||0,
-            atech: parseFloat(document.getElementById('new_atech').value)||0,
-            dtech: parseFloat(document.getElementById('new_dtech').value)||0
-        }};
-        characterDB[id] = newChar;
-        let saved = JSON.parse(localStorage.getItem('hq_custom_chars')) || {};
-        saved[id] = newChar;
-        localStorage.setItem('hq_custom_chars', JSON.stringify(saved));
-        updateCharDropdown();
-        alert("Saved!");
-    }
-    
-    function loadCustomChars() {
-        let saved = JSON.parse(localStorage.getItem('hq_custom_chars')) || {};
-        Object.assign(characterDB, saved);
-    }
-    function updateCharDropdown() {
-        const sel = document.getElementById('charSelector');
-        sel.innerHTML = '<option value="">-- Select --</option>';
-        for(let key in characterDB) sel.innerHTML += `<option value="${key}">${characterDB[key].name}</option>`;
-    }
-    function updateMemoryDropdown() {
-        const sel = document.getElementById('memorySelector');
-        sel.innerHTML = '<option value="">-- None --</option>';
-        for(let key in memoryDB) sel.innerHTML += `<option value="${key}">${memoryDB[key].name}</option>`;
-    }
-    function updateMemoryDesc() {
-        const k = document.getElementById('memorySelector').value;
-        document.getElementById('memoryDesc').innerText = (k && memoryDB[k]) ? "Effect: " + memoryDB[k].desc : "";
-    }
-    function selectSlot(n) {
-        document.querySelectorAll('.team-slot').forEach(e => e.classList.remove('active'));
-        document.getElementById(`slot${n}`).classList.add('active');
-        activeSlot = n;
-        const k = teamRoster[n-1];
-        if(k && characterDB[k]) { document.getElementById('charSelector').value = k; loadStats(characterDB[k].stats); } 
-        else { document.getElementById('charSelector').value = ""; loadStats({}); }
-    }
-    function assignCharacter() {
-        const k = document.getElementById('charSelector').value;
-        if(!k) return;
-        teamRoster[activeSlot-1] = k;
-        document.getElementById(`name${activeSlot}`).innerText = characterDB[k].name;
-        loadStats(characterDB[k].stats);
-    }
-    function loadStats(s) {
-        ['spike','block','receive','serve','set','save','aware','reflex','spirit','str','atech','dtech'].forEach(id => document.getElementById(`base_${id}`).value = s[id] || 0);
-        refreshInventoryDisplay(); // Update potential analysis based on new stats? (Actually depends on target stat)
-    }
-
-    // --- INVENTORY ---
     function addPotential() {
+        // ... (Same Add Potential logic as previous version, abbreviated) ...
         const item = {
-            id: idCounter++,
-            set: document.getElementById('pot_set').value,
-            slot: parseInt(document.getElementById('pot_slot').value),
+            id: idCounter++, set: document.getElementById('pot_set').value, slot: parseInt(document.getElementById('pot_slot').value),
             level: parseInt(document.getElementById('pot_level').value)||0,
-            main: {
-                type: document.getElementById('pot_main_type').value,
-                val: parseFloat(document.getElementById('pot_main_val').value)||0,
-                isPercent: document.getElementById('pot_main_is_percent').checked
-            },
+            main: { type: document.getElementById('pot_main_type').value, val: parseFloat(document.getElementById('pot_main_val').value)||0, isPercent: document.getElementById('pot_main_is_percent').checked },
             subs: {
-                spike: { flat: parseFloat(document.getElementById('sub_spike_flat').value)||0, pct: parseFloat(document.getElementById('sub_spike_pct').value)||0 },
+                quick: { flat: parseFloat(document.getElementById('sub_quick_flat').value)||0, pct: parseFloat(document.getElementById('sub_quick_pct').value)||0 },
+                power: { flat: parseFloat(document.getElementById('sub_power_flat').value)||0, pct: parseFloat(document.getElementById('sub_power_pct').value)||0 },
                 block: { flat: parseFloat(document.getElementById('sub_block_flat').value)||0, pct: parseFloat(document.getElementById('sub_block_pct').value)||0 },
                 receive: { flat: parseFloat(document.getElementById('sub_receive_flat').value)||0, pct: parseFloat(document.getElementById('sub_receive_pct').value)||0 },
                 serve: { flat: parseFloat(document.getElementById('sub_serve_flat').value)||0, pct: parseFloat(document.getElementById('sub_serve_pct').value)||0 },
                 set: { flat: parseFloat(document.getElementById('sub_set_flat').value)||0, pct: parseFloat(document.getElementById('sub_set_pct').value)||0 },
-                aware: { flat: parseFloat(document.getElementById('sub_aware_flat').value)||0, pct: parseFloat(document.getElementById('sub_aware_pct').value)||0 },
-                reflex: { flat: parseFloat(document.getElementById('sub_reflex_flat').value)||0, pct: parseFloat(document.getElementById('sub_reflex_pct').value)||0 }
+                save: { flat: parseFloat(document.getElementById('sub_save_flat').value)||0, pct: parseFloat(document.getElementById('sub_save_pct').value)||0 },
+                str: { flat: 0, pct: parseFloat(document.getElementById('sub_str_pct').value)||0 },
+                spirit: { flat: 0, pct: parseFloat(document.getElementById('sub_spirit_pct').value)||0 },
+                aware: { flat: 0, pct: parseFloat(document.getElementById('sub_aware_pct').value)||0 },
+                reflex: { flat: 0, pct: parseFloat(document.getElementById('sub_reflex_pct').value)||0 }
             }
         };
-        inventory.push(item);
-        saveInv();
-        renderInv();
+        inventory.push(item); saveInv(); renderInv();
     }
 
-    function saveInv() { localStorage.setItem('hq_inventory', JSON.stringify(inventory)); }
-    function loadInventory() {
-        const s = localStorage.getItem('hq_inventory');
-        if(s) { inventory = JSON.parse(s); if(inventory.length) idCounter = Math.max(...inventory.map(i=>i.id))+1; renderInv(); }
-    }
-    
     function renderInv() {
         const l = document.getElementById('inventoryList');
         const target = document.getElementById('targetStat').value;
         document.getElementById('count').innerText = inventory.length;
         l.innerHTML = "";
-        
         inventory.forEach(i => {
-            let stats = "";
-            if(i.subs.spike.flat || i.subs.spike.pct) stats += `Spk:${i.subs.spike.flat}/${i.subs.spike.pct}% `;
-            if(i.subs.block.flat || i.subs.block.pct) stats += `Blk:${i.subs.block.flat}/${i.subs.block.pct}% `;
-            if(i.subs.receive.flat || i.subs.receive.pct) stats += `Rec:${i.subs.receive.flat}/${i.subs.receive.pct}% `;
-            
-            // ANALYZE GROWTH
+            let stats = [];
+            for(let k in i.subs) {
+                if(i.subs[k].flat > 0) stats.push(`${k.substr(0,3)}:${i.subs[k].flat}`);
+                if(i.subs[k].pct > 0) stats.push(`${k.substr(0,3)}%:${i.subs[k].pct}`);
+            }
             const analysis = analyzePotential(i, target);
-            
             l.innerHTML += `<div class="item-box ${analysis.css}">
                 <button class="btn-delete" onclick="delItem(${i.id})">x</button>
-                <strong>${i.set}</strong> (S${i.slot}) Lv${i.level||0}<br>
+                <strong>${i.set}</strong> (S${i.slot}) Lv${i.level}<br>
                 Main: ${i.main.val}${i.main.isPercent?'%':''} ${i.main.type}<br>
-                <span style="font-size:0.8em; color:#666;">${stats}</span>
-                <div class="potential-stats">
-                    <span class="pot-chance">🎲 ${analysis.label}</span>
-                    <span class="pot-score">📈 Avg Gain: +${analysis.avgGain.toFixed(0)} Score</span>
-                </div>
+                <span style="font-size:0.8em; color:#666;">${stats.join(', ')}</span>
+                <div class="potential-stats"><span class="pot-chance">🎲 ${analysis.label}</span><span class="pot-score">📈 Avg: +${analysis.avgGain.toFixed(0)}</span></div>
             </div>`;
         });
     }
-    function delItem(id) { inventory = inventory.filter(i=>i.id!==id); saveInv(); renderInv(); }
 
-    function exportData() {
-        const data = JSON.stringify(inventory);
-        document.getElementById('io_area').value = data;
-        navigator.clipboard.writeText(data);
-        alert("Copied!");
-    }
-    function importData() {
-        try {
-            const data = document.getElementById('io_area').value;
-            if(!data) return alert("Paste data first!");
-            inventory = JSON.parse(data);
-            if(inventory.length) idCounter = Math.max(...inventory.map(i=>i.id))+1;
-            saveInv();
-            renderInv();
-            alert("Inventory Loaded!");
-        } catch(e) { alert("Invalid Data!"); }
-    }
+    // --- SYNERGY FUNCTIONS ---
+    function updateSynergyDisplay() {
+        const k = document.getElementById('charSelector').value;
+        const sr = parseInt(document.getElementById('srSelector').value);
+        teamSR[activeSlot-1] = sr; // Save SR level
 
-    // --- OPTIMIZER ---
-    function getBuffs() {
-        const b = {
-            spike: parseFloat(document.getElementById('buff_spike').value)||0,
-            block: parseFloat(document.getElementById('buff_block').value)||0,
-            receive: parseFloat(document.getElementById('buff_receive').value)||0,
-            serve: parseFloat(document.getElementById('buff_serve').value)||0,
-            aware: parseFloat(document.getElementById('buff_aware').value)||0,
-            reflex: parseFloat(document.getElementById('buff_reflex').value)||0,
-            team: parseFloat(document.getElementById('buff_team').value)||1.0
-        };
-        const k = document.getElementById('memorySelector').value;
-        if(k && memoryDB[k] && memoryDB[k].buffs) {
-            for(let s in memoryDB[k].buffs) if(b[s] !== undefined) b[s] += memoryDB[k].buffs[s];
+        const panel = document.getElementById('synergyPanel');
+        const content = document.getElementById('synergyContent');
+        content.innerHTML = "";
+        
+        if(!k || !characterDB[k]) { panel.style.display="none"; return; }
+        
+        panel.style.display = "block";
+        const char = characterDB[k];
+
+        // 0. Base Stat Calculation Logic display
+        const inputSR = parseInt(document.getElementById('inputSR').value);
+        const mult = getSRMult(sr, inputSR);
+        if(mult > 1.0) {
+            const pct = Math.round((mult - 1.0)*100);
+            content.innerHTML += `<div class="synergy-item"><span class="synergy-title">📈 Base Stats (Auto-Calc)</span>+${pct}% Bonus applied to optimization (Input SR${inputSR} -> Target SR${sr})</div>`;
         }
+
+        // 1. Resonance
+        if(char.sr) {
+            for(let level in char.sr) {
+                if(sr >= parseInt(level)) {
+                    content.innerHTML += `<div class="synergy-item"><span class="synergy-title">⭐ SR ${level} Active</span>${char.sr[level]}</div>`;
+                }
+            }
+        }
+        
+        // 2. Bonds
+        if(char.bonds) {
+            char.bonds.forEach(bond => {
+                if(teamRoster.includes(bond.partner)) {
+                    content.innerHTML += `<div class="synergy-item"><span class="synergy-title">🔗 Bond: ${bond.name}</span>${bond.desc}</div>`;
+                }
+            });
+        }
+    }
+
+    function getSRMult(targetSR, inputSR) {
+        // Calculate cumulative multipliers
+        // SR1: +13% (1.13)
+        // SR3: +13% (1.26)
+        // SR5: +13% (1.39)
+        const getVal = (lvl) => {
+            let val = 1.0;
+            if(lvl >= 1) val += 0.13;
+            if(lvl >= 3) val += 0.13;
+            if(lvl >= 5) val += 0.13;
+            return val;
+        };
+
+        const currentVal = getVal(inputSR);
+        const targetVal = getVal(targetSR);
+        
+        // Return ratio to adjust base stats
+        // e.g. Input SR1 (1.13), Target SR3 (1.26). Mult = 1.26 / 1.13 = 1.115 (+11.5%)
+        return targetVal / currentVal;
+    }
+
+    // --- HELPERS (Same as before) ---
+    function saveInv() { localStorage.setItem('hq_inventory', JSON.stringify(inventory)); }
+    function loadInventory() { const s = localStorage.getItem('hq_inventory'); if(s) { inventory = JSON.parse(s); idCounter = Math.max(...inventory.map(i=>i.id))+1; renderInv(); } }
+    function delItem(id) { inventory = inventory.filter(i=>i.id!==id); saveInv(); renderInv(); }
+    function exportData() { navigator.clipboard.writeText(JSON.stringify(inventory)); alert("Copied!"); }
+    function importData() { try { inventory = JSON.parse(document.getElementById('io_area').value); saveInv(); renderInv(); alert("Loaded!"); } catch(e) { alert("Error"); } }
+    
+    function saveCustomCharacter() {
+        const id = document.getElementById('new_name').value.toLowerCase().replace(/\s+/g,'_');
+        const c = { name: document.getElementById('new_name').value, stats: {}, bonds:[], sr:{} };
+        ['spike','block','receive','serve','set','save','aware','reflex','spirit','str','atech','dtech'].forEach(k => c.stats[k] = parseFloat(document.getElementById(`new_${k}`).value)||0);
+        characterDB[id] = c;
+        localStorage.setItem('hq_custom_chars', JSON.stringify(characterDB));
+        updateCharDropdown();
+    }
+    function loadCustomChars() { Object.assign(characterDB, JSON.parse(localStorage.getItem('hq_custom_chars'))||{}); }
+    function updateCharDropdown() { const s=document.getElementById('charSelector'); s.innerHTML='<option value="">-- Select --</option>'; for(let k in characterDB) s.innerHTML += `<option value="${k}">${characterDB[k].name}</option>`; }
+    function updateMemoryDropdown() { const s=document.getElementById('memorySelector'); s.innerHTML='<option value="">-- None --</option>'; for(let k in memoryDB) s.innerHTML += `<option value="${k}">${memoryDB[k].name}</option>`; }
+    function updateMemoryDesc() { const k=document.getElementById('memorySelector').value; document.getElementById('memoryDesc').innerText = (k && memoryDB[k]) ? memoryDB[k].desc : ""; }
+    
+    function selectSlot(n) {
+        document.querySelectorAll('.team-slot').forEach(e => e.classList.remove('active'));
+        document.getElementById(`slot${n}`).classList.add('active');
+        activeSlot = n;
+        const k = teamRoster[n-1];
+        if(k) { 
+            document.getElementById('charSelector').value = k; 
+            document.getElementById('srSelector').value = teamSR[n-1]; // Restore SR
+            loadStats(characterDB[k].stats); 
+        } else { 
+            document.getElementById('charSelector').value=""; 
+            document.getElementById('srSelector').value=1; // Default SR1
+            loadStats({}); 
+        }
+        updateSynergyDisplay(); // Refresh
+    }
+    
+    function assignCharacter() { 
+        const k=document.getElementById('charSelector').value; 
+        if(k) { 
+            teamRoster[activeSlot-1]=k; 
+            document.getElementById(`name${activeSlot}`).innerText=characterDB[k].name; 
+            loadStats(characterDB[k].stats); 
+            updateSynergyDisplay();
+        } 
+    }
+    function loadStats(s) { ['spike','block','receive','serve','set','save','aware','reflex','spirit','str','atech','dtech'].forEach(k => document.getElementById(`base_${k}`).value = s[k]||0); renderInv(); }
+
+    function getBuffs() {
+        const b = { quick:0, power:0, block:0, receive:0, serve:0, set:0, save:0, aware:0, reflex:0, team:1.0 };
+        b.spike = parseFloat(document.getElementById('buff_spike').value)||0; 
+        b.quick += b.spike; b.power += b.spike;
+        b.block = parseFloat(document.getElementById('buff_block').value)||0;
+        b.receive = parseFloat(document.getElementById('buff_receive').value)||0;
+        b.serve = parseFloat(document.getElementById('buff_serve').value)||0;
+        b.aware = parseFloat(document.getElementById('buff_aware').value)||0;
+        b.reflex = parseFloat(document.getElementById('buff_reflex').value)||0;
+        b.team = parseFloat(document.getElementById('buff_team').value)||1.0;
+        const k = document.getElementById('memorySelector').value;
+        if(k && memoryDB[k].buffs) for(let s in memoryDB[k].buffs) b[s] += memoryDB[k].buffs[s];
         return b;
     }
 
     function runOptimizer() {
+        // 1. Get Base Stats
         const base = {};
-        ['spike','block','receive','serve','set','save','aware','reflex','spirit','str','atech','dtech'].forEach(id => {
-            base[id] = parseFloat(document.getElementById(`base_${id}`).value)||0;
-        });
+        ['spike','block','receive','serve','set','save','aware','reflex','spirit','str','atech','dtech'].forEach(k => base[k] = parseFloat(document.getElementById(`base_${k}`).value)||0);
+        
+        // 2. Apply Auto-SR Math
+        const targetSR = parseInt(document.getElementById('srSelector').value);
+        const inputSR = parseInt(document.getElementById('inputSR').value);
+        const srMult = getSRMult(targetSR, inputSR);
+        
+        // Apply multiplier to all base stats
+        for(let k in base) base[k] = base[k] * srMult;
+
+        base.quick = base.spike; base.power = base.spike; 
+        
         const target = document.getElementById('targetStat').value;
         const buffs = getBuffs();
-
+        
         const slots = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
         inventory.forEach(i => slots[i.slot].push(i));
-        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{
-            spike:{flat:0,pct:0}, block:{flat:0,pct:0}, receive:{flat:0,pct:0}, 
-            serve:{flat:0,pct:0}, set:{flat:0,pct:0}, aware:{flat:0,pct:0}, reflex:{flat:0,pct:0}
-        }};
+        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{quick:{flat:0,pct:0},power:{flat:0,pct:0}}};
         for(let k=1; k<=6; k++) if(!slots[k].length) slots[k].push(dummy);
 
         let bestVal = -1, bestBuild = null;
-
         for(let s1 of slots[1]) for(let s2 of slots[2]) for(let s3 of slots[3]) 
         for(let s4 of slots[4]) for(let s5 of slots[5]) for(let s6 of slots[6]) {
             const build = [s1,s2,s3,s4,s5,s6];
@@ -567,6 +593,7 @@
         if(!bestBuild) { res.innerHTML = "No items."; return; }
         
         let html = `<div style="font-size:1.5em; color:#ff6b00;">Total ${target.toUpperCase()}: ${bestBuild.stats.final.toFixed(0)}</div>`;
+        if(srMult > 1.0) html += `<div style="color:#28a745; font-size:0.9em;">(Includes +${Math.round((srMult-1)*100)}% Base Stat Bonus from SR${targetSR})</div>`;
         html += `<strong>Sets:</strong> ${bestBuild.stats.activeSets.join(', ')||"None"}<br><em>(Buffs: ${buffs[target]||0}%)</em><br><br>`;
         bestBuild.build.forEach(i => {
             if(i.set !== "None") html += `<div class="item-box">S${i.slot}: <strong>${i.set}</strong> (${i.main.val}${i.main.isPercent?'%':''} ${i.main.type})</div>`;
@@ -576,28 +603,15 @@
 
     function calcStats(base, items, target, buffs) {
         let flat = 0, pct = buffs[target]||0, sets = {};
-        
         items.forEach(i => {
             if(i.set !== "None") sets[i.set] = (sets[i.set]||0)+1;
-            // Main Stat
-            if(i.main.type === target) {
-                if(i.main.isPercent) pct += i.main.val; else flat += i.main.val;
-            }
-            // Substats
-            if(i.subs[target]) {
-                flat += i.subs[target].flat;
-                pct += i.subs[target].pct;
-            }
+            if(i.main.type === target) { if(i.main.isPercent) pct += i.main.val; else flat += i.main.val; }
+            if(i.subs[target]) { flat += i.subs[target].flat; pct += i.subs[target].pct; }
         });
-
         let active = [];
         for(let s in sets) {
-            if(sets[s] >= 2 && setBonuses[s] && setBonuses[s][2].stat === target) {
-                pct += (setBonuses[s][2].val * 100);
-                active.push(s);
-            }
+            if(sets[s] >= 2 && setBonuses[s] && setBonuses[s][2].stat === target) { pct += (setBonuses[s][2].val * 100); active.push(s); }
         }
-        
         const final = (base[target] * buffs.team * (1 + (pct/100))) + flat;
         return { final, activeSets: active };
     }
