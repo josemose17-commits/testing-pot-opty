@@ -55,7 +55,7 @@
 
 <div class="card">
     <h2>1. Team Roster (7 Players)</h2>
-    <p class="hint">Select a character to Optimize.</p>
+    <p class="hint">Select a character slot to Optimize.</p>
     
     <div class="team-row">
         <div class="team-slot active" onclick="selectSlot(1)" id="slot1"><span class="slot-role">Slot 1</span><span class="slot-name" id="name1">Empty</span></div>
@@ -117,7 +117,7 @@
 
             <div class="buff-panel">
                 <h3>⚔️ Battle Conditions (Buffs)</h3>
-                <p class="hint">Total Buffs (Skills + Memory + Passives)</p>
+                <p class="hint"><strong>Manually add buffs</strong> from Skills (e.g., Attack Mode +40%) or conditional Memory stacks.</p>
                 <div class="buff-grid">
                     <div><label>Spike Buff %</label><input type="number" id="buff_spike" placeholder="0"></div>
                     <div><label>Block Buff %</label><input type="number" id="buff_block" placeholder="0"></div>
@@ -133,7 +133,7 @@
             <h2>4. Optimizer</h2>
             <label>Target Stat:</label>
             <select id="targetStat">
-                <option value="spike">Spike Power</option>
+                <option value="spike">Spike Power (Quick)</option>
                 <option value="block">Block</option>
                 <option value="receive">Receive</option>
                 <option value="serve">Serve</option>
@@ -193,25 +193,34 @@
 <script>
     // --- 1. DATA & DEFAULTS ---
     
-    // Character DB
+    // Character DB (Loaded with Tsukishima SP)
     let characterDB = {
         "komori": { name: "Motoya Komori", stats: { spike: 1579, receive: 2012, serve: 1580, block: 1580, set: 1904, aware: 150, str: 100 } },
-        "sakusa": { name: "Kiyoomi Sakusa", stats: { spike: 2200, receive: 1400, serve: 1800, block: 1300, set: 1100, aware: 200, str: 180 } },
-        "tsukishima_hanabi": { name: "Tsukishima (Hanabi)", stats: { spike: 1948, receive: 1661, serve: 1668, block: 1769, set: 1579, aware: 200, str: 150 } }
+        "tsukishima_sp": { 
+            name: "Tsukishima SP (MB)", 
+            stats: { 
+                spike: 1948, 
+                receive: 1661, 
+                serve: 1668, 
+                block: 1769, 
+                set: 1579, 
+                aware: 0, 
+                str: 0 
+            } 
+        }
     };
 
-    // Memory DB (Examples provided)
-    // Format: "key": { name: "Display Name", desc: "Effect Text", buffs: { stat: val } }
+    // Memory DB (Added Tsukishima SP Memory)
     let memoryDB = {
-        "mem_example": { 
-            name: "Example Memory", 
-            desc: "Increases Quick Attack by 24%.", 
-            buffs: { spike: 24 } 
+        "mem_tsuki_sp": { 
+            name: "Tsukishima SP Memory", 
+            desc: "Passive: Quick Attack +24%. Conditional: If good play, Block +9% (Stack x3). Inflicts Suppress.", 
+            buffs: { spike: 24 } // 24% Spike (Quick Attack) applied automatically
         },
-         "mem_complex": { 
-            name: "Complex Memory", 
-            desc: "If making a good play, Block +9%. (Manual: Add 9 to Block Buff).", 
-            buffs: {} // No static buff, user must add manually
+        "mem_generic_atk": { 
+            name: "Generic Attack Memory", 
+            desc: "Increases Spike by 10%.", 
+            buffs: { spike: 10 } 
         }
     };
 
@@ -298,7 +307,6 @@
         const box = document.getElementById('memoryDesc');
         if(key && memoryDB[key]) {
             box.innerText = "Effect: " + memoryDB[key].desc;
-            // Auto-fill buffs if static (optional feature, currently just visual)
         } else {
             box.innerText = "";
         }
@@ -392,7 +400,6 @@
     // --- 6. OPTIMIZER LOGIC ---
 
     function getBattleBuffs() {
-        // Reads manual inputs
         const buffs = {
             spike: parseFloat(document.getElementById('buff_spike').value) || 0,
             block: parseFloat(document.getElementById('buff_block').value) || 0,
