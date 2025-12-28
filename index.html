@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haikyu!! Fly High Ultimate Optimizer</title>
+    <title>Haikyu!! Ultimate Optimizer</title>
     <style>
         :root { --hq-orange: #ff6b00; --hq-black: #1a1a1a; --hq-gray: #f4f4f9; --hq-blue: #0056b3; --hq-purple: #6f42c1; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--hq-gray); color: var(--hq-black); padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -16,10 +16,14 @@
         h1, h2, h3 { color: var(--hq-orange); margin-top: 0; }
         
         /* Inputs */
-        label { display: block; font-weight: bold; margin-top: 8px; font-size: 0.85em; color:#444; }
-        input, select { width: 100%; padding: 6px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9em; }
+        label { display: block; font-weight: bold; margin-top: 8px; font-size: 0.8em; color:#444; }
+        input, select { width: 100%; padding: 6px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9em; }
         .hint { font-size: 0.8em; color: #666; font-style: italic; margin-top: 2px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        
+        /* Substat specific grid */
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; align-items: end; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .sub-grid label { margin-top:0; font-size: 0.75em; }
 
         /* Buttons */
         .btn { width: 100%; padding: 12px; background: var(--hq-orange); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
@@ -43,7 +47,6 @@
         /* Inventory & Results */
         .item-box { border-left: 4px solid var(--hq-orange); background: #fff5eb; padding: 8px; margin-bottom: 6px; font-size: 0.85em; }
         .result-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        
         .creator-section { border-top: 2px dashed #ccc; margin-top: 20px; padding-top: 20px; }
     </style>
 </head>
@@ -153,11 +156,7 @@
             <h2>3. Potential Inventory</h2>
             
             <div class="ref-panel">
-                <strong>Substat Growth Cheat Sheet:</strong><br>
-                • Flat Stats (Spk/Blk/etc): <strong>24</strong> per roll<br>
-                • % Stats (Spk/Blk/etc): <strong>2%</strong> per roll<br>
-                • Spirit/Str: <strong>3.2%</strong> | Reflex/Aware: <strong>1.6%</strong><br>
-                • Techs: <strong>1.2%</strong>
+                <strong>Substat Ref:</strong> Flat +24 | % +2% | Spirit/Str +3.2% | Reflex/Awar +1.6% | Techs +1.2%
             </div>
 
             <div style="border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 15px;">
@@ -185,17 +184,19 @@
                 </div>
                 <div id="slotHint" class="hint" style="color:#d32f2f; margin-bottom:10px;"></div>
 
-                <label>Substats (Enter Total Value)</label>
-                <div class="stat-grid">
-                    <input type="number" id="sub_spike" placeholder="Spike">
-                    <input type="number" id="sub_block" placeholder="Block">
-                    <input type="number" id="sub_receive" placeholder="Rec">
-                    <input type="number" id="sub_aware" placeholder="Aware">
-                    <input type="number" id="sub_reflex" placeholder="Reflex">
-                    <input type="number" id="sub_spirit" placeholder="Spirit">
-                    <input type="number" id="sub_atech" placeholder="AtkTec">
-                    <input type="number" id="sub_dtech" placeholder="DefTec">
-                </div>
+                <label>Substats (Split Flat and %)</label>
+                <div class="sub-grid">
+                    <div><strong>Stat</strong></div><div><strong>Flat</strong></div><div><strong>%</strong></div>
+                    
+                    <label>Spike</label> <input type="number" id="sub_spike_flat" placeholder="24"> <input type="number" id="sub_spike_pct" placeholder="2">
+                    <label>Block</label> <input type="number" id="sub_block_flat" placeholder="0"> <input type="number" id="sub_block_pct" placeholder="0">
+                    <label>Receive</label> <input type="number" id="sub_receive_flat" placeholder="0"> <input type="number" id="sub_receive_pct" placeholder="0">
+                    <label>Serve</label> <input type="number" id="sub_serve_flat" placeholder="0"> <input type="number" id="sub_serve_pct" placeholder="0">
+                    <label>Set</label> <input type="number" id="sub_set_flat" placeholder="0"> <input type="number" id="sub_set_pct" placeholder="0">
+                    <label>Aware</label> <input type="number" id="sub_aware_flat" placeholder="0"> <input type="number" id="sub_aware_pct" placeholder="0">
+                    <label>Reflex</label> <input type="number" id="sub_reflex_flat" placeholder="0"> <input type="number" id="sub_reflex_pct" placeholder="0">
+                    </div>
+                
                 <button class="btn btn-secondary" onclick="addPotential()">+ Add Potential</button>
             </div>
 
@@ -355,14 +356,13 @@
                 isPercent: document.getElementById('pot_main_is_percent').checked
             },
             subs: {
-                spike: parseFloat(document.getElementById('sub_spike').value)||0,
-                block: parseFloat(document.getElementById('sub_block').value)||0,
-                receive: parseFloat(document.getElementById('sub_receive').value)||0,
-                aware: parseFloat(document.getElementById('sub_aware').value)||0,
-                reflex: parseFloat(document.getElementById('sub_reflex').value)||0,
-                spirit: parseFloat(document.getElementById('sub_spirit').value)||0,
-                atech: parseFloat(document.getElementById('sub_atech').value)||0,
-                dtech: parseFloat(document.getElementById('sub_dtech').value)||0
+                spike: { flat: parseFloat(document.getElementById('sub_spike_flat').value)||0, pct: parseFloat(document.getElementById('sub_spike_pct').value)||0 },
+                block: { flat: parseFloat(document.getElementById('sub_block_flat').value)||0, pct: parseFloat(document.getElementById('sub_block_pct').value)||0 },
+                receive: { flat: parseFloat(document.getElementById('sub_receive_flat').value)||0, pct: parseFloat(document.getElementById('sub_receive_pct').value)||0 },
+                serve: { flat: parseFloat(document.getElementById('sub_serve_flat').value)||0, pct: parseFloat(document.getElementById('sub_serve_pct').value)||0 },
+                set: { flat: parseFloat(document.getElementById('sub_set_flat').value)||0, pct: parseFloat(document.getElementById('sub_set_pct').value)||0 },
+                aware: { flat: parseFloat(document.getElementById('sub_aware_flat').value)||0, pct: parseFloat(document.getElementById('sub_aware_pct').value)||0 },
+                reflex: { flat: parseFloat(document.getElementById('sub_reflex_flat').value)||0, pct: parseFloat(document.getElementById('sub_reflex_pct').value)||0 }
             }
         };
         inventory.push(item);
@@ -380,9 +380,15 @@
         document.getElementById('count').innerText = inventory.length;
         l.innerHTML = "";
         inventory.forEach(i => {
+            let stats = "";
+            // Simplified display
+            if(i.subs.spike.flat || i.subs.spike.pct) stats += `Spk:${i.subs.spike.flat}/${i.subs.spike.pct}% `;
+            if(i.subs.receive.flat || i.subs.receive.pct) stats += `Rec:${i.subs.receive.flat}/${i.subs.receive.pct}% `;
+            
             l.innerHTML += `<div class="item-box">
                 <button class="btn-delete" onclick="delItem(${i.id})">x</button>
-                <strong>${i.set}</strong> (S${i.slot}) | ${i.main.val}${i.main.isPercent?'%':''} ${i.main.type}
+                <strong>${i.set}</strong> (S${i.slot}) | Main: ${i.main.val}${i.main.isPercent?'%':''} ${i.main.type}<br>
+                <span style="font-size:0.8em; color:#666;">${stats}</span>
             </div>`;
         });
     }
@@ -415,7 +421,10 @@
 
         const slots = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
         inventory.forEach(i => slots[i.slot].push(i));
-        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{}};
+        const dummy = {set:"None", main:{val:0,isPercent:false}, subs:{
+            spike:{flat:0,pct:0}, block:{flat:0,pct:0}, receive:{flat:0,pct:0}, 
+            serve:{flat:0,pct:0}, set:{flat:0,pct:0}, aware:{flat:0,pct:0}, reflex:{flat:0,pct:0}
+        }};
         for(let k=1; k<=6; k++) if(!slots[k].length) slots[k].push(dummy);
 
         let bestVal = -1, bestBuild = null;
@@ -444,10 +453,16 @@
         
         items.forEach(i => {
             if(i.set !== "None") sets[i.set] = (sets[i.set]||0)+1;
+            
+            // Main Stat
             if(i.main.type === target) {
                 if(i.main.isPercent) pct += i.main.val; else flat += i.main.val;
             }
-            if(i.subs[target]) flat += i.subs[target];
+            // Substats (Handle both Flat and Pct)
+            if(i.subs[target]) {
+                flat += i.subs[target].flat;
+                pct += i.subs[target].pct;
+            }
         });
 
         let active = [];
