@@ -17,11 +17,9 @@
         
         /* Inputs */
         label { display: block; font-weight: bold; margin-top: 8px; font-size: 0.8em; color:#444; }
-        input, select { width: 100%; padding: 6px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9em; }
+        input, select, textarea { width: 100%; padding: 6px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9em; }
         .hint { font-size: 0.8em; color: #666; font-style: italic; margin-top: 2px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        
-        /* Substat specific grid */
         .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; align-items: end; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .sub-grid label { margin-top:0; font-size: 0.75em; }
 
@@ -29,6 +27,7 @@
         .btn { width: 100%; padding: 12px; background: var(--hq-orange); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
         .btn:hover { background: #e65c00; }
         .btn-green { background: #28a745; } .btn-green:hover { background: #218838; }
+        .btn-blue { background: #007bff; } .btn-blue:hover { background: #0056b3; }
         .btn-delete { background: #cc0000; padding: 2px 6px; font-size: 0.8em; color: white; border: none; cursor: pointer; float: right; }
 
         /* Team Styles */
@@ -39,12 +38,13 @@
         .slot-role { font-size: 0.65em; color: #666; display: block; margin-bottom: 5px; text-transform: uppercase; }
         .slot-name { font-weight: bold; font-size: 0.75em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Info Panels */
+        /* Panels */
         .buff-panel { background: #eef6ff; padding: 15px; border-radius: 8px; border: 1px solid #0056b3; }
         .memory-panel { background: #f3e5f5; padding: 15px; border-radius: 8px; border: 1px solid var(--hq-purple); margin-bottom: 15px; }
         .ref-panel { background: #fff8e1; padding: 10px; border: 1px solid #ffc107; font-size: 0.8em; margin-bottom: 15px; border-radius: 6px;}
+        .io-panel { background: #e2e6ea; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #adb5bd; }
         
-        /* Inventory & Results */
+        /* Items */
         .item-box { border-left: 4px solid var(--hq-orange); background: #fff5eb; padding: 8px; margin-bottom: 6px; font-size: 0.85em; }
         .result-box { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .creator-section { border-top: 2px dashed #ccc; margin-top: 20px; padding-top: 20px; }
@@ -187,7 +187,6 @@
                 <label>Substats (Split Flat and %)</label>
                 <div class="sub-grid">
                     <div><strong>Stat</strong></div><div><strong>Flat</strong></div><div><strong>%</strong></div>
-                    
                     <label>Spike</label> <input type="number" id="sub_spike_flat" placeholder="24"> <input type="number" id="sub_spike_pct" placeholder="2">
                     <label>Block</label> <input type="number" id="sub_block_flat" placeholder="0"> <input type="number" id="sub_block_pct" placeholder="0">
                     <label>Receive</label> <input type="number" id="sub_receive_flat" placeholder="0"> <input type="number" id="sub_receive_pct" placeholder="0">
@@ -195,13 +194,23 @@
                     <label>Set</label> <input type="number" id="sub_set_flat" placeholder="0"> <input type="number" id="sub_set_pct" placeholder="0">
                     <label>Aware</label> <input type="number" id="sub_aware_flat" placeholder="0"> <input type="number" id="sub_aware_pct" placeholder="0">
                     <label>Reflex</label> <input type="number" id="sub_reflex_flat" placeholder="0"> <input type="number" id="sub_reflex_pct" placeholder="0">
-                    </div>
+                </div>
                 
                 <button class="btn btn-secondary" onclick="addPotential()">+ Add Potential</button>
             </div>
 
             <h3>Inventory (<span id="count">0</span>)</h3>
-            <div id="inventoryList" style="max-height: 400px; overflow-y: auto;"></div>
+            <div id="inventoryList" style="max-height: 250px; overflow-y: auto;"></div>
+            
+            <div class="io-panel">
+                <strong>💾 Backup / Restore</strong>
+                <p style="font-size:0.8em; margin:5px 0;">Click "Export" to copy data. Save it in a text file. Paste it here later to "Import".</p>
+                <textarea id="io_area" rows="3" placeholder="Paste data here..."></textarea>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
+                    <button class="btn btn-blue" style="margin:0" onclick="exportData()">Export Data</button>
+                    <button class="btn btn-green" style="margin:0" onclick="importData()">Import Data</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -252,19 +261,10 @@
         const h = document.getElementById('slotHint');
         const c = document.getElementById('pot_main_is_percent');
         
-        if(s === "2") {
-            h.innerText = "Max: 35% (Set/Atk/Srv) OR 20% (Aware/Str)";
-            c.checked = true;
-        } else if(s === "4") {
-            h.innerText = "Max: 35% (Blk/Rec) OR 20% (Reflex/Spirit)";
-            c.checked = true;
-        } else if(s === "6") {
-            h.innerText = "Max: 35% (Main Stats) OR 15% (Techs)";
-            c.checked = true;
-        } else {
-            h.innerText = "Usually Flat Stats (+300)";
-            c.checked = false;
-        }
+        if(s === "2") { h.innerText = "Max: 35% (Set/Atk/Srv) OR 20% (Aware/Str)"; c.checked = true; } 
+        else if(s === "4") { h.innerText = "Max: 35% (Blk/Rec) OR 20% (Reflex/Spirit)"; c.checked = true; } 
+        else if(s === "6") { h.innerText = "Max: 35% (Main Stats) OR 15% (Techs)"; c.checked = true; } 
+        else { h.innerText = "Usually Flat Stats (+300)"; c.checked = false; }
     }
 
     function saveCustomCharacter() {
@@ -381,18 +381,36 @@
         l.innerHTML = "";
         inventory.forEach(i => {
             let stats = "";
-            // Simplified display
             if(i.subs.spike.flat || i.subs.spike.pct) stats += `Spk:${i.subs.spike.flat}/${i.subs.spike.pct}% `;
-            if(i.subs.receive.flat || i.subs.receive.pct) stats += `Rec:${i.subs.receive.flat}/${i.subs.receive.pct}% `;
+            if(i.subs.block.flat || i.subs.block.pct) stats += `Blk:${i.subs.block.flat}/${i.subs.block.pct}% `;
             
             l.innerHTML += `<div class="item-box">
                 <button class="btn-delete" onclick="delItem(${i.id})">x</button>
-                <strong>${i.set}</strong> (S${i.slot}) | Main: ${i.main.val}${i.main.isPercent?'%':''} ${i.main.type}<br>
+                <strong>${i.set}</strong> (S${i.slot}) | ${i.main.val}${i.main.isPercent?'%':''} ${i.main.type}<br>
                 <span style="font-size:0.8em; color:#666;">${stats}</span>
             </div>`;
         });
     }
     function delItem(id) { inventory = inventory.filter(i=>i.id!==id); saveInv(); renderInv(); }
+
+    function exportData() {
+        const data = JSON.stringify(inventory);
+        document.getElementById('io_area').value = data;
+        navigator.clipboard.writeText(data);
+        alert("Copied to clipboard! Save this text in a file.");
+    }
+
+    function importData() {
+        try {
+            const data = document.getElementById('io_area').value;
+            if(!data) return alert("Paste data first!");
+            inventory = JSON.parse(data);
+            if(inventory.length) idCounter = Math.max(...inventory.map(i=>i.id))+1;
+            saveInv();
+            renderInv();
+            alert("Inventory Loaded!");
+        } catch(e) { alert("Invalid Data!"); }
+    }
 
     function getBuffs() {
         const b = {
@@ -458,7 +476,7 @@
             if(i.main.type === target) {
                 if(i.main.isPercent) pct += i.main.val; else flat += i.main.val;
             }
-            // Substats (Handle both Flat and Pct)
+            // Substats
             if(i.subs[target]) {
                 flat += i.subs[target].flat;
                 pct += i.subs[target].pct;
