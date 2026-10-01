@@ -29,7 +29,7 @@ On the map, tap **Pick topics** and choose the topics (or **Lists → Study guid
 
 ## Layout
 
-- `data/` — question banks and drug data the pages load (`ngn-*`, `recall-*`, `drugs-*`), the glossary, the map's topics (`info-topics.js`, generated) and breakdowns (`concept-nodes.js`).
+- `data/` — question banks and drug data the pages load (`ngn-*`, `recall-*`, `drugs-*`), the glossary, the map's topics (`info-topics.js`, generated) and breakdowns (`concept-nodes.js`, with the short memory keys in `concept-keys.js`).
 - `focus.js` — the shared focus (which topics you picked) that the map, Recall and the Mastery Loop read.
 - `tools/` — the script that splits the Info page into map topics.
 - `support.js` — the Claude Design page runtime every `.dc.html` page loads.
