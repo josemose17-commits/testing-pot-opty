@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-<script src="./nav.js"></script>
+<script src="./support.js?v=202610012130"></script>
+<script src="./nav.js?v=202610012130"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css">
-<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js"></script>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610012130"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -22,14 +22,16 @@
   .card { cursor: pointer; }
   .card:hover { border-color: var(--color-neutral-600) !important; }
 </style>
-<script src="data/recall-22-23.js"></script>
-<script src="data/recall-24-25.js"></script>
-<script src="data/recall-27-28.js"></script>
-<script src="data/recall-29-30.js"></script>
-<script src="data/recall-33-34.js"></script>
-<script src="data/ngn-22-25.js"></script>
-<script src="data/ngn-27-30.js"></script>
-<script src="data/ngn-33-34.js"></script>
+<script src="data/recall-22-23.js?v=202610012130"></script>
+<script src="data/recall-24-25.js?v=202610012130"></script>
+<script src="data/recall-27-28.js?v=202610012130"></script>
+<script src="data/recall-29-30.js?v=202610012130"></script>
+<script src="data/recall-33-34.js?v=202610012130"></script>
+<script src="data/ngn-22-25.js?v=202610012130"></script>
+<script src="data/ngn-27-30.js?v=202610012130"></script>
+<script src="data/ngn-33-34.js?v=202610012130"></script>
+<script src="data/topic-index.js?v=202610012130"></script>
+<script src="focus.js?v=202610012130"></script>
 </helmet>
 
 <div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16.5px;line-height:1.55;min-height:100vh">
@@ -38,7 +40,8 @@
     <div style="font-family:var(--font-heading);font-size:11.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--color-neutral-400);margin-bottom:10px">{{ crumb }}</div>
     <sc-if value="{{ examIs }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;border:1px solid var(--color-accent);background:var(--color-accent-900);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);color:var(--color-accent-100);font-size:14.5px;max-width:900px">{{ examNote }}</div></sc-if>
     <sc-if value="{{ examNot }}" hint-placeholder-val="{{ false }}"><div style="border:1px dashed var(--color-divider);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);color:var(--color-neutral-400);font-size:14.5px;max-width:900px">{{ examNote }}</div></sc-if>
-    <h1 style="margin:0;font-family:var(--font-heading);font-weight:500;font-size:clamp(26px,4.2vw,44px);line-height:1.05;letter-spacing:-0.01em;max-width:24ch;text-wrap:balance">Find out what survives with the teaching page closed.</h1>
+    <sc-if value="{{ focusHas }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4);align-items:center;margin-top:var(--space-2);border:1px solid var(--color-accent-700);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);font-size:14.5px;max-width:900px"><span style="flex:1 1 260px;color:var(--color-accent-100)">{{ focusNote }}</span><button class="ctl" onClick="{{ toggleFocus }}" style="cursor:pointer;font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--color-accent);background:{{ focusBg }};color:{{ focusFg }}">{{ focusBtn }}</button><a href="Exam 2 Map.html" style="font-size:13px;color:var(--color-accent-300)">Change on the map</a></div></sc-if>
+    <h1 style="margin:var(--space-4) 0 0;font-family:var(--font-heading);font-weight:500;font-size:clamp(26px,4.2vw,44px);line-height:1.05;letter-spacing:-0.01em;max-width:24ch;text-wrap:balance">Find out what survives with the teaching page closed.</h1>
     <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);margin-top:var(--space-4);align-items:flex-start">
       <div style="flex:1 1 420px;min-width:0">
         <div style="border-left:2px solid var(--color-accent-500);padding:2px 0 2px var(--space-4);margin-bottom:var(--space-3)">
@@ -69,7 +72,7 @@
   </div>
 
   <div style="position:sticky;top:0;z-index:30;background:var(--color-bg);border-bottom:1px solid var(--color-divider);padding:var(--space-3) clamp(14px,4vw,48px);display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center">
-    <a class="ctl" href="Exam 2 Info.dc.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300);transition:border-color .15s">Info page</a>
+    <a class="ctl" href="Exam 2 Map.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300);transition:border-color .15s">Map</a>
     <a class="ctl" href="Exam 2 Drug Cards.dc.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300);transition:border-color .15s">Drug cards</a>
     <a class="ctl" href="Exam 2 Missed Review.dc.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300);transition:border-color .15s">Missed review</a>
     <span style="width:1px;height:22px;background:var(--color-divider);margin:0 4px"></span>
@@ -5043,7 +5046,7 @@ function examTag(key) {
 }
 
 class Component extends DCLogic {
-  state = { examOnly: false, chapter: '22', recall: true, hints: false, hl: false, open: {}, marks: {}, order: {}, missed: {}, drill: null, drillPos: 0, drillOpen: false, drillLog: { good: 0, miss: 0 }, rqShow: {}, nShow: {}, nSel: {} };
+  state = { examOnly: false, focusOn: true, chapter: '22', recall: true, hints: false, hl: false, open: {}, marks: {}, order: {}, missed: {}, drill: null, drillPos: 0, drillOpen: false, drillLog: { good: 0, miss: 0 }, rqShow: {}, nShow: {}, nSel: {} };
 
   componentWillUnmount() { if (this._poll) clearInterval(this._poll); }
 
@@ -5148,8 +5151,15 @@ buildNclex(num, items) {
     };
   }
 
+  // True when a focus is picked on the map, it's switched on here, and this card isn't part of it.
+  offFocus(num, card) {
+    const F = window.E2Focus;
+    return !!(F && this.state.focusOn && F.active() && !F.matches(JSON.stringify(card), num));
+  }
+
   buildExtra(num, X) {
     const self = this, st = this.state;
+    X = Object.assign({}, X, { rq: (X.rq || []).filter(r => !this.offFocus(num, r)), nclex: (X.nclex || []).filter(q => !this.offFocus(num, q)) });
     const L = (k, v, strong) => ({ k, v, kColor: strong ? K.A : K.N, vColor: strong ? 'var(--color-neutral-100)' : 'var(--color-neutral-300)' });
     const LET = 'ABCDEFGH';
     const GOOD = 'var(--color-accent-2-400)', BAD = '#c97f78';
@@ -5166,7 +5176,7 @@ buildNclex(num, items) {
         toggleAns: () => self.setState(s => ({ rqShow: Object.assign({}, s.rqShow, { [num]: !s.rqShow[num] }) }))
       });
     }
-    const nItems = (X.nclex || []).map(q => Object.assign({ f: (q.a.length > 1 || /select all/i.test(q.t)) ? 'sata' : 'mc' }, q)).concat((window.NGN_EXTRA || {})[num] || []);
+    const nItems = (X.nclex || []).map(q => Object.assign({ f: (q.a.length > 1 || /select all/i.test(q.t)) ? 'sata' : 'mc' }, q)).concat(((window.NGN_EXTRA || {})[num] || []).filter(q => !this.offFocus(num, q)));
     if (nItems.length) out.push(this.buildNclex(num, nItems));
     if (X.mc && X.mc.length) {
       out.push({
@@ -5232,6 +5242,8 @@ buildNclex(num, items) {
 
   componentDidMount() {
     const patch = {};
+    const fch = window.E2Focus && window.E2Focus.chapters();
+    if (fch && fch.length && fch.indexOf(this.state.chapter) < 0) { const first = fch.filter(c => CHMAP[c]).sort()[0]; if (first) patch.chapter = first; }
     if (this.props.startWithAnswersShown) patch.recall = false;
     if (this.props.showClinicalHints) patch.hints = true;
     try {
@@ -5349,7 +5361,7 @@ buildNclex(num, items) {
         onFoundation: examTag(activeCh.num + '|' + secId + '|' + i) === 'foundation',
         onRelated: examTag(activeCh.num + '|' + secId + '|' + i) === 'related',
         examRing: examTag(activeCh.num + '|' + secId + '|' + i) === 'exam' ? '0 0 0 1px var(--color-accent), 0 0 18px -6px var(--color-accent)' : 'none',
-        dim: (self.state.examOnly && !examTag(activeCh.num + '|' + secId + '|' + i)) ? 0.35 : 1
+        dim: ((self.state.examOnly && !examTag(activeCh.num + '|' + secId + '|' + i)) || self.offFocus(activeCh.num, card)) ? 0.35 : 1
       };
     };
 
@@ -5427,7 +5439,7 @@ buildNclex(num, items) {
         base.onFoundation = tag === 'foundation';
         base.onRelated = tag === 'related';
         base.examRing = tag === 'exam' ? '0 0 0 1px var(--color-accent), 0 0 18px -6px var(--color-accent)' : 'none';
-        base.dim = (self.state.examOnly && !tag) ? 0.35 : 1;
+        base.dim = ((self.state.examOnly && !tag) || (!isMissedPile && self.offFocus(activeCh.num, c))) ? 0.35 : 1;
         const sKey = en.scoreKey || en.key;
         const payloadFn = () => {
           const r = toReview(en.kind, c, i);
@@ -5533,6 +5545,12 @@ buildNclex(num, items) {
       examNote: (EXAM[activeCh.num] ? ('On Exam 2 · ' + EXAM[activeCh.num].n + ' questions — ' + EXAM[activeCh.num].topics) : 'Not on the Exam 2 study guide — exam focus keeps only core nursing for this system (Foundation) and cards tied to a listed topic (Related).') + (EXAM[activeCh.num] ? ' · On exam = listed topic · Foundation = core nursing for this system, whatever the diagnosis · Related = ties to a listed topic.' : ''),
       examIs: !!EXAM[activeCh.num],
       examNot: !EXAM[activeCh.num],
+      focusHas: !!(window.E2Focus && window.E2Focus.active()),
+      focusNote: window.E2Focus && window.E2Focus.active() ? (this.state.focusOn ? 'Following your focus — ' + window.E2Focus.label() + '. Cards outside it are faded; extra questions outside it are hidden. ★ marks chapters in your focus.' : 'Focus paused — showing everything. Your list: ' + window.E2Focus.label() + '.') : '',
+      focusBtn: this.state.focusOn ? 'Show everything' : 'Follow my focus',
+      focusBg: this.state.focusOn ? 'transparent' : 'var(--color-accent)',
+      focusFg: this.state.focusOn ? 'var(--color-accent-200)' : '#04160e',
+      toggleFocus: () => this.setState(s => ({ focusOn: !s.focusOn })),
       examOnlyLabel: this.state.examOnly ? 'Exam focus: on' : 'Exam focus: off',
       toggleExamOnly: () => this.setState(s => ({ examOnly: !s.examOnly })),
       addExamChapter: () => this.addExam(false),
@@ -5541,8 +5559,9 @@ buildNclex(num, items) {
       chapterTabs: CHAPTERS.map(ch => {
         const on = ch.num === activeCh.num;
         const pile = missedKeys.filter(k => REGISTRY[k].ch === ch.num).length;
+        const fch = (self.state.focusOn && window.E2Focus && window.E2Focus.chapters()) || null;
         return {
-          num: ch.num, label: ch.short || ch.title,
+          num: ch.num, label: (ch.short || ch.title) + (fch && fch.indexOf(ch.num) >= 0 ? ' ★' : ''),
           bc: on ? 'var(--color-accent-500)' : 'var(--color-neutral-800)',
           bg: on ? 'var(--color-accent-900)' : 'transparent',
           fg: on ? 'var(--color-accent-200)' : 'var(--color-neutral-300)',

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#04160e">
 <title>Exam 2 Study Hub</title>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
 <style>
   main { max-width: 920px; padding: clamp(20px, 4vw, 44px) 16px 24px; display: flex; flex-direction: column; gap: 18px; }
   .kicker { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent-300); }
@@ -37,16 +37,15 @@
     <div class="kicker">NRS 114 · Med-Surg 1 · Exam 2</div>
     <h1>Oxygen in, blood around.</h1>
   </div>
-  <p class="lead">Chapters 22, 24, 25, 27, 28, 29, 30 and 34 — 60 questions, a third of them hematology. Learn on the info page, test on recall, then let the mastery loop find what is still weak.</p>
+  <p class="lead">Chapters 22, 24, 25, 27, 28, 29, 30 and 34 — 60 questions, a third of them hematology. Learn on the map, test on recall, then let the mastery loop find what is still weak. When your professor gives the exam topics, pick them on the map and everything else follows.</p>
 
   <div class="glass next" id="next">
-    <div><b id="next-title">Start here</b><span id="next-body">Read the Info page, then take the diagnostic pre-test.</span></div>
-    <a class="btn btn-primary go" id="next-go" href="Exam 2 Info.dc.html">Open Info page</a>
+    <div><b id="next-title">Start here</b><span id="next-body">Study on the map, then take the diagnostic pre-test.</span></div>
+    <a class="btn btn-primary go" id="next-go" href="Exam 2 Map.html">Open the map</a>
   </div>
 
   <div class="tiles">
-    <a class="glass tile" href="Exam 2 Info.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4.5v.01M11 11h1v6h1"/></svg><span class="step">1 · Learn</span><b>Info page</b><p>Every tested topic, the reference values, and the physiology behind them.</p></a>
-    <a class="glass tile" href="Exam 2 Concept Map.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h.01M18 6h.01M12 18h.01M6 6l6 12 6-12M6 6h12"/></svg><span class="step">1 · Learn</span><b>Concept map</b><p>Each topic broken down organ → molecule, with every word defined.</p></a>
+    <a class="glass tile" href="Exam 2 Map.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v4M12 8 6 13M12 8l6 5M6 13v3M18 13v3M4 16h4v4H4zM16 16h4v4h-4zM10 2h4v4h-4z"/></svg><span class="step">1 · Learn</span><b>Exam map</b><p>All the content as one map — notes, organ → molecule breakdowns, every word defined. Pick your focus topics here.</p><em id="focus-status"></em></a>
     <a class="glass tile" href="Exam 2 Drug Cards.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 4.5a4.95 4.95 0 0 1 7 7l-6 6a4.95 4.95 0 0 1-7-7Zm-3 3 7 7"/></svg><span class="step">1 · Learn</span><b>Drug cards</b><p>Every drug by system and class, with the why behind each effect.</p></a>
     <a class="glass tile" href="Exam 2 Recall.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4ZM8 9h8M8 12h5"/></svg><span class="step">2 · Test</span><b>Recall</b><p>Recall prompts, NCLEX and NGN items. Fails feed missed review.</p></a>
     <a class="glass tile" href="Exam 2 Missed Review.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/></svg><span class="step">3 · Fix</span><b>Missed review</b><p>Small repair cards for only what you missed on recall.</p><em id="missed-due"></em></a>
@@ -56,6 +55,7 @@
   <div class="glass more">
     Also here
     <ul>
+      <li><a href="Exam 2 Info.dc.html">Info page</a> and <a href="Exam 2 Concept Map.dc.html">Concept map</a> — the old one-page versions (the map now holds both)</li>
       <li><a href="Exam 2 Mastery Loop v1.dc.html">Mastery loop v1</a> — fixed-length version</li>
       <li><a href="offline/Exam 2 Info offline.html">Info page</a> and <a href="offline/Exam 2 Missed Review offline.html">Missed review</a> offline copies (open without internet)</li>
       <li><a href="notes/Exam 2 Audio Notes.txt">Audio notes</a> · <a href="notes/NRS 114 Exam 2 Study Guide.docx">Study guide</a></li>
@@ -71,7 +71,9 @@
   var now = Date.now(), due = 0;
   Object.keys(cards).forEach(function (k) { var c = cards[k]; if (c && !c.spawned && c.status !== 'RETIRED' && c.status !== 'STABLE' && c.due <= now) due++; });
   if (due) document.getElementById('missed-due').textContent = due + ' card' + (due > 1 ? 's' : '') + ' due now';
-  var title = 'Start here', body = 'Read the Info page, then take the 60-question diagnostic pre-test.', label = 'Open Info page', href = 'Exam 2 Info.dc.html', status = '';
+  var title = 'Start here', body = 'Study on the map, then take the 60-question diagnostic pre-test.', label = 'Open the map', href = 'Exam 2 Map.html', status = '';
+  var focus = read('e2-focus');
+  if (focus && focus.ids && focus.ids.length) document.getElementById('focus-status').textContent = 'Focus: ' + focus.name + ' · ' + focus.ids.length + ' topics';
   if (M && M.test) { title = 'Finish your ' + M.test.name.toLowerCase(); body = 'You stopped at question ' + M.test.items.length + '.'; label = 'Resume'; href = 'Exam 2 Mastery Loop.dc.html'; status = 'Test in progress'; }
   else if (M && M.result) {
     var goal = M.goal || 90, last = (M.history || []).slice(-1)[0] || {};
@@ -86,6 +88,6 @@
   if (status) document.getElementById('mastery-status').textContent = status;
 })();
 </script>
-<script src="nav.js"></script>
+<script src="nav.js?v=202610012130"></script>
 </body>
 </html>
