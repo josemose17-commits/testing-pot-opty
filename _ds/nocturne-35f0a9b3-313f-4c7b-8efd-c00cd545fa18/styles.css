@@ -1,66 +1,59 @@
-/* Nocturne — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
+/* Exam 2 study hub theme (built on the Nocturne component layer). Tokens at the top set the look. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* Essex County College theme — green, gold/yellow and white on a dark
+   green ground, with frosted-glass surfaces. Every page reads these tokens,
+   so retuning the look happens here. Translucent ramp steps (700–900) are
+   what make panels read as glass over the background glow. */
 :root {
-  --color-bg: #161826;
-  --color-surface: #232532;
-  --color-text: #e9e9ed;
-  --color-accent: #9184d9; /* review round 7 (Barron): the accent moves to
-     the product's blurple — OKLCH hue 289.2, the hue of the app's own Pro
-     accent (#9a8fe0, --om-accent-pro) — at the same lightness the steel
-     accent held (L 0.660, so the documented ratios survive) and chroma
-     in the product blurple's own range (its token sits at C 0.118; the
-     accent takes 0.125, from the old steel's 0.030):
-     the accent now reads as an accent rather than another neutral. */
-  --color-accent-2: #a7a1db; /* the machine-derived stand-in follows: same
-     hue, same L 0.734, chroma at the same 2:3 proportion it held */
-  --color-divider: color-mix(in srgb, #e9e9ed 16%, transparent);
+  color-scheme: dark;
+  --color-bg: rgba(3, 20, 12, 0.55);
+  --color-surface: rgba(255, 255, 255, 0.075);
+  --color-text: #f7fbf8;
+  --color-accent: #f5c400;
+  --color-accent-2: #2fbf6a;
+  --color-divider: rgba(255, 255, 255, 0.14);
 
-  /* Tonal ramps — generated in OKLCH on one shared lightness scale, so the
-     same step of any role matches the others in visual value. */
-  --color-neutral-100: #f3f5fe;
-  --color-neutral-200: #e4e7f5;
-  --color-neutral-300: #cfd3e5;
-  --color-neutral-400: #b2b6ca;
-  --color-neutral-500: #9397ab;
-  --color-neutral-600: #75798c;
-  --color-neutral-700: #595d6c;
-  --color-neutral-800: #3f424d;
-  --color-neutral-900: #292b31;
+  /* Gold */
+  --color-accent-100: #fff9e0;
+  --color-accent-200: #fff0b3;
+  --color-accent-300: #ffe27a;
+  --color-accent-400: #ffd43b;
+  --color-accent-500: #f5c400;
+  --color-accent-600: #d4a900;
+  --color-accent-700: rgba(245, 196, 0, 0.45);
+  --color-accent-800: rgba(245, 196, 0, 0.24);
+  --color-accent-900: rgba(245, 196, 0, 0.12);
 
-  --color-accent-100: #f5f4ff;
-  --color-accent-200: #e7e5fe;
-  --color-accent-300: #d2cefd;
-  --color-accent-400: #b5abfc;
-  --color-accent-500: #968ae0;
-  --color-accent-600: #796cbf;
-  --color-accent-700: #5d5294;
-  --color-accent-800: #423a6a;
-  --color-accent-900: #2b2741;
+  /* Green */
+  --color-accent-2-100: #e6f7ec;
+  --color-accent-2-200: #c2ecd1;
+  --color-accent-2-300: #8fdcab;
+  --color-accent-2-400: #4fc47c;
+  --color-accent-2-500: #1fa35a;
+  --color-accent-2-600: #12823f;
+  --color-accent-2-700: rgba(31, 163, 90, 0.45);
+  --color-accent-2-800: rgba(31, 163, 90, 0.26);
+  --color-accent-2-900: rgba(31, 163, 90, 0.13);
 
-  --color-accent-2-100: #f5f4ff;
-  --color-accent-2-200: #e7e5fe;
-  --color-accent-2-300: #d2cefd;
-  --color-accent-2-400: #b5afe8;
-  --color-accent-2-500: #9690c9;
-  --color-accent-2-600: #7972a9;
-  --color-accent-2-700: #5c5783;
-  --color-accent-2-800: #423e5d;
-  --color-accent-2-900: #2b293a;
+  /* White, faintly green; dark steps are translucent white for glass edges */
+  --color-neutral-100: #f5faf7;
+  --color-neutral-200: #e2ede6;
+  --color-neutral-300: #c8d8ce;
+  --color-neutral-400: #a6baae;
+  --color-neutral-500: #83998c;
+  --color-neutral-600: #647b6e;
+  --color-neutral-700: rgba(255, 255, 255, 0.22);
+  --color-neutral-800: rgba(255, 255, 255, 0.13);
+  --color-neutral-900: rgba(255, 255, 255, 0.07);
 
-  /* Deck section-divider ground — review round 3: saturation as presence.
-     Dividers take a saturated deep indigo (hue 277, the neutral ramp's own
-     family; C 0.094 — written when the accent held C 0.030, before the
-     round-7 blurple raised it past the ground's) with a lighter bloom and
-     a ghost tint of the same hue, while the slide grounds stay
-     desaturated. Deck-scale fills only — not interface colors. */
-  --color-section: #262a60;
-  --color-section-glow: #353b80;
-  --color-section-ghost: #4c5397;
+  --color-section: #0b5a32;
+  --color-section-glow: #12823f;
+  --color-section-ghost: #1fa35a;
 
-  --font-heading: "Inter", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, -apple-system, sans-serif;
   --font-heading-weight: 500;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
 
   --space-1: 2.8px;
   --space-2: 5.6px;
@@ -69,15 +62,15 @@
   --space-6: 16.8px;
   --space-8: 22.4px;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 14px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
 
-  /* Elevation — derived from the ground: soft ink-tinted shadows on a
-     light theme, a hairline edge + ambient darkness on a dark one. */
-  --shadow-sm: 0 0 0 1px #3f424d;
-  --shadow-md: 0 0 0 1px #595d6c, 0 6px 18px rgba(0,0,0,0.55);
-  --shadow-lg: 0 0 0 1px #9397ab, 0 16px 40px rgba(0,0,0,0.65);
+  --glass-blur: blur(18px) saturate(160%);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-sm: var(--glass-edge);
+  --shadow-md: var(--glass-edge), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: var(--glass-edge), 0 18px 48px rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -292,3 +285,70 @@ textarea.input { min-height: 90px; resize: vertical; }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
+
+/* ══ Glass layer ═════════════════════════════════════════════════════════
+   A fixed green/gold glow sits behind everything; panels that use the
+   surface token blur and tint it, like iOS. Applied by attribute selector
+   because the pages set their backgrounds inline. */
+html { background: #03100a; }
+body { background: transparent; }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 8% 0%, rgba(31, 163, 90, 0.6), transparent 70%),
+    radial-gradient(45% 40% at 100% 22%, rgba(245, 196, 0, 0.26), transparent 70%),
+    radial-gradient(60% 50% at 30% 100%, rgba(18, 130, 63, 0.45), transparent 70%),
+    radial-gradient(35% 30% at 85% 90%, rgba(245, 196, 0, 0.14), transparent 70%),
+    linear-gradient(165deg, #072a1a 0%, #04160e 55%, #020b06 100%);
+}
+.card, .dialog,
+[style*="background:var(--color-surface)"],
+[style*="background: var(--color-surface)"] {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
+}
+/* Full-page wrappers stay clear so the glow shows; inner panels on the
+   ground token become glass too. */
+[style*="min-height:100vh"] { background: transparent !important; }
+[style*="background:var(--color-bg)"]:not([style*="min-height:100vh"]):not([style*="position:sticky"]) {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+[style*="position:sticky"], .nav {
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+}
+/* Dark text on gold badges must stay solid, not the translucent ground. */
+[style*=";color:var(--color-bg)"], [style^="color:var(--color-bg)"] { color: #04160e !important; }
+.btn { border-radius: 12px; }
+.btn-primary { background: rgba(245, 196, 0, 0.12); }
+.btn-primary:hover { background: rgba(245, 196, 0, 0.22); }
+.tag { border-radius: 999px; }
+::selection { background: rgba(245, 196, 0, 0.35); }
+@media (prefers-reduced-transparency: reduce) {
+  :root { --color-surface: #10291c; --color-bg: #061a10; }
+  .card, .dialog, [style*="background:var(--color-surface)"], [style*="position:sticky"] { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ══ Tab bar (nav.js) — a floating glass pill, like iOS ══════════════════ */
+body { padding-bottom: 84px; }
+.hub-tabs {
+  position: fixed; left: 50%; bottom: max(12px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  z-index: 9999; display: flex; gap: 2px; padding: 5px; width: max-content; max-width: calc(100vw - 16px);
+  border-radius: 999px; background: rgba(8, 36, 22, 0.62);
+  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-body); scrollbar-width: none;
+}
+.hub-tabs::-webkit-scrollbar { display: none; }
+.hub-tabs a {
+  flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 0; padding: 6px 12px; border-radius: 999px;
+  color: var(--color-neutral-300); text-decoration: none; font-size: 10.5px; line-height: 1.1; white-space: nowrap;
+}
+.hub-tabs a svg { width: 20px; height: 20px; flex: none; }
+@media (max-width: 480px) { .hub-tabs a { padding: 6px 4px; font-size: 10px; } }
+.hub-tabs a:hover { color: var(--color-text); background: rgba(255, 255, 255, 0.08); }
+.hub-tabs a[aria-current="page"] { color: #04160e; background: var(--color-accent); }
+@media print { .hub-tabs { display: none; } body { padding-bottom: 0; } }
