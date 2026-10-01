@@ -29,6 +29,7 @@
 <script src="data/drugs-cardio.js"></script>
 <script src="data/drugs-heme.js"></script>
 <script src="data/drugs-resp.js"></script>
+<script src="data/glossary.js"></script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.55;">
 <div style="max-width:860px;padding:28px 20px 64px;display:flex;flex-direction:column;gap:22px;">
@@ -36,7 +37,7 @@
   <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px;">
     <div style="display:flex;flex-direction:column;gap:4px;">
       <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Exam 2 · Adaptive mastery loop</div>
-      <div style="font-family:var(--font-heading);font-weight:500;font-size:26px;line-height:1.15;">Test, diagnose, fix, retest — until 90%</div>
+      <div style="font-family:var(--font-heading);font-weight:500;font-size:26px;line-height:1.15;">Test, diagnose, fix, retest — until {{ goal }}%</div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;">
       <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
@@ -56,30 +57,43 @@
     <div style="display:flex;flex-direction:column;gap:22px;">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
         <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">1 · Adaptive pre-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">No set length. It samples every exam topic, digs deeper wherever you slip, and stops once each topic is settled.</div>
+          <div class="card-kicker">1 · Diagnostic pre-test</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">Once. Every Exam 2 topic, no set length — it keeps asking wherever you slip until it knows exactly where you are weak.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">2 · Tell it why</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">After a miss, pick why — drug, mechanism, fact, cue, priority, misread. The next question probes that exact gap.</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">After every miss, say why — a word you didn’t know, the drug, what to look for, what to do, the mechanism. The next question probes that gap.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">3 · Repair deck</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Cards built from your misses and your reasons — plus anything you got right by guessing.</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">Cards built from your misses and your reasons. A card only clears after you recall it right twice. Clear the deck and you’re eligible for the post-test.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">4 · Adaptive post-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Fresh questions, weighted to weak topics, with about a third of your misses reshuffled. Loop until 90%.</div>
+          <div class="card-kicker">4 · Post-test</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">Fresh questions weighted to your weak topics. Under {{ goal }}%? It loops repair → post-test only, never the pre-test again.</div>
         </div>
       </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--color-neutral-300);">
+        <span>Goal</span>
+        <sc-for list="{{ goalOpts }}" as="g" hint-placeholder-count="2">
+          <button onClick="{{ g.pick }}" style="padding:5px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ g.bg }};border:1px solid {{ g.bd }};">{{ g.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasStage }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--color-accent-700);background:var(--color-accent-900);font-size:14px;color:var(--color-accent-100);">{{ stageNote }}</div>
+      </sc-if>
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <sc-if value="{{ canResume }}" hint-placeholder-val="{{ false }}">
           <button class="btn btn-primary" onClick="{{ resume }}">{{ resumeLabel }}</button>
         </sc-if>
-        <button class="btn {{ startCls }}" onClick="{{ startPre }}">{{ startLabel }}</button>
+        <sc-if value="{{ showStartPre }}" hint-placeholder-val="{{ true }}">
+          <button class="btn btn-primary" onClick="{{ startPre }}">Start diagnostic pre-test</button>
+        </sc-if>
         <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-ghost" onClick="{{ resetAll }}">Reset progress</button>
+          <button class="btn btn-ghost" onClick="{{ resetAll }}">Start over (new pre-test)</button>
         </sc-if>
       </div>
 
@@ -234,6 +248,14 @@
             <span style="color:var(--color-neutral-400);">Why</span><span style="color:var(--color-neutral-200);">{{ fb.phys }}</span>
             <span style="color:var(--color-neutral-400);">Rule</span><span style="color:var(--color-neutral-200);">{{ fb.rule }}</span>
           </div>
+          <sc-if value="{{ fb.hasTerms }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
+              <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Words in this question</div>
+              <sc-for list="{{ fb.terms }}" as="w" hint-placeholder-count="2">
+                <div style="font-size:13px;color:var(--color-neutral-200);"><b style="color:var(--color-accent-200);font-weight:500;">{{ w.term }}</b> — {{ w.def }}</div>
+              </sc-for>
+            </div>
+          </sc-if>
           <sc-if value="{{ fb.askWhy }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
               <div style="font-size:14px;color:var(--color-neutral-100);">Why did you miss it? <span style="color:var(--color-neutral-400);font-size:12px;">Pick any — the next question targets it.</span></div>
@@ -288,11 +310,16 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
         <sc-if value="{{ res.hasDeck }}" hint-placeholder-val="{{ true }}">
           <button class="btn btn-primary" onClick="{{ startRemed }}">{{ res.remedLabel }}</button>
         </sc-if>
-        <button class="btn btn-secondary" onClick="{{ startPost }}">{{ res.postLabel }}</button>
+        <sc-if value="{{ eligible }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-primary" onClick="{{ startPost }}">{{ res.postLabel }}</button>
+        </sc-if>
+        <sc-if value="{{ notEligible }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size:13px;color:var(--color-neutral-400);">Post-test unlocks when the repair deck is cleared.</span>
+        </sc-if>
         <button class="btn btn-ghost" onClick="{{ goHome }}">Home</button>
       </div>
 
@@ -401,13 +428,18 @@
         </div>
       </sc-if>
       <sc-if value="{{ rm.empty }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:12px;background:var(--color-surface);border:1px solid var(--color-neutral-800);">
-          <div style="font-size:18px;">Deck cleared.</div>
-          <div style="font-size:14px;color:var(--color-neutral-300);">Every gap is marked “Got it.” Prove it on fresh questions.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:12px;background:var(--color-accent-900);border:1px solid var(--color-accent-500);">
+          <div style="font-size:18px;color:var(--color-accent-100);">You’re eligible for the post-test.</div>
+          <div style="font-size:14px;color:var(--color-neutral-200);">Every card was recalled correctly twice. Now prove it on fresh questions — the goal is {{ goal }}%.</div>
         </div>
       </sc-if>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn {{ rm.postCls }}" onClick="{{ startPost }}">Take adaptive post-test</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <sc-if value="{{ eligible }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-primary" onClick="{{ startPost }}">Take the post-test</button>
+        </sc-if>
+        <sc-if value="{{ notEligible }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size:13px;color:var(--color-neutral-400);">Post-test unlocks when every card is cleared.</span>
+        </sc-if>
         <button class="btn btn-ghost" onClick="{{ backToResults }}">Back to report</button>
       </div>
     </div>
@@ -419,8 +451,8 @@
 <script type="text/x-dc" data-dc-script>
 const CHS = ['22', '24', '25', '27', '28', '29', '30', '34'];
 const BP = { '22': 5, '24': 8, '25': 5, '27': 3, '28': 5, '29': 6, '30': 8, '34': 20 };
-const MIN_N = { '22': 2, '24': 3, '25': 2, '27': 2, '28': 3, '29': 3, '30': 3, '34': 4 };
-const MAX_N = { '22': 4, '24': 6, '25': 5, '27': 4, '28': 5, '29': 5, '30': 6, '34': 8 };
+const MIN_N = { '22': 3, '24': 4, '25': 3, '27': 3, '28': 3, '29': 3, '30': 4, '34': 6 };
+const MAX_N = { '22': 6, '24': 8, '25': 6, '27': 5, '28': 7, '29': 7, '30': 8, '34': 12 };
 const TOPIC = { '22': 'Ch 22 · Health promotion, pack-years, aging', '24': 'Ch 24 · Asthma & COPD', '25': 'Ch 25 · Pneumonia', '27': 'Ch 27 · Cardiac aging', '28': 'Ch 28 · ECG', '29': 'Ch 29 · Heart failure', '30': 'Ch 30 · HTN, PAD, DVT', '34': 'Ch 34 · Anemias & leukemia' };
 const KW = {
   '34': /anemi|sickle|iron[- ]deficien|pernicious|folic|folate|B12|leukemi|MCV|ferritin|reticulocyte|hemoglobin|hematocrit|\bHgb\b|\bHct\b|CBC/i,
@@ -434,7 +466,10 @@ const KW = {
 };
 const SKILLS = ['Drugs & mechanisms', 'Pathophysiology', 'Priority & safety', 'Recognizing cues'];
 const REASONS = [
+  ['words', 'Didn’t know what a word means', -1],
   ['drug', 'Didn’t know the drug — name, class or action', 0],
+  ['look', 'Didn’t know what to look for (assessment)', 3],
+  ['do', 'Didn’t know what to do (nursing action)', 2],
   ['mech', 'Didn’t understand the mechanism / why', 1],
   ['fact', 'Didn’t know the fact or normal value', -1],
   ['cue', 'Missed a cue in the scenario', 3],
@@ -521,13 +556,20 @@ function wrongNotes(P, R) {
   return out.slice(0, 6).join('\n');
 }
 const eff = (T, id) => (T.scores[id] || 0) * (T.conf[id] === 'guess' ? 0.5 : 1);
+// Glossary terms that appear in a question (same matching as the Concept Map).
+function termsFor(P) {
+  const txt = JSON.stringify([P.q, P.ex, P.fig, P.choices, P.rows, P.segs, P.groups, P.phys, P.rule]);
+  // Short abbreviations (AP, MI, PE…) must match as whole words, not inside MAP or PEA.
+  const hit = m => /^[A-Z][A-Z0-9₀-₉⁺]{0,3}$/.test(m) ? new RegExp('(^|[^A-Za-z])' + m + '([^A-Za-z]|$)').test(txt) : txt.includes(m);
+  return (window.GLOSSARY || []).filter(g => g[1].some(hit)).slice(0, 10).map(g => ({ term: g[0], def: g[2] }));
+}
 
 class Component extends DCLogic {
   state = { ready: false, S: null, flipped: false };
 
   componentDidMount() {
     const tryLoad = () => {
-      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3) return false;
+      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY) return false;
       if (!CHS.every(c => window.NGN_EXTRA[c] || window.RECALL_EXTRA[c])) return false;
       this.build();
       let S = null; try { S = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
@@ -619,7 +661,7 @@ class Component extends DCLogic {
         const why = T.why[last.id] || [];
         const target = why.map(w => REASONS.find(r => r[0] === w)).filter(r => r && r[2] >= 0).map(r => SKILLS[r[2]]);
         skill = target[0] || (this.byId[last.id] || {}).skill || null;
-        const PL = { drug: 'drug knowledge', mech: 'mechanism', fact: 'facts & values', cue: 'scenario cues', prio: 'prioritizing' };
+        const PL = { drug: 'drug knowledge', look: 'what to look for', do: 'what to do', mech: 'mechanism', fact: 'facts & values', cue: 'scenario cues', prio: 'prioritizing' };
         probe = 'Follow-up: ' + ((why.map(w => PL[w]).find(Boolean)) || 'same topic');
         T.probeRun++;
       } else {
@@ -712,6 +754,9 @@ class Component extends DCLogic {
       const W = b.words || words(P.q);
       const best = (arr, get, filt) => { let top = null, ts = 1; (arr || []).forEach((x, i) => { if (filt && !filt(x)) return; const s = overlap(W, words(get(x))); if (s > ts) { ts = s; top = [x, i]; } }); return top; };
       const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (rq) add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: rq[0][4] }, { h: 'Nursing move', v: rq[0][5] }, { h: 'Trap', v: rq[0][6] }].filter(x => x.v) }); };
+      if (why.includes('words')) termsFor(P).slice(0, 4).forEach(t => add({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
+      if (has('look')) rqCard(x => /see next|finding changes|compare/i.test(x[0]), 'What to look for');
+      if (has('do')) rqCard(x => /first action|mini case|medication/i.test(x[0]), 'What to do');
       if (has('mech') || has('cue')) rqCard(x => !/direct recall/i.test(x[0]), 'Mechanism');
       if (has('fact') || has('guess')) rqCard(x => /direct recall/i.test(x[0]), 'Fact');
       if (has('prio') || has('second') || has('fact') || has('guess')) {
@@ -724,10 +769,23 @@ class Component extends DCLogic {
     return order.concat(o);
   }
 
+  // Learning steps: a card clears only after two correct recalls in a row,
+  // the second one a few cards later. Again / Shaky reset the streak.
   rate(gap) {
-    this.upd(S => { const c = S.deck.shift(); if (!c) return; if (gap == null) S.deckDone++; else S.deck.splice(Math.min(gap, S.deck.length), 0, c); });
+    this.upd(S => {
+      const c = S.deck.shift(); if (!c) return;
+      if (gap == null) {
+        c.streak = (c.streak || 0) + 1;
+        if (c.streak >= 2) { S.deckDone++; return; }
+        S.deck.splice(Math.min(6, S.deck.length), 0, c);
+      } else {
+        c.streak = 0;
+        S.deck.splice(Math.min(gap, S.deck.length), 0, c);
+      }
+    });
     this.setState({ flipped: false });
   }
+  eligible(S) { return !!S.result && !S.test && S.deck.length === 0; }
 
   onKey(e) {
     const S = this.state.S; if (!S || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
@@ -751,29 +809,39 @@ class Component extends DCLogic {
       loading: !ready, isHome: phase === 'home', isTest: phase === 'test' && !!(S && S.test), isResults: phase === 'results' && !!(S && S.result), isRemed: phase === 'remed',
       goHome: () => this.upd(S => { S.phase = 'home'; }),
       startPre: () => { if (this.state.S.test && !window.confirm('Discard the test in progress and start a new pre-test?')) return; const T = this.startTest('pre'); this.upd(S => { S.test = T; S.phase = 'test'; }); window.scrollTo(0, 0); },
-      startPost: () => { if (!this.state.S.result) return; const T = this.startTest('post'); this.upd(S => { S.test = T; S.phase = 'test'; }); window.scrollTo(0, 0); },
+      startPost: () => { if (!this.eligible(this.state.S)) return; const T = this.startTest('post'); this.upd(S => { S.test = T; S.phase = 'test'; }); window.scrollTo(0, 0); },
       startRemed: () => { this.upd(S => { S.phase = 'remed'; }); this.setState({ flipped: false }); window.scrollTo(0, 0); },
       backToResults: () => this.upd(S => { S.phase = 'results'; }),
-      resetAll: () => { if (window.confirm('Clear all test history and start over?')) this.save(this.blank()); },
+      resetAll: () => { if (window.confirm('Clear all test history and take a new pre-test?')) this.save(Object.assign(this.blank(), { goal: this.state.S.goal })); },
       check: () => this.check(), next: () => this.next(), finish: () => this.finish(),
       flip: () => this.setState({ flipped: true }),
       rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null),
       bankSize: this.bank ? this.bank.length : 0
     };
     const hist = ready ? S.history : [];
-    const mastered = hist.some(h => h.kind === 'post' && h.pct >= 90);
+    const goal = (S && S.goal) || 90;
+    v.goal = goal;
+    const mastered = hist.some(h => h.kind === 'post' && h.pct >= goal);
+    const elig = ready && this.eligible(S);
+    v.eligible = elig; v.notEligible = !elig;
     const stepAt = phase === 'test' ? (S.test.kind === 'pre' ? 0 : 3) : phase === 'results' ? 1 : phase === 'remed' ? 2 : -1;
     v.steps = ['Pre-test', 'Report', 'Repair', 'Post-test'].map((label, i) => ({ label, arrow: i < 3, bd: i === stepAt ? A : N, fg: i === stepAt ? 'var(--color-accent-200)' : 'var(--color-neutral-400)' }));
-    v.steps.push({ label: mastered ? '90% reached' : 'Goal 90%', arrow: false, bd: mastered ? A : 'transparent', fg: mastered ? 'var(--color-accent-200)' : 'var(--color-neutral-500)' });
-    if (!ready) return Object.assign(v, { history: [], q: {}, dots: [], chips: [], fb: {}, res: {}, rm: {} });
+    v.steps.push({ label: mastered ? goal + '% reached' : 'Goal ' + goal + '%', arrow: false, bd: mastered ? A : 'transparent', fg: mastered ? 'var(--color-accent-200)' : 'var(--color-neutral-500)' });
+    if (!ready) return Object.assign(v, { history: [], q: {}, dots: [], chips: [], fb: {}, res: {}, rm: {}, goalOpts: [] });
 
+    v.goalOpts = [90, 100].map(n => ({ label: n + '%', bg: goal === n ? 'var(--color-accent-900)' : 'transparent', bd: goal === n ? A : N, pick: () => this.upd(S => { S.goal = n; }) }));
     v.hasHistory = hist.length > 0;
     v.history = hist.map(h => ({ label: h.name, pct: h.pct, n: h.n || '—', w: h.pct + '%' }));
+    // The pre-test runs once; after that the loop is repair deck → post-test only.
+    v.showStartPre = !S.result && !S.test;
+    const lastPost = hist.filter(h => h.kind === 'post').slice(-1)[0];
+    v.hasStage = !!S.result && !S.test;
+    v.stageNote = !v.hasStage ? '' : mastered && lastPost && lastPost.pct >= goal ? 'Goal reached: ' + lastPost.pct + '% on ' + lastPost.name + '. Take one more post-test on fresh questions to make sure it holds.'
+      : elig ? 'You’re eligible for the post-test. Your repair deck is cleared.'
+      : 'Next step: clear your repair deck (' + S.deck.length + ' card' + (S.deck.length === 1 ? '' : 's') + ' left). The post-test unlocks when it’s empty.';
     v.canResume = !!S.test || !!S.result;
-    v.resumeLabel = S.test ? 'Resume ' + S.test.name + ' (question ' + S.test.items.length + ')' : (S.deck.length ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Back to last report');
-    v.resume = () => this.upd(S => { S.phase = S.test ? 'test' : (S.deck.length ? 'remed' : 'results'); });
-    v.startLabel = hist.length ? 'New pre-test (fresh mix)' : 'Start adaptive pre-test';
-    v.startCls = v.canResume ? 'btn-secondary' : 'btn-primary';
+    v.resumeLabel = S.test ? 'Resume ' + S.test.name + ' (question ' + S.test.items.length + ')' : (S.deck.length ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Take the post-test');
+    v.resume = () => { if (!S.test && !S.deck.length) return v.startPost(); this.upd(S => { S.phase = S.test ? 'test' : 'remed'; }); };
 
     v.q = {}; v.dots = []; v.chips = []; v.fb = {};
     if (v.isTest) {
@@ -810,7 +878,9 @@ class Component extends DCLogic {
       if (ck) {
         const sc = T.scores[P.id] || 0, full = sc >= 1, why = T.why[P.id] || [], conf = T.conf[P.id];
         const notes = full ? '' : wrongNotes(P, R);
+        const terms = termsFor(P);
         v.fb = {
+          terms, hasTerms: terms.length > 0,
           title: full ? 'Correct.' : sc > 0 ? 'Partially correct — ' + Math.round(sc * 100) + '% credit.' : 'Incorrect.',
           fg: full ? 'var(--color-accent-200)' : 'var(--color-neutral-100)', bd: full ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
           correct: correctText(P), notes, hasNotes: !!notes, phys: P.phys || '—', rule: P.rule || '—',
@@ -835,20 +905,20 @@ class Component extends DCLogic {
       const rmax = Math.max(1, ...Object.values(rc));
       const reasons = REASONS.filter(r => rc[r[0]]).map(r => ({ label: r[1], n: rc[r[0]], w: Math.round(100 * rc[r[0]] / rmax) + '%' })).sort((a, b) => b.n - a.n);
       const prev = hist.length > 1 ? hist[hist.length - 2] : null;
-      const pass = Rz.pct >= 90;
+      const pass = Rz.pct >= goal;
       const weakList = topics.filter(t => t.weak).slice(0, 2).map(t => t.label.replace(/^Ch \d+ · /, ''));
       const missed = items.filter(P => eff(T, P.id) < 1).sort((a, b) => eff(T, a.id) - eff(T, b.id));
       const untested = CHS.filter(c => !Rz.topics[c].n).length;
       v.res = {
         name: Rz.name + ' · ' + items.length + ' questions' + (prev ? ' · ' + (Rz.pct - prev.pct >= 0 ? '+' : '') + (Rz.pct - prev.pct) + ' vs ' + prev.name : ''),
         pct: Rz.pct, raw: Rz.raw + '% raw',
-        verdict: pass ? 'Mastery reached.' : (90 - Rz.pct) + ' points to the 90% goal.',
-        sub: (untested ? untested + ' topic' + (untested > 1 ? 's' : '') + ' not reached — test ended early. ' : '') + (pass ? 'Run one more post-test on fresh questions to confirm it holds.' : (weakList.length ? 'Weakest: ' + weakList.join(' and ') + '. The next post-test starts deeper on these.' : 'Repair the missed items, then retest.')),
+        verdict: pass ? 'Goal reached.' : (goal - Rz.pct) + ' points to the ' + goal + '% goal.',
+        sub: (untested ? untested + ' topic' + (untested > 1 ? 's' : '') + ' not reached — test ended early. ' : '') + (pass ? 'Run one more post-test on fresh questions to confirm it holds.' : (weakList.length ? 'Weakest: ' + weakList.join(' and ') + '. Clear the repair deck, then the post-test starts deeper on these.' : 'Clear the repair deck, then retest.')),
         topics, skills, reasons, hasReasons: reasons.length > 0,
         hasMissed: missed.length > 0, missedCount: missed.length,
         hasDeck: S.deck.length > 0,
         remedLabel: S.deckDone ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Start repair deck (' + S.deck.length + ' cards)',
-        postLabel: pass ? 'Confirm with another post-test' : (S.deck.length ? 'Skip to post-test' : 'Take adaptive post-test'),
+        postLabel: pass ? 'Confirm with another post-test' : 'Take the post-test',
         missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
       };
     }
@@ -859,8 +929,8 @@ class Component extends DCLogic {
       v.rm = {
         left: S.deck.length, doneLabel: S.deckDone + ' of ' + S.deckTotal + ' cleared', w: Math.round(100 * S.deckDone / total) + '%',
         hasCard: !!c, empty: !c, showBack: !!c && fl, showFront: !!c && !fl,
-        type: c ? c.type : '', topic: c ? TOPIC[c.ch].split(' · ')[0] : '', sub: c ? c.sub : '', front: c ? c.front : '', back: c ? c.back : [],
-        postCls: c ? 'btn-secondary' : 'btn-primary'
+        type: c ? c.type : '', topic: c ? TOPIC[c.ch].split(' · ')[0] : '', front: c ? c.front : '', back: c ? c.back : [],
+        sub: c ? (c.streak ? 'One more correct recall clears it · ' : '') + c.sub : ''
       };
     }
     return v;
