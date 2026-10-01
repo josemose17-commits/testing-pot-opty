@@ -3,8 +3,7 @@
 (function () {
   var TABS = [
     ['index.html', 'Home', 'M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z'],
-    ['Exam 2 Info.dc.html', 'Info', 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4.5v.01M11 11h1v6h1'],
-    ['Exam 2 Concept Map.dc.html', 'Map', 'M6 6h.01M18 6h.01M12 18h.01M6 6l6 12 6-12M6 6h12'],
+    ['Exam 2 Map.html', 'Map', 'M6 6h.01M18 6h.01M12 18h.01M6 6l6 12 6-12M6 6h12'],
     ['Exam 2 Drug Cards.dc.html', 'Drugs', 'M10.5 4.5a4.95 4.95 0 0 1 7 7l-6 6a4.95 4.95 0 0 1-7-7Zm-3 3 7 7'],
     ['Exam 2 Recall.dc.html', 'Recall', 'M4 5h16v11H8l-4 4ZM8 9h8M8 12h5'],
     ['Exam 2 Missed Review.dc.html', 'Missed', 'M4 4l16 16M20 4 4 20'],

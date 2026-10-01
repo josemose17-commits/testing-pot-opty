@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=202610012026"></script>
-<script src="./nav.js?v=202610012026"></script>
+<script src="./support.js?v=202610012130"></script>
+<script src="./nav.js?v=202610012130"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012026">
-<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610012026"></script>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610012130"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -19,19 +19,21 @@
   a:hover { color: var(--color-accent-200); }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 </style>
-<script src="data/recall-22-23.js?v=202610012026"></script>
-<script src="data/recall-24-25.js?v=202610012026"></script>
-<script src="data/recall-27-28.js?v=202610012026"></script>
-<script src="data/recall-29-30.js?v=202610012026"></script>
-<script src="data/recall-33-34.js?v=202610012026"></script>
-<script src="data/ngn-22-25.js?v=202610012026"></script>
-<script src="data/ngn-27-30.js?v=202610012026"></script>
-<script src="data/ngn-33-34.js?v=202610012026"></script>
-<script src="data/drugs-cardio.js?v=202610012026"></script>
-<script src="data/drugs-heme.js?v=202610012026"></script>
-<script src="data/drugs-resp.js?v=202610012026"></script>
-<script src="data/glossary.js?v=202610012026"></script>
-<script src="data/extra-questions.js?v=202610012026"></script>
+<script src="data/recall-22-23.js?v=202610012130"></script>
+<script src="data/recall-24-25.js?v=202610012130"></script>
+<script src="data/recall-27-28.js?v=202610012130"></script>
+<script src="data/recall-29-30.js?v=202610012130"></script>
+<script src="data/recall-33-34.js?v=202610012130"></script>
+<script src="data/ngn-22-25.js?v=202610012130"></script>
+<script src="data/ngn-27-30.js?v=202610012130"></script>
+<script src="data/ngn-33-34.js?v=202610012130"></script>
+<script src="data/drugs-cardio.js?v=202610012130"></script>
+<script src="data/drugs-heme.js?v=202610012130"></script>
+<script src="data/drugs-resp.js?v=202610012130"></script>
+<script src="data/glossary.js?v=202610012130"></script>
+<script src="data/extra-questions.js?v=202610012130"></script>
+<script src="data/topic-index.js?v=202610012130"></script>
+<script src="focus.js?v=202610012130"></script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.55;">
 <div style="max-width:860px;padding:28px 20px 64px;display:flex;flex-direction:column;gap:22px;">
@@ -83,6 +85,11 @@
         </sc-for>
       </div>
 
+      <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid var(--color-neutral-800);font-size:13.5px;color:var(--color-neutral-200);">
+        <span style="flex:1 1 260px;">{{ focusNote }}</span>
+        <a href="Exam 2 Map.html" style="color:var(--color-accent-300);font-size:13px;">{{ focusLink }}</a>
+      </div>
+
       <sc-if value="{{ hasStage }}" hint-placeholder-val="{{ false }}">
         <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--color-accent-700);background:var(--color-accent-900);font-size:14px;color:var(--color-accent-100);">{{ stageNote }}</div>
       </sc-if>
@@ -111,7 +118,7 @@
           </sc-for>
         </div>
       </sc-if>
-      <div style="font-size:12px;color:var(--color-neutral-500);">Bank: {{ bankSize }} questions from chapters 22, 24, 25, 27, 28, 29, 30 and 34, weighted to the Exam 2 blueprint.</div>
+      <div style="font-size:12px;color:var(--color-neutral-500);">Bank: {{ bankSize }} questions from chapters {{ bankChs }}, weighted to the Exam 2 blueprint.</div>
     </div>
   </sc-if>
 
@@ -626,6 +633,7 @@ class Component extends DCLogic {
     const classRe = /beta[- ]?blocker|calcium channel|ACE inhibitor|\bARB\b|diuretic|anticoag|heparin|warfarin|nitro|digoxin|bronchodilat|inhaler|corticosteroid|antibiotic|statin|iron supplement|-olol|-pril|-sartan/i;
     bank.forEach(b => {
       const txt = [b.t, b.q, JSON.stringify(b.o || b.rows || b.parts || [b.cond, b.act, b.mon]), b.rule, b.phys].join(' ');
+      b.txt = txt;
       b.kw = KW[b.ch].test(txt); b.words = words(b.t + ' ' + b.q + ' ' + (b.rule || '') + ' ' + (b.phys || ''));
       b.subs = (SUB[b.ch] || []).filter(s => s[1].test(txt)).map(s => s[0]);
       const k = b.src;
@@ -635,7 +643,16 @@ class Component extends DCLogic {
         : (b.kind === 'order' || b.kind === 'bow' || /priorit|first|immediate|best action|which client|sees? first|unsafe|report/i.test(b.q)) ? SKILLS[2]
         : (b.kind === 'cloze' || b.kind === 'matrix' || /\bwhy\b|mechanism|because|caus|explain/i.test(b.q)) ? SKILLS[1] : SKILLS[3];
     });
-    this.bank = bank; this.byId = {}; bank.forEach(b => { this.byId[b.id] = b; });
+    // byId keeps every question so saved tests still open after the focus changes;
+    // the bank the tests draw from is only the topics picked on the map.
+    this.byId = {}; bank.forEach(b => { this.byId[b.id] = b; });
+    const F = window.E2Focus, on = !!(F && F.active());
+    const inFocus = b => !on || (b.id.indexOf('33|') === 0 ? F.matches(b.txt, '33') || F.matches(b.txt, '34') : F.matches(b.txt, b.ch));
+    this.bank = bank.filter(inFocus);
+    this.focusEmpty = on && !this.bank.length;
+    if (this.focusEmpty) this.bank = bank;
+    this.chs = CHS.filter(ch => this.bank.some(b => b.ch === ch));
+    this.focusLabel = on && !this.focusEmpty ? F.label() : 'Everything';
   }
 
   present(b) {
@@ -675,6 +692,7 @@ class Component extends DCLogic {
     const posts = S.history.filter(h => h.kind === 'post').length;
     const T = { kind, name: kind === 'pre' ? 'Pre-test' : 'Post-test ' + (posts + 1), items: [], resp: {}, scores: {}, checked: {}, why: {}, conf: {}, probe: {}, exhausted: {}, probeRun: 0, boost,
       lastIds: last ? last.test.items.map(p => p.id) : [], repeatIds: last ? last.test.items.filter(p => eff(last.test, p.id) < 1).map(p => p.id) : [] };
+    T.focus = this.focusLabel;
     if (kind === 'pre') T.plan = this.makePlan();
     const P = this.nextItem(T); if (P) T.items.push(P);
     return T;
@@ -683,9 +701,9 @@ class Component extends DCLogic {
   // Fixed pre-test: BP[ch] questions per chapter, chosen greedily so every
   // study-guide topic, skill and question format is covered before repeats.
   makePlan() {
-    const total = CHS.reduce((a, ch) => a + BP[ch], 0);
+    const total = this.chs.reduce((a, ch) => a + BP[ch], 0);
     const ids = [];
-    CHS.forEach(ch => {
+    this.chs.forEach(ch => {
       const want = Math.round(PRE_LEN * BP[ch] / total);
       let pool = this.bank.filter(b => b.ch === ch);
       const cov = {};
@@ -715,7 +733,7 @@ class Component extends DCLogic {
     }
     for (let guard = 0; guard < 12; guard++) {
       const st = this.stats(T);
-      const open = CHS.filter(ch => !st[ch].resolved);
+      const open = this.chs.filter(ch => !st[ch].resolved);
       if (!open.length) return null;
       const used = new Set(T.items.map(p => p.id));
       const last = T.items[T.items.length - 1];
@@ -880,8 +898,14 @@ class Component extends DCLogic {
       check: () => this.check(), next: () => this.next(), finish: () => this.finish(),
       flip: () => this.setState({ flipped: true }),
       rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null),
-      bankSize: this.bank ? this.bank.length : 0
+      bankSize: this.bank ? this.bank.length : 0,
+      bankChs: (this.chs || CHS).join(', ')
     };
+    const fl = this.focusLabel || 'Everything';
+    v.focusNote = this.focusEmpty ? 'Your focus on the map has no questions in this bank yet, so tests use everything.'
+      : fl === 'Everything' ? 'Studying everything. Pick your professor’s exam topics on the map and the tests and repair deck will use only those.'
+      : 'Following your focus — ' + fl + '. Pre-test, repair cards and post-tests use only these topics.';
+    v.focusLink = fl === 'Everything' ? 'Pick topics on the map' : 'Change on the map';
     const hist = ready ? S.history : [];
     const goal = (S && S.goal) || 90;
     v.goal = goal;
@@ -902,7 +926,9 @@ class Component extends DCLogic {
     v.hasStage = !!S.result && !S.test;
     v.stageNote = !v.hasStage ? '' : mastered && lastPost && lastPost.pct >= goal ? 'Goal reached: ' + lastPost.pct + '% on ' + lastPost.name + '. Take one more post-test on fresh questions to make sure it holds.'
       : elig ? 'You’re eligible for the post-test. Your repair deck is cleared.'
-      : 'Next step: clear your repair deck (' + S.deck.length + ' card' + (S.deck.length === 1 ? '' : 's') + ' left). The post-test unlocks when it’s empty.';
+      : 'Next step: clear your repair deck (' + S.deck.length + ' card' + (S.deck.length === 1 ? '' : 's') + ' left). The post-test unlocks when it’s empty.'
+    const testedOn = S.result && S.result.test && S.result.test.focus;
+    if (v.hasStage && testedOn && testedOn !== (this.focusLabel || 'Everything')) v.stageNote += ' Your focus changed since that test (it was: ' + testedOn + '). Post-tests now use the new topics — or tap “Start over” for a fresh pre-test on them.';
     v.canResume = !!S.test || !!S.result;
     v.resumeLabel = S.test ? 'Resume ' + S.test.name + ' (question ' + S.test.items.length + ')' : (S.deck.length ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Take the post-test');
     v.resume = () => { if (!S.test && !S.deck.length) return v.startPost(); this.upd(S => { S.phase = S.test ? 'test' : 'remed'; }); };
@@ -910,7 +936,7 @@ class Component extends DCLogic {
     v.q = {}; v.dots = []; v.chips = []; v.fb = {};
     if (v.isTest) {
       const T = S.test, P = T.items[T.items.length - 1], R = T.resp[P.id], ck = !!T.checked[P.id];
-      const st = this.stats(T), settled = CHS.filter(c => st[c].resolved).length;
+      const st = this.stats(T), settled = this.chs.filter(c => st[c].resolved).length;
       v.testName = T.name;
       if (T.plan) {
         const done = T.items.filter(p => T.checked[p.id]).length;
@@ -919,11 +945,11 @@ class Component extends DCLogic {
         v.progW = Math.round(100 * done / T.plan.length) + '%';
       } else {
         v.qNum = T.items.length;
-        v.settledLabel = settled + ' of ' + CHS.length + ' topics settled';
-        v.progW = Math.round(100 * settled / CHS.length) + '%';
+        v.settledLabel = settled + ' of ' + this.chs.length + ' topics settled';
+        v.progW = Math.round(100 * settled / this.chs.length) + '%';
       }
       const planN = ch => T.plan ? T.plan.filter(id => this.byId[id].ch === ch).length : 0;
-      v.chips = CHS.map(ch => { const s = st[ch]; const on = ch === P.ch; return { label: 'Ch ' + ch + ' · ' + (T.plan ? s.n + '/' + planN(ch) + (s.n ? ' · ' + Math.round(s.acc * 100) + '%' : '') : s.status), title: TOPIC[ch] + (s.n ? ' — ' + Math.round(s.acc * 100) + '% on ' + s.n : ''), bd: on ? A : (s.status === 'Weak' ? 'var(--color-accent-700)' : N), fg: s.status === 'Solid' ? 'var(--color-neutral-100)' : s.status === 'Weak' ? 'var(--color-accent-200)' : 'var(--color-neutral-400)', bg: s.status === 'Weak' ? 'var(--color-accent-900)' : 'transparent' }; });
+      v.chips = this.chs.map(ch => { const s = st[ch]; const on = ch === P.ch; return { label: 'Ch ' + ch + ' · ' + (T.plan ? s.n + '/' + planN(ch) + (s.n ? ' · ' + Math.round(s.acc * 100) + '%' : '') : s.status), title: TOPIC[ch] + (s.n ? ' — ' + Math.round(s.acc * 100) + '% on ' + s.n : ''), bd: on ? A : (s.status === 'Weak' ? 'var(--color-accent-700)' : N), fg: s.status === 'Solid' ? 'var(--color-neutral-100)' : s.status === 'Weak' ? 'var(--color-accent-200)' : 'var(--color-neutral-400)', bg: s.status === 'Weak' ? 'var(--color-accent-900)' : 'transparent' }; });
       v.checked = ck; v.notChecked = !ck; v.cantCheck = !answered(P, R);
       const mark = (sel, multi, isC) => {
         if (!ck) return { bg: sel ? 'var(--color-accent-900)' : 'transparent', bd: sel ? A : N, mr: multi ? '4px' : '50%', mf: sel ? A : 'transparent' };
@@ -962,7 +988,7 @@ class Component extends DCLogic {
           conf: [['sure', 'Knew it'], ['guess', 'Guessed — add to repair deck']].map(([k, label]) => { const on = conf === k; return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { S.test.conf[P.id] = S.test.conf[P.id] === k ? null : k; }) }; })
         };
         const stAfter = this.stats(T);
-        const last = T.plan ? T.items.length >= T.plan.length : CHS.every(c => stAfter[c].resolved);
+        const last = T.plan ? T.items.length >= T.plan.length : this.chs.every(c => stAfter[c].resolved);
         v.nextLabel = last ? 'Finish — see report' : 'Next question';
       }
       v.dots = T.items.map((p, i) => { const c = T.checked[p.id], e = eff(T, p.id); const isCur = i === T.items.length - 1; return { n: i + 1, label: 'Q' + (i + 1) + ' · Ch ' + p.ch + (c ? ' · ' + Math.round(e * 100) + '%' : ''), bd: isCur ? A : N, bg: !c ? 'transparent' : e >= 1 ? 'var(--color-neutral-700)' : 'var(--color-accent-800)', fg: !c ? 'var(--color-neutral-400)' : e >= 1 ? 'var(--color-neutral-100)' : 'var(--color-accent-100)' }; });
@@ -984,7 +1010,7 @@ class Component extends DCLogic {
       const pass = Rz.pct >= goal;
       const weakList = topics.filter(t => t.weak).slice(0, 2).map(t => t.label.replace(/^Ch \d+ · /, ''));
       const missed = items.filter(P => eff(T, P.id) < 1).sort((a, b) => eff(T, a.id) - eff(T, b.id));
-      const untested = CHS.filter(c => !Rz.topics[c].n).length;
+      const untested = this.chs.filter(c => !Rz.topics[c].n).length;
       v.res = {
         name: Rz.name + ' · ' + items.length + ' questions' + (prev ? ' · ' + (Rz.pct - prev.pct >= 0 ? '+' : '') + (Rz.pct - prev.pct) + ' vs ' + prev.name : ''),
         pct: Rz.pct, raw: Rz.raw + '% raw',

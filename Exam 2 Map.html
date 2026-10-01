@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04160e">
+<title>Exam 2 Map</title>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
+<style>
+  body { padding-bottom: 96px; }
+  main { max-width: 1240px; margin: 0 auto; padding: clamp(18px, 3.5vw, 40px) 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .kicker { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent-300); }
+  h1 { font-size: clamp(28px, 5.5vw, 44px); margin: 4px 0 0; }
+  .lead { color: var(--color-neutral-300); max-width: 70ch; margin: 0; }
+  .glass { border-radius: var(--radius-lg); background: var(--color-surface); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--shadow-md); }
+  button { font: inherit; color: inherit; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); cursor: pointer; font-size: 13.5px; white-space: nowrap; }
+  .pill:hover { border-color: var(--color-accent-700); }
+  .pill[aria-pressed="true"], .pill.on { background: var(--color-accent); border-color: var(--color-accent); color: #04160e; font-weight: 600; }
+  .pill.gold { border-color: var(--color-accent-700); color: var(--color-accent-200); }
+
+  /* Focus bar */
+  .focusbar { position: relative; top: 8px; z-index: 20; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; border: 1px solid var(--color-accent-800); }
+  @media (min-width: 721px) { .focusbar { position: sticky; } }
+  .focusbar .who { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+  .focusbar .who small { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); }
+  .focusbar .who b { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .focusbar .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .search { flex: 1 1 200px; min-width: 0; max-width: 320px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); color: var(--color-text); font: inherit; font-size: 14px; }
+  .search::placeholder { color: var(--color-neutral-500); }
+  .pickhint { width: 100%; font-size: 13px; color: var(--color-accent-200); display: none; }
+  body.picking .pickhint { display: block; }
+
+  /* Menu (presets) */
+  .menu { position: relative; }
+  .menu-list { position: absolute; right: 0; top: calc(100% + 6px); min-width: 250px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; border: 1px solid var(--color-divider); background: rgba(6, 30, 18, .92); }
+  .menu.open .menu-list { display: flex; }
+  .menu-list button { text-align: left; background: none; border: 0; padding: 9px 10px; border-radius: 10px; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; gap: 10px; }
+  .menu-list button:hover { background: var(--color-neutral-800); }
+  .menu-list .sep { height: 1px; background: var(--color-divider); margin: 4px 6px; }
+  .menu-list .lbl { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-neutral-500); padding: 6px 10px 2px; }
+  .menu-list .x { color: var(--color-neutral-500); padding: 0 4px; }
+
+  /* The map: root → systems → chapters → topics */
+  .root { align-self: center; padding: 10px 22px; border-radius: 999px; border: 1px solid var(--color-accent); background: var(--color-accent-900); font-weight: 600; letter-spacing: .02em; text-align: center; }
+  .root small { display: block; font-weight: 400; font-size: 12px; color: var(--color-accent-200); }
+  .systems { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 14px; position: relative; }
+  .systems::before { content: ""; position: absolute; left: 12%; right: 12%; top: -9px; height: 9px; border: 1px solid var(--color-accent-700); border-bottom: 0; border-radius: 12px 12px 0 0; }
+  @media (max-width: 760px) { .systems::before { display: none; } }
+  .system { padding: 14px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid var(--color-accent-2-500); }
+  .system h2 { margin: 0; font-size: 19px; font-weight: 500; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .system h2 span { font-size: 12px; color: var(--color-accent-2-300); font-weight: 400; }
+  .system .why { margin: -6px 0 0; font-size: 13px; color: var(--color-neutral-400); }
+  .chapter { position: relative; padding-left: 14px; border-left: 1px solid var(--color-accent-2-700); display: flex; flex-direction: column; gap: 6px; }
+  .chapter.untested { opacity: .78; }
+  .chhead { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .chhead b { font-weight: 600; font-size: 14px; }
+  .chhead .q { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-900); color: var(--color-accent-200); border: 1px solid var(--color-accent-800); }
+  .chhead .q.none { background: none; color: var(--color-neutral-500); border-color: var(--color-divider); }
+  .chhead .all { margin-left: auto; font-size: 12px; background: none; border: 0; color: var(--color-accent-300); cursor: pointer; display: none; }
+  body.picking .chhead .all { display: inline; }
+  .chips { display: flex; flex-direction: column; gap: 5px; }
+  .chip { position: relative; text-align: left; display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); cursor: pointer; font-size: 13.5px; line-height: 1.3; transition: border-color .15s, background .15s, opacity .15s, box-shadow .15s; }
+  .chip::before { content: ""; position: absolute; left: -15px; top: 50%; width: 12px; height: 1px; background: var(--color-accent-2-700); }
+  .chip:hover { border-color: var(--color-accent-700); }
+  .chip .t { flex: 1; }
+  .chip .k { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-neutral-500); white-space: nowrap; padding-top: 2px; }
+  .chip .bd { font-size: 10px; letter-spacing: .06em; color: var(--color-accent-2-300); white-space: nowrap; padding-top: 2px; }
+  .chip .star { width: 16px; flex: none; color: var(--color-neutral-600); }
+  .chip.focus { border-color: var(--color-accent); background: var(--color-accent-900); box-shadow: 0 0 18px rgba(245, 196, 0, .22); }
+  .chip.focus .star { color: var(--color-accent); }
+  body.has-focus .chip:not(.focus) { opacity: .5; }
+  body.has-focus .chip:not(.focus):hover { opacity: .85; }
+  body.focus-only .chip:not(.focus), body.focus-only .chapter.empty, body.focus-only .system.empty { display: none; }
+  .chip.miss { display: none; }
+  .chapter.nomatch, .system.nomatch { display: none; }
+  body.picking .chip { border-style: dashed; }
+  body.picking .chip.focus { border-style: solid; }
+
+  .mechs { padding: 14px; display: flex; flex-direction: column; gap: 10px; border-top: 2px solid var(--color-accent); }
+  .mechs h2 { margin: 0; font-size: 19px; font-weight: 500; }
+  .mechs p { margin: -4px 0 0; font-size: 13px; color: var(--color-neutral-400); }
+  .mechs .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mechs .pill small { color: var(--color-neutral-400); font-size: 12px; }
+  .mechs .pill { white-space: normal; text-align: left; }
+
+  /* Panel: side drawer on desktop, bottom sheet on phones */
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .panel { position: fixed; z-index: 41; top: 10px; right: 10px; bottom: 10px; width: min(640px, calc(100vw - 20px)); display: flex; flex-direction: column; border: 1px solid var(--color-divider); background: rgba(5, 26, 16, .86); transform: translateX(105%); transition: transform .25s ease; }
+  body.panel-open .scrim { opacity: 1; pointer-events: auto; }
+  body.panel-open .panel { transform: none; }
+  body.panel-open .hub-tabs { opacity: 0; pointer-events: none; }
+  @media (max-width: 720px) {
+    .panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 90vh; border-radius: 22px 22px 0 0; transform: translateY(105%); }
+  }
+  .phead { padding: 14px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+  .phead .top { display: flex; gap: 8px; align-items: flex-start; }
+  .phead .meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); }
+  .phead h3 { margin: 2px 0 0; font-size: 21px; font-weight: 500; line-height: 1.2; }
+  .phead .grow { flex: 1; min-width: 0; }
+  .iconbtn { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-divider); background: var(--color-neutral-900); cursor: pointer; display: grid; place-items: center; }
+  .tabs { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid var(--color-divider); }
+  .tabs button { background: none; border: 0; padding: 7px 12px; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--color-neutral-300); white-space: nowrap; }
+  .tabs button[aria-selected="true"] { background: var(--color-neutral-800); color: var(--color-text); }
+  .tabs button[hidden] { display: none; }
+  .pbody { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  .pbody .notes { display: flex; flex-direction: column; gap: var(--space-6); }
+  .pfoot { padding: 10px 16px; border-top: 1px solid var(--color-divider); display: flex; gap: 8px; justify-content: space-between; }
+
+  .gw { border-bottom: 1px dotted var(--color-accent-400); cursor: help; }
+  .pop { position: fixed; z-index: 60; max-width: min(340px, calc(100vw - 24px)); padding: 12px 14px; font-size: 14px; line-height: 1.45; border: 1px solid var(--color-accent-700); background: rgba(5, 26, 16, .95); display: none; }
+  .pop b { display: block; color: var(--color-accent-200); margin-bottom: 4px; font-weight: 600; }
+
+  /* Breakdown */
+  .bd-core { font-size: 16px; line-height: 1.5; margin: 0 0 16px; }
+  .ladder { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; }
+  .rung { display: grid; grid-template-columns: 86px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--color-divider); }
+  .rung > span { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-accent-2-300); padding-top: 3px; }
+  .rung:nth-child(1) > span::before { content: "◯ "; } .rung:nth-child(2) > span::before { content: "◎ "; } .rung:nth-child(3) > span::before { content: "● "; } .rung:nth-child(4) > span::before { content: "· "; }
+  .sec { margin: 18px 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 8px; font-size: 13.5px; }
+  .chain > span { padding: 4px 9px; border-radius: 8px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); }
+  .chain i { font-style: normal; color: var(--color-accent); }
+  .bd ul { margin: 0; padding-left: 18px; } .bd li { margin-bottom: 4px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 18px; }
+  .med { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); margin-bottom: 6px; font-size: 14px; }
+  .med b { color: var(--color-accent-200); font-weight: 600; }
+  .med div { color: var(--color-neutral-300); margin-top: 2px; }
+  .flag { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 110, 90, .5); background: rgba(255, 90, 70, .1); font-size: 14.5px; }
+  .flag::before { content: "Red flag · "; font-weight: 600; color: #ff9b8a; }
+  .bd table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+  .bd th, .bd td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+  .bd th { color: var(--color-accent-200); font-weight: 600; }
+  .tablewrap { overflow-x: auto; }
+
+  .words { display: flex; flex-direction: column; gap: 8px; }
+  .word { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 14.5px; line-height: 1.45; }
+  .word b { display: block; color: var(--color-accent-200); font-weight: 600; margin-bottom: 2px; }
+  .conn { display: flex; flex-direction: column; gap: 6px; }
+  .conn button { text-align: left; padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+  .conn button:hover { border-color: var(--color-accent-700); }
+  .conn button small { color: var(--color-neutral-400); font-size: 12.5px; }
+  .conn button .c { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-accent-2-300); }
+  .empty-note { color: var(--color-neutral-400); font-size: 14px; }
+  .loading { text-align: center; color: var(--color-neutral-400); padding: 40px 0; }
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <div class="kicker">NRS 114 · Med-Surg 1 · Exam 2</div>
+    <h1>The whole exam, as one map.</h1>
+  </div>
+  <p class="lead">Every topic from the textbook notes, grouped by body system. Tap a topic to read it, break it down organ → molecule, look up the words, and follow its connections. When your professor names the exam topics, pick them and the map, Recall and the Mastery Loop all follow your focus.</p>
+
+  <div class="glass focusbar" id="focusbar">
+    <div class="who"><small>Studying</small><b id="focus-label">Everything</b></div>
+    <input class="search" id="search" type="search" placeholder="Search the map…" aria-label="Search the map">
+    <div class="row">
+      <button class="pill" id="pick" aria-pressed="false">Pick topics</button>
+      <button class="pill" id="only" aria-pressed="false">Focus only</button>
+      <div class="menu" id="menu">
+        <button class="pill gold" id="menu-btn" aria-haspopup="true" aria-expanded="false">Lists ▾</button>
+        <div class="menu-list glass" id="menu-list" role="menu"></div>
+      </div>
+    </div>
+    <div class="row" id="practice" hidden>
+      <a class="pill" href="Exam 2 Recall.dc.html">Practice in Recall →</a>
+      <a class="pill" href="Exam 2 Mastery Loop.dc.html">Mastery Loop →</a>
+    </div>
+    <div class="pickhint">Picking: tap topics to add or remove them. Gold = in your focus. Tap <b>Pick topics</b> again when you're done.</div>
+  </div>
+
+  <div id="map"><div class="loading">Loading the map…</div></div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel glass" id="panel" role="dialog" aria-modal="true" aria-labelledby="p-title">
+  <div class="phead">
+    <div class="top">
+      <div class="grow"><div class="meta" id="p-meta"></div><h3 id="p-title"></h3></div>
+      <button class="iconbtn" id="p-close" aria-label="Close">✕</button>
+    </div>
+    <div class="row" style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="p-focus"></button></div>
+    <div class="tabs" role="tablist" id="p-tabs">
+      <button role="tab" data-tab="notes">Notes</button>
+      <button role="tab" data-tab="breakdown">Organ → molecule</button>
+      <button role="tab" data-tab="words">Words</button>
+      <button role="tab" data-tab="links">Connections</button>
+    </div>
+  </div>
+  <div class="pbody" id="p-body"></div>
+  <div class="pfoot"><button class="pill" id="p-prev">← Previous</button><button class="pill" id="p-next">Next →</button></div>
+</aside>
+<div class="pop glass" id="pop" role="tooltip"></div>
+
+<script src="data/info-topics.js?v=202610012130"></script>
+<script src="data/concept-nodes.js?v=202610012130"></script>
+<script src="data/glossary.js?v=202610012130"></script>
+<script src="focus.js?v=202610012130"></script>
+<script>
+(function () {
+  var TOPICS = window.INFO_TOPICS || [], NODES = window.CONCEPT_NODES || [], GLOSS = window.GLOSSARY || [], F = window.E2Focus;
+
+  // Body systems on the map. A chapter not listed here (e.g. one added for a later exam) lands in "More chapters".
+  var SYSTEMS = [
+    { name: 'Gas exchange', why: 'Getting oxygen in and carbon dioxide out.', chs: ['22', '23', '24', '25'] },
+    { name: 'Heart & vessels', why: 'Moving oxygenated blood to every cell.', chs: ['27', '28', '29', '30'] },
+    { name: 'Blood', why: 'The carrier itself — cells, hemoglobin, clotting.', chs: ['33', '34'] }
+  ];
+  var EXAM_Q = { '22': 5, '24': 8, '25': 5, '27': 3, '28': 5, '29': 6, '30': 8, '34': 20 };
+
+  // Which notes topics each Concept Map breakdown belongs to.
+  var NODE_TOPICS = {
+    promo: [['22', /smoking cessation/i]], packyr: [['22', /questions to ask/i]], 'resp-age': [['22', /overview/i], ['22', /questions to ask/i]],
+    asthma: [['24', /^asthma/i]], copd: [['24', /^COPD/i]], pna: [['25', /^pneumonia/i]],
+    'cv-age': [['27', /overview/i], ['27', /physical exam/i]],
+    'ecg-r': [['28', /recording the rhythm/i], ['28', /nine-step/i], ['28', /conduction system/i]],
+    'ecg-a': [['28', /^the rhythms/i], ['28', /atrial dysrhythmias/i], ['28', /sinus dysrhythmias/i]],
+    hf: [['29', /overview/i], ['29', /types, staging/i], ['29', /assessing heart failure/i], ['29', /afterload and preload/i], ['29', /contractility/i], ['29', /devices, surgery/i], ['29', /drug classes/i]],
+    htn: [['30', /hypertension — mechanisms/i], ['27', /blood pressure regulation/i]],
+    pad: [['30', /peripheral arterial/i], ['30', /revascularization/i], ['30', /arteriosclerosis/i]],
+    dvt: [['30', /^VTE/i], ['30', /venous thromboembolism/i]],
+    labs: [['33', /head-to-toe/i], ['34', /overview/i]],
+    anemia: [['34', /anemias — cause to cue/i], ['34', /anemias — cause by cause/i]],
+    sickle: [['34', /sickle/i]], leuk: [['34', /^leukemia/i], ['34', /white cell cancers/i], ['34', /stem cell/i]]
+  };
+
+  var byId = {}; TOPICS.forEach(function (t) { byId[t.id] = t; });
+  var nodeById = {}; NODES.forEach(function (n) { nodeById[n.id] = n; });
+  var nodesFor = {}, topicsForNode = {};
+  Object.keys(NODE_TOPICS).forEach(function (nid) {
+    topicsForNode[nid] = [];
+    NODE_TOPICS[nid].forEach(function (r) {
+      TOPICS.forEach(function (t) {
+        if (t.ch === r[0] && r[1].test(t.title)) { (nodesFor[t.id] = nodesFor[t.id] || []).push(nid); topicsForNode[nid].push(t.id); }
+      });
+    });
+  });
+  // Mechanisms point at the topic nodes they explain.
+  NODES.filter(function (n) { return n.kind === 'mech'; }).forEach(function (m) {
+    var ids = []; (m.links || []).filter(function (l) { return NODE_TOPICS[l[0]]; }).forEach(function (l) { (topicsForNode[l[0]] || []).forEach(function (id) { if (ids.indexOf(id) < 0) ids.push(id); }); });
+    topicsForNode[m.id] = ids;
+  });
+
+  // Plain text of each topic (for search, words and connections), computed once.
+  var textOf = {};
+  var scratch = document.createElement('div');
+  TOPICS.forEach(function (t) { scratch.innerHTML = t.html; textOf[t.id] = (t.title + ' ' + scratch.textContent).replace(/\s+/g, ' '); });
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function isAbbr(a) { return /^[A-Z][A-Z0-9₀-₉⁺]{0,3}$/.test(a); }
+  function aliasRe(a) {
+    var e = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return isAbbr(a) ? new RegExp('(^|[^A-Za-z])(' + e + ')(?=[^A-Za-z]|$)') : new RegExp('()(' + e + ')', a === a.toLowerCase() ? 'i' : '');
+  }
+  var GRE = GLOSS.map(function (g) { return { term: g[0], def: g[2], res: g[1].map(aliasRe) }; });
+  function wordsIn(text) { return GRE.filter(function (g) { return g.res.some(function (r) { return r.test(text); }); }); }
+
+  // ---------- Map ----------
+  var mapEl = document.getElementById('map');
+  function chTitle(ch) { var t = TOPICS.find(function (x) { return x.ch === ch; }); return t ? t.chTitle : ''; }
+  function order(ch) { return TOPICS.filter(function (t) { return t.ch === ch; }); }
+  function kindLabel(t) { return t.kind === 'overview' ? 'Start' : t.kind === 'adpie' ? 'ADPIE' : (t.tag === 'Foundation' ? 'Base' : ''); }
+
+  function chipHtml(t) {
+    var nb = nodesFor[t.id] ? '<span class="bd" title="Has an organ → molecule breakdown">⇣ molecule</span>' : '';
+    var k = kindLabel(t);
+    return '<button class="chip" data-id="' + t.id + '"><svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="t">' + esc(t.title) + '</span>' + nb + (k ? '<span class="k">' + k + '</span>' : '') + '</button>';
+  }
+  function chapterHtml(ch) {
+    var q = EXAM_Q[ch];
+    return '<div class="chapter' + (q ? '' : ' untested') + '" data-ch="' + ch + '"><div class="chhead"><b>' + ch + ' · ' + esc(chTitle(ch)) + '</b>' +
+      (q ? '<span class="q">' + q + ' questions</span>' : '<span class="q none">Background</span>') +
+      '<button class="all" data-ch="' + ch + '">All / none</button></div><div class="chips">' + order(ch).map(chipHtml).join('') + '</div></div>';
+  }
+  function buildMap() {
+    var chs = []; TOPICS.forEach(function (t) { if (chs.indexOf(t.ch) < 0) chs.push(t.ch); });
+    var systems = SYSTEMS.map(function (s) { return { name: s.name, why: s.why, chs: s.chs.filter(function (c) { return chs.indexOf(c) >= 0; }) }; });
+    var placed = [].concat.apply([], systems.map(function (s) { return s.chs; }));
+    var rest = chs.filter(function (c) { return placed.indexOf(c) < 0; });
+    if (rest.length) systems.push({ name: 'More chapters', why: '', chs: rest });
+    var total = Object.keys(EXAM_Q).reduce(function (a, k) { return a + EXAM_Q[k]; }, 0);
+    var mechs = NODES.filter(function (n) { return n.kind === 'mech'; });
+    mapEl.innerHTML =
+      '<div style="display:flex;flex-direction:column;gap:18px">' +
+      '<div class="root">Exam 2<small>' + total + ' questions · ' + TOPICS.length + ' topics</small></div>' +
+      '<div class="systems">' + systems.filter(function (s) { return s.chs.length; }).map(function (s) {
+        var q = s.chs.reduce(function (a, c) { return a + (EXAM_Q[c] || 0); }, 0);
+        return '<section class="glass system"><h2>' + esc(s.name) + '<span>' + (q ? q + ' q' : '') + '</span></h2>' + (s.why ? '<p class="why">' + esc(s.why) + '</p>' : '') + s.chs.map(chapterHtml).join('') + '</section>';
+      }).join('') + '</div>' +
+      (mechs.length ? '<section class="glass mechs"><h2>Mechanisms that tie it together</h2><p>The same few molecules explain drugs and symptoms across all three systems.</p><div class="row">' +
+        mechs.map(function (m) { return '<button class="pill" data-node="' + m.id + '">' + esc(m.name) + (m.short ? ' <small>' + esc(m.short) + '</small>' : '') + '</button>'; }).join('') + '</div></section>' : '') +
+      '</div>';
+  }
+
+  // ---------- Focus state ----------
+  var picking = false, focusOnly = false;
+  try { focusOnly = localStorage.getItem('e2-map-only') === '1'; } catch (e) {}
+  function refresh() {
+    var ids = F.ids(), on = ids.length > 0;
+    document.body.classList.toggle('has-focus', on);
+    document.body.classList.toggle('focus-only', on && focusOnly);
+    document.getElementById('only').setAttribute('aria-pressed', on && focusOnly ? 'true' : 'false');
+    document.getElementById('only').disabled = !on;
+    document.getElementById('only').style.opacity = on ? '' : '.45';
+    document.getElementById('practice').hidden = !on;
+    document.getElementById('focus-label').textContent = F.label();
+    mapEl.querySelectorAll('.chip').forEach(function (c) { c.classList.toggle('focus', ids.indexOf(c.dataset.id) >= 0); });
+    mapEl.querySelectorAll('.chapter').forEach(function (c) { c.classList.toggle('empty', !c.querySelector('.chip.focus')); });
+    mapEl.querySelectorAll('.system').forEach(function (s) { s.classList.toggle('empty', !s.querySelector('.chip.focus')); });
+    if (current) setFocusBtn();
+    buildMenu();
+  }
+
+  // ---------- Lists menu ----------
+  var menu = document.getElementById('menu'), menuList = document.getElementById('menu-list');
+  function buildMenu() {
+    var saved = F.saved(), names = Object.keys(saved), v = F.get();
+    var h = '<div class="lbl">Ready-made</div>' +
+      '<button data-act="guide">Study guide topics <span class="x">' + F.studyGuideIds().length + '</span></button>' +
+      '<button data-act="exam">Everything on Exam 2 <span class="x">tested chapters</span></button>' +
+      '<button data-act="all">Everything (no focus)</button>';
+    if (names.length) h += '<div class="sep"></div><div class="lbl">Your saved lists</div>' + names.map(function (n) {
+      return '<button data-act="load" data-name="' + esc(n) + '">' + esc(n) + ' <span class="x" data-act="forget" data-name="' + esc(n) + '" title="Delete list">✕</span></button>';
+    }).join('');
+    if (v) h += '<div class="sep"></div><button data-act="save">Save this focus as a list…</button>';
+    menuList.innerHTML = h;
+  }
+  document.getElementById('menu-btn').addEventListener('click', function (e) {
+    e.stopPropagation(); var open = !menu.classList.contains('open');
+    menu.classList.toggle('open', open); this.setAttribute('aria-expanded', open);
+  });
+  document.addEventListener('click', function () { menu.classList.remove('open'); });
+  menuList.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return; e.stopPropagation();
+    var act = b.dataset.act, name = b.dataset.name;
+    if (act === 'guide') F.set(F.studyGuideIds(), 'Study guide');
+    else if (act === 'exam') F.set(TOPICS.filter(function (t) { return EXAM_Q[t.ch]; }).map(function (t) { return t.id; }), 'All Exam 2 chapters');
+    else if (act === 'all') F.clear();
+    else if (act === 'load') F.load(name);
+    else if (act === 'forget') { if (confirm('Delete the list "' + name + '"?')) F.forget(name); refresh(); return; }
+    else if (act === 'save') {
+      var cur = F.get(), n = prompt('Name this list (e.g. "Exam 2 — professor\'s topics"):', cur && cur.name !== 'My topics' ? cur.name : '');
+      if (n && n.trim()) F.save(n.trim());
+    }
+    menu.classList.remove('open'); refresh();
+  });
+
+  document.getElementById('pick').addEventListener('click', function () {
+    picking = !picking; document.body.classList.toggle('picking', picking); this.setAttribute('aria-pressed', picking);
+    this.textContent = picking ? 'Done picking' : 'Pick topics';
+  });
+  document.getElementById('only').addEventListener('click', function () {
+    focusOnly = !focusOnly; try { localStorage.setItem('e2-map-only', focusOnly ? '1' : '0'); } catch (e) {} refresh();
+  });
+
+  // ---------- Search ----------
+  document.getElementById('search').addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    mapEl.querySelectorAll('.chip').forEach(function (c) { c.classList.toggle('miss', !!q && textOf[c.dataset.id].toLowerCase().indexOf(q) < 0); });
+    mapEl.querySelectorAll('.chapter').forEach(function (c) { c.classList.toggle('nomatch', !!q && !c.querySelector('.chip:not(.miss)')); });
+    mapEl.querySelectorAll('.system').forEach(function (s) { s.classList.toggle('nomatch', !!q && !s.querySelector('.chip:not(.miss)')); });
+  });
+
+  // ---------- Map clicks ----------
+  mapEl.addEventListener('click', function (e) {
+    var all = e.target.closest('.all');
+    if (all) {
+      var ids = order(all.dataset.ch).map(function (t) { return t.id; }), cur = F.ids().slice();
+      var every = ids.every(function (id) { return cur.indexOf(id) >= 0; });
+      cur = cur.filter(function (id) { return ids.indexOf(id) < 0; }); if (!every) cur = cur.concat(ids);
+      F.set(cur, (F.get() || {}).name || 'My topics'); refresh(); return;
+    }
+    var chip = e.target.closest('.chip');
+    if (chip) { if (picking) { F.toggle(chip.dataset.id); refresh(); } else openTopic(chip.dataset.id); return; }
+    var nb = e.target.closest('[data-node]'); if (nb) openNode(nb.dataset.node);
+  });
+
+  // ---------- Panel ----------
+  var panel = document.getElementById('panel'), body = document.getElementById('p-body'), tabs = document.getElementById('p-tabs');
+  var current = null, tab = 'notes';
+  function seq() {
+    var v = F.ids(); var list = TOPICS.map(function (t) { return t.id; });
+    if (v.length && focusOnly) list = list.filter(function (id) { return v.indexOf(id) >= 0; });
+    return list;
+  }
+  function setFocusBtn() {
+    var b = document.getElementById('p-focus');
+    if (current.type !== 'topic') { b.hidden = true; return; }
+    b.hidden = false; var on = F.has(current.id);
+    b.className = 'pill' + (on ? ' on' : ''); b.textContent = on ? '★ In your focus' : '☆ Add to focus';
+  }
+  function show() {
+    document.body.classList.add('panel-open');
+    try { history.replaceState(null, '', '#' + (current.type === 'node' ? 'n-' : '') + current.id); } catch (e) {}
+  }
+  function openTopic(id, keepTab) {
+    var t = byId[id]; if (!t) return;
+    current = { type: 'topic', id: id };
+    document.getElementById('p-meta').textContent = 'Chapter ' + t.ch + ' · ' + t.chTitle;
+    document.getElementById('p-title').textContent = t.title;
+    tabs.querySelector('[data-tab="notes"]').hidden = false;
+    tabs.querySelector('[data-tab="breakdown"]').hidden = !nodesFor[id];
+    if (!keepTab || (tab === 'breakdown' && !nodesFor[id])) tab = 'notes';
+    setFocusBtn(); renderTab(); show();
+  }
+  function openNode(nid) {
+    var n = nodeById[nid]; if (!n) return;
+    current = { type: 'node', id: nid };
+    document.getElementById('p-meta').textContent = n.kind === 'mech' ? 'Mechanism' : 'Breakdown · chapter ' + n.ch;
+    document.getElementById('p-title').textContent = n.name;
+    tabs.querySelector('[data-tab="notes"]').hidden = true;
+    tabs.querySelector('[data-tab="breakdown"]').hidden = false;
+    tab = 'breakdown'; setFocusBtn(); renderTab(); show();
+  }
+  function close() {
+    document.body.classList.remove('panel-open'); hidePop();
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  document.getElementById('p-close').addEventListener('click', close);
+  document.getElementById('scrim').addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (pop.style.display === 'block') hidePop(); else close(); } });
+  document.getElementById('p-focus').addEventListener('click', function () { if (current && current.type === 'topic') { F.toggle(current.id); refresh(); } });
+  tabs.addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) { tab = b.dataset.tab; renderTab(); } });
+  function step(d) {
+    var list = seq(); if (!current) return;
+    var id = current.type === 'topic' ? current.id : (topicsForNode[current.id] || [])[0];
+    var i = list.indexOf(id), j = i < 0 ? 0 : (i + d + list.length) % list.length;
+    openTopic(list[j], true); body.scrollTop = 0;
+  }
+  document.getElementById('p-prev').addEventListener('click', function () { step(-1); });
+  document.getElementById('p-next').addEventListener('click', function () { step(1); });
+
+  function renderTab() {
+    tabs.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === tab); });
+    hidePop(); body.scrollTop = 0;
+    var t = current.type === 'topic' ? byId[current.id] : null;
+    var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
+    if (tab === 'notes' && t) {
+      body.innerHTML = '<div class="notes">' + t.html + '</div>';
+      markWords(body.firstChild);
+    } else if (tab === 'breakdown') {
+      body.innerHTML = nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">');
+      markWords(body);
+    } else if (tab === 'words') {
+      var text = t ? textOf[t.id] : JSON.stringify(nodes[0]);
+      var ws = wordsIn(text);
+      body.innerHTML = ws.length ? '<p class="empty-note" style="margin:0 0 10px">' + ws.length + ' words from this ' + (t ? 'topic' : 'mechanism') + ', in plain language. In the notes, any dotted-underlined word can be tapped too.</p><div class="words">' +
+        ws.map(function (w) { return '<div class="word"><b>' + esc(w.term) + '</b>' + esc(w.def) + '</div>'; }).join('') + '</div>' : '<p class="empty-note">No glossary words found here.</p>';
+    } else if (tab === 'links') {
+      body.innerHTML = connectionsHtml(t, nodes);
+    }
+  }
+
+  function list(title, arr) { return arr && arr.length ? '<div class="sec">' + title + '</div><ul>' + arr.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : ''; }
+  function breakdownHtml(n) {
+    if (!n) return '';
+    var h = '<div class="bd">' + (nodesFor[current.id] && nodesFor[current.id].length > 1 ? '<div class="sec" style="margin-top:0">' + esc(n.name) + '</div>' : '') + '<p class="bd-core">' + esc(n.core) + '</p>';
+    if (n.zoom) h += '<div class="sec">Zoom in — organ to molecule</div><div class="ladder">' + n.zoom.map(function (z) { return '<div class="rung"><span>' + esc(z[0]) + '</span><div>' + esc(z[1]) + '</div></div>'; }).join('') + '</div>';
+    if (n.chains && n.chains.length) h += '<div class="sec">Cause → effect chains</div>' + n.chains.map(function (c) { return '<div class="chain">' + c.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('<i>→</i>') + '</div>'; }).join('');
+    h += '<div class="grid2"><div>' + list('What you see', n.see) + list('Labs', n.labs) + '</div><div>' + list('What you do', n.do) + list('Teach', n.teach) + '</div></div>';
+    if (n.meds && n.meds.length) h += '<div class="sec">Drugs — where they act and why</div>' + n.meds.map(function (m) { return '<div class="med"><b>' + esc(m[0]) + '</b><div>Acts on: ' + esc(m[1]) + '</div><div>Effect: ' + esc(m[2]) + '</div><div>Watch: ' + esc(m[3]) + '</div></div>'; }).join('');
+    (n.tables || []).forEach(function (tb) {
+      h += '<div class="sec">' + esc(tb.title) + '</div><div class="tablewrap"><table><tr>' + tb.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>' +
+        tb.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>';
+    });
+    if (n.flag) h += '<div class="flag">' + esc(n.flag) + '</div>';
+    return h + '</div>';
+  }
+
+  function connectionsHtml(t, nodes) {
+    var out = [], seen = {};
+    function add(id, why, kind) { if (seen[id] || (t && id === t.id) || !byId[id]) return; seen[id] = 1; out.push({ id: id, why: why, kind: kind }); }
+    // 1. Links the Concept Map draws between breakdowns.
+    nodes.forEach(function (n) {
+      (n.links || []).forEach(function (l) { (topicsForNode[l[0]] || []).slice(0, 2).forEach(function (id) { add(id, l[1], 'Concept link'); }); });
+    });
+    // 2. Topics in other chapters whose key words show up here.
+    if (t) {
+      var text = textOf[t.id], scored = [];
+      TOPICS.forEach(function (o) {
+        if (o.ch === t.ch) return;
+        var kw = F.keywordsFor(o); if (!kw) return;
+        var m = text.match(new RegExp(kw.source, 'gi')); if (!m || m.length < 3) return;
+        var uniq = []; m.forEach(function (x) { x = x.toLowerCase(); if (uniq.indexOf(x) < 0) uniq.push(x); });
+        scored.push({ id: o.id, n: m.length, words: uniq.slice(0, 4) });
+      });
+      scored.sort(function (a, b) { return b.n - a.n; }).slice(0, 8).forEach(function (s) { add(s.id, 'Both talk about ' + s.words.join(', '), 'Shared idea'); });
+      // 3. The rest of this chapter.
+      order(t.ch).forEach(function (o) { add(o.id, 'Same chapter', 'Chapter ' + t.ch); });
+    }
+    var mechs = NODES.filter(function (m) {
+      return m.kind === 'mech' && (current.type === 'node' ? false : (topicsForNode[m.id] || []).indexOf(t.id) >= 0);
+    });
+    var h = '';
+    if (current.type === 'node') h += '<p class="empty-note" style="margin:0 0 10px">Where this shows up:</p>';
+    if (mechs.length) h += '<div class="sec" style="margin-top:0">Mechanisms behind this topic</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">' + mechs.map(function (m) { return '<button class="pill" data-node="' + m.id + '">' + esc(m.name) + '</button>'; }).join('') + '</div>';
+    if (current.type === 'node') (topicsForNode[current.id] || []).forEach(function (id) { add(id, 'Uses this mechanism', 'Topic'); });
+    h += '<div class="conn">' + out.map(function (c) {
+      var o = byId[c.id];
+      return '<button data-go="' + c.id + '"><span class="c">' + esc(c.kind) + ' · ' + o.ch + '</span><b style="font-weight:500">' + esc(o.title) + '</b><small>' + esc(c.why) + '</small></button>';
+    }).join('') + '</div>';
+    return out.length || mechs.length ? h : '<p class="empty-note">No connections found.</p>';
+  }
+  body.addEventListener('click', function (e) {
+    var go = e.target.closest('[data-go]'); if (go) { tab = 'notes'; openTopic(go.dataset.go); return; }
+    var nb = e.target.closest('[data-node]'); if (nb) { openNode(nb.dataset.node); return; }
+    var w = e.target.closest('.gw'); if (w) { showPop(w); e.stopPropagation(); return; }
+    hidePop();
+  });
+
+  // ---------- Tap-to-define words in the notes ----------
+  var pop = document.getElementById('pop');
+  function markWords(root) {
+    var done = {}, walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (node) {
+      if (!node.nodeValue.trim() || node.parentNode.closest('.gw, button, th')) return;
+      var s = node.nodeValue, best = null;
+      GRE.forEach(function (g, gi) {
+        if (done[gi]) return;
+        g.res.forEach(function (r) { var m = r.exec(s); if (m) { var at = m.index + m[1].length; if (!best || at < best.at) best = { at: at, len: m[2].length, gi: gi }; } });
+      });
+      if (!best) return;
+      done[best.gi] = 1;
+      // Underline the whole word, not just the stem the glossary matched.
+      while (best.at > 0 && /[A-Za-z]/.test(s[best.at - 1])) { best.at--; best.len++; }
+      while (best.at + best.len < s.length && /[A-Za-z]/.test(s[best.at + best.len])) best.len++;
+      var after = node.splitText(best.at), rest = after.splitText(best.len);
+      var span = document.createElement('span'); span.className = 'gw'; span.dataset.g = best.gi; span.tabIndex = 0;
+      span.textContent = after.nodeValue; after.parentNode.replaceChild(span, after);
+      nodes.push(rest); // keep scanning the remainder for other words
+    });
+  }
+  function showPop(el) {
+    var g = GRE[+el.dataset.g]; pop.innerHTML = '<b>' + esc(g.term) + '</b>' + esc(g.def); pop.style.display = 'block';
+    var r = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+    var x = Math.min(Math.max(12, r.left), innerWidth - w - 12), y = r.bottom + 8 + h > innerHeight - 12 ? r.top - h - 8 : r.bottom + 8;
+    pop.style.left = x + 'px'; pop.style.top = Math.max(12, y) + 'px';
+  }
+  function hidePop() { pop.style.display = 'none'; }
+  body.addEventListener('scroll', hidePop);
+  body.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.classList.contains('gw')) showPop(e.target); });
+
+  // ---------- Start ----------
+  buildMap(); refresh();
+  var h = decodeURIComponent(location.hash.slice(1));
+  if (h.indexOf('n-') === 0) openNode(h.slice(2)); else if (byId[h]) openTopic(h);
+  window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
+})();
+</script>
+<script src="nav.js?v=202610012130"></script>
+</body>
+</html>
