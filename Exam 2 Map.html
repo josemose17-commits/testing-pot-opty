@@ -112,26 +112,65 @@
   .pop b { display: block; color: var(--color-accent-200); margin-bottom: 4px; font-weight: 600; }
 
   /* Breakdown */
-  .bd-core { font-size: 16px; line-height: 1.5; margin: 0 0 16px; }
-  .ladder { display: flex; flex-direction: column; gap: 0; margin-bottom: 18px; }
-  .rung { display: grid; grid-template-columns: 86px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--color-divider); }
-  .rung > span { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-accent-2-300); padding-top: 3px; }
-  .rung:nth-child(1) > span::before { content: "◯ "; } .rung:nth-child(2) > span::before { content: "◎ "; } .rung:nth-child(3) > span::before { content: "● "; } .rung:nth-child(4) > span::before { content: "· "; }
-  .sec { margin: 18px 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); }
+  .bdbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .seg2 { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); }
+  .seg2 button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-size: 13.5px; color: var(--color-neutral-300); }
+  .seg2 button[aria-pressed="true"] { background: var(--color-accent); color: #04160e; font-weight: 600; }
+  .bdhint { margin: 8px 0 14px; font-size: 12.5px; color: var(--color-neutral-400); }
+  .hook { padding: 14px 16px; border-radius: 16px; border: 1px solid var(--color-accent-700); background: linear-gradient(135deg, var(--color-accent-900), transparent); }
+  .hook small { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-accent-300); }
+  .hook p { margin: 4px 0 0; font-size: 19px; line-height: 1.35; font-weight: 500; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .more > summary { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--color-accent-300); }
+  .more > summary::before { content: "▸"; transition: transform .15s; }
+  .more[open] > summary::before { transform: rotate(90deg); }
+  .full { margin-top: 8px; font-size: 14.5px; line-height: 1.5; color: var(--color-neutral-200); display: flex; flex-direction: column; gap: 4px; }
+  .ln b { color: var(--color-text); font-weight: 600; }
+  .ar { font-style: normal; color: var(--color-accent); padding: 0 1px; }
+  .up { font-style: normal; color: #7fe3a5; font-weight: 700; } .dn { font-style: normal; color: #ffab9c; font-weight: 700; }
+  .ladder { position: relative; display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+  .ladder::before { content: ""; position: absolute; left: 15px; top: 18px; bottom: 18px; width: 2px; background: linear-gradient(var(--color-accent-2-500), var(--color-accent)); opacity: .5; }
+  .rung { position: relative; border-radius: 12px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); padding: 10px 12px 10px 38px; }
+  .rung[open] { border-color: var(--color-accent-2-700); }
+  .rung > summary { display: flex; flex-direction: column; gap: 1px; }
+  .rung .dot { position: absolute; left: 9px; top: 13px; width: 14px; height: 14px; border-radius: 50%; background: var(--color-accent-2-500); box-shadow: 0 0 0 3px rgba(4, 22, 14, .9); }
+  .rung.lv2 .dot { width: 11px; height: 11px; left: 10.5px; top: 14.5px; } .rung.lv3 .dot { width: 8px; height: 8px; left: 12px; top: 16px; background: var(--color-accent-400); } .rung.lv4 .dot { width: 5px; height: 5px; left: 13.5px; top: 17.5px; background: var(--color-accent); }
+  .rung .lv { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-2-300); }
+  .rung .key { font-size: 15.5px; font-weight: 500; }
+  .rung > summary::after { content: "tap for detail"; font-size: 11px; color: var(--color-neutral-500); }
+  .rung[open] > summary::after { content: none; }
+  .sec { margin: 22px 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); }
   .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 8px; font-size: 13.5px; }
   .chain > span { padding: 4px 9px; border-radius: 8px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); }
+  .chain > span:first-child { border-color: var(--color-accent-2-700); }
+  .chain > span:last-child { border-color: var(--color-accent-700); color: var(--color-accent-100); }
   .chain i { font-style: normal; color: var(--color-accent); }
-  .bd ul { margin: 0; padding-left: 18px; } .bd li { margin-bottom: 4px; }
-  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 18px; }
-  .med { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); margin-bottom: 6px; font-size: 14px; }
-  .med b { color: var(--color-accent-200); font-weight: 600; }
-  .med div { color: var(--color-neutral-300); margin-top: 2px; }
-  .flag { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 110, 90, .5); background: rgba(255, 90, 70, .1); font-size: 14.5px; }
-  .flag::before { content: "Red flag · "; font-weight: 600; color: #ff9b8a; }
-  .bd table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+  .tiles2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+  .tile { padding: 12px; border-radius: 14px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 14px; }
+  .tile .th { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; color: var(--color-accent-200); margin-bottom: 6px; }
+  .tile .th svg { width: 16px; height: 16px; } .tile .th span { margin-left: auto; font-weight: 400; font-size: 11.5px; color: var(--color-neutral-500); }
+  .tile ul { margin: 0; padding-left: 16px; } .tile li { margin-bottom: 5px; line-height: 1.4; } .tile li::marker { color: var(--color-accent-2-400); }
+  .tile .more ul { margin-top: 6px; }
+  .med { border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); margin-bottom: 6px; padding: 10px 12px; font-size: 14px; }
+  .med > summary { display: flex; flex-direction: column; gap: 2px; }
+  .med > summary b { color: var(--color-accent-200); font-weight: 600; }
+  .med > summary span { color: var(--color-neutral-200); }
+  .mrow { display: grid; grid-template-columns: 64px 1fr; gap: 8px; margin-top: 8px; color: var(--color-neutral-300); }
+  .mrow > span { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-accent-2-300); padding-top: 3px; }
+  .mrow.watch > span { color: #ffab9c; }
+  .flag { margin-top: 10px; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 110, 90, .5); background: rgba(255, 90, 70, .1); font-size: 14.5px; }
+  .flag::before { content: "Red flag"; display: block; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: #ff9b8a; margin-bottom: 2px; }
+  .tbl > summary { padding: 9px 12px; border-radius: 12px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); color: var(--color-accent-200); margin-top: 10px; }
+  .bd table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 10px; }
   .bd th, .bd td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
   .bd th { color: var(--color-accent-200); font-weight: 600; }
   .tablewrap { overflow-x: auto; }
+  /* Test me: hide the answers until tapped */
+  .quiz .cover:not(.shown) { color: transparent !important; text-shadow: 0 0 9px rgba(255, 255, 255, .55); cursor: pointer; user-select: none; }
+  .quiz .cover:not(.shown) .gw { border-bottom-color: transparent; }
+  .quiz .cover:not(.shown) i { color: transparent; }
+  .quiz .rung > summary::after { content: none; }
 
   .words { display: flex; flex-direction: column; gap: 8px; }
   .word { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 14.5px; line-height: 1.45; }
@@ -196,6 +235,7 @@
 
 <script src="data/info-topics.js?v=202610012130"></script>
 <script src="data/concept-nodes.js?v=202610012130"></script>
+<script src="data/concept-keys.js?v=202610021200"></script>
 <script src="data/glossary.js?v=202610012130"></script>
 <script src="focus.js?v=202610012130"></script>
 <script>
@@ -441,7 +481,7 @@
       body.innerHTML = '<div class="notes">' + t.html + '</div>';
       markWords(body.firstChild);
     } else if (tab === 'breakdown') {
-      body.innerHTML = nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">');
+      body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
       markWords(body);
     } else if (tab === 'words') {
       var text = t ? textOf[t.id] : JSON.stringify(nodes[0]);
@@ -453,19 +493,58 @@
     }
   }
 
-  function list(title, arr) { return arr && arr.length ? '<div class="sec">' + title + '</div><ul>' + arr.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : ''; }
+  // ---------- Breakdown: the one-line key first, every detail one tap away ----------
+  var KEYS = window.CONCEPT_KEYS || {};
+  var bdMode = 'quick', quiz = false;
+  try { bdMode = localStorage.getItem('e2-bd-mode') || 'quick'; quiz = localStorage.getItem('e2-bd-quiz') === '1'; } catch (e) {}
+  // Splits a dense sentence block into one line per sentence and colours the arrows, so it reads as steps.
+  function fmt(text) {
+    var safe = esc(text).replace(/e\.g\./g, 'e·g·');
+    var lines = safe.split(/(?<=\.)\s+(?=[A-Z0-9α-ωΑ-Ω₀-₉(])/);
+    return lines.map(function (l) {
+      l = l.replace(/e·g·/g, 'e.g.')
+        .replace(/^([A-Za-z0-9 /()₀-₉⁺⁻²+-]{2,26}):\s/, '<b>$1:</b> ')
+        .replace(/→/g, '<i class="ar">→</i>').replace(/↑/g, '<i class="up">↑</i>').replace(/↓/g, '<i class="dn">↓</i>');
+      return '<div class="ln">' + l + '</div>';
+    }).join('');
+  }
+  function arrows(h) { return h.replace(/→/g, '<i class="ar">→</i>').replace(/↑/g, '<i class="up">↑</i>').replace(/↓/g, '<i class="dn">↓</i>'); }
+  function more(n, label, inner) { return n > 0 ? '<details class="more"' + (bdMode === 'full' ? ' open' : '') + '><summary>' + label + '</summary>' + inner + '</details>' : ''; }
+  var TILES = [['see', 'What you see', 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'], ['labs', 'Labs', 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3'], ['do', 'What you do', 'M5 12l4 4L19 6'], ['teach', 'Teach', 'M4 5h16v11H8l-4 4Z']];
+  function tile(n, t) {
+    var arr = n[t[0]] || []; if (!arr.length) return '';
+    var li = function (x) { return '<li>' + fmt(x) + '</li>'; };
+    return '<div class="tile"><div class="th"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + t[2] + '"/></svg>' + t[1] + '<span>' + arr.length + '</span></div><ul>' + arr.slice(0, 3).map(li).join('') + '</ul>' +
+      more(arr.length - 3, '+' + (arr.length - 3) + ' more', '<ul>' + arr.slice(3).map(li).join('') + '</ul>') + '</div>';
+  }
+  function chainHtml(c) { return '<div class="chain">' + c.map(function (x, i) { return '<span' + (i ? ' class="cover"' : '') + '>' + esc(x) + '</span>'; }).join('<i>→</i>') + '</div>'; }
+  function bdToolbar() {
+    return '<div class="bdbar"><div class="seg2" role="group" aria-label="How much to show">' +
+      '<button data-bd="quick" aria-pressed="' + (bdMode === 'quick') + '">Quick</button><button data-bd="full" aria-pressed="' + (bdMode === 'full') + '">Full</button></div>' +
+      '<button class="pill' + (quiz ? ' on' : '') + '" data-quiz>' + (quiz ? 'Testing — tap to reveal' : 'Test me') + '</button>' +
+      (quiz ? '<button class="pill" data-revealall>Reveal all</button>' : '') + '</div>' +
+      '<p class="bdhint">' + (quiz ? 'Keys and chain steps are hidden. Say them out loud, then tap to check.' : bdMode === 'quick' ? 'Quick shows the key ideas. Tap any row to open the full detail, or switch to Full.' : 'Everything is open. Switch to Quick for just the key ideas.') + '</p>';
+  }
   function breakdownHtml(n) {
     if (!n) return '';
-    var h = '<div class="bd">' + (nodesFor[current.id] && nodesFor[current.id].length > 1 ? '<div class="sec" style="margin-top:0">' + esc(n.name) + '</div>' : '') + '<p class="bd-core">' + esc(n.core) + '</p>';
-    if (n.zoom) h += '<div class="sec">Zoom in — organ to molecule</div><div class="ladder">' + n.zoom.map(function (z) { return '<div class="rung"><span>' + esc(z[0]) + '</span><div>' + esc(z[1]) + '</div></div>'; }).join('') + '</div>';
-    if (n.chains && n.chains.length) h += '<div class="sec">Cause → effect chains</div>' + n.chains.map(function (c) { return '<div class="chain">' + c.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('<i>→</i>') + '</div>'; }).join('');
-    h += '<div class="grid2"><div>' + list('What you see', n.see) + list('Labs', n.labs) + '</div><div>' + list('What you do', n.do) + list('Teach', n.teach) + '</div></div>';
-    if (n.meds && n.meds.length) h += '<div class="sec">Drugs — where they act and why</div>' + n.meds.map(function (m) { return '<div class="med"><b>' + esc(m[0]) + '</b><div>Acts on: ' + esc(m[1]) + '</div><div>Effect: ' + esc(m[2]) + '</div><div>Watch: ' + esc(m[3]) + '</div></div>'; }).join('');
+    var k = KEYS[n.id] || {}, open = bdMode === 'full' ? ' open' : '';
+    var h = '<div class="bd">' + (nodesFor[current.id] && nodesFor[current.id].length > 1 ? '<div class="sec" style="margin-top:0">' + esc(n.name) + '</div>' : '');
+    h += '<div class="hook"><small>Remember this</small><p class="cover">' + arrows(esc(k.gist || n.core)) + '</p>' + (k.gist ? more(1, 'Why — the full explanation', '<div class="full">' + fmt(n.core) + '</div>') : '') + '</div>';
+    if (n.flag) h += '<div class="flag">' + fmt(n.flag) + '</div>';
+    if (n.zoom) h += '<div class="sec">Organ → molecule</div><div class="ladder">' + n.zoom.map(function (z, i) {
+      return '<details class="rung lv' + (i + 1) + '"' + open + '><summary><i class="dot" aria-hidden="true"></i><span class="lv">' + esc(z[0]) + '</span><b class="key cover">' + arrows(esc((k.zk || [])[i] || z[1])) + '</b></summary><div class="full">' + fmt(z[1]) + '</div></details>';
+    }).join('') + '</div>';
+    if (n.chains && n.chains.length) h += '<div class="sec">One thing leads to the next</div>' + n.chains.slice(0, 2).map(chainHtml).join('') +
+      more(n.chains.length - 2, '+' + (n.chains.length - 2) + ' more chain' + (n.chains.length - 2 > 1 ? 's' : ''), n.chains.slice(2).map(chainHtml).join(''));
+    var tiles = TILES.map(function (t) { return tile(n, t); }).join('');
+    if (tiles) h += '<div class="sec">At the bedside</div><div class="tiles2">' + tiles + '</div>';
+    if (n.meds && n.meds.length) h += '<div class="sec">Drugs · tap for target and what to watch</div>' + n.meds.map(function (m) {
+      return '<details class="med"' + open + '><summary><b>' + esc(m[0]) + '</b><span class="cover">' + esc(m[2]) + '</span></summary><div class="mrow"><span>Acts on</span>' + fmt(m[1]) + '</div><div class="mrow watch"><span>Watch</span>' + fmt(m[3]) + '</div></details>';
+    }).join('');
     (n.tables || []).forEach(function (tb) {
-      h += '<div class="sec">' + esc(tb.title) + '</div><div class="tablewrap"><table><tr>' + tb.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>' +
-        tb.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>';
+      h += '<details class="more tbl"' + open + '><summary>Table · ' + esc(tb.title) + '</summary><div class="tablewrap"><table><tr>' + tb.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>' +
+        tb.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div></details>';
     });
-    if (n.flag) h += '<div class="flag">' + esc(n.flag) + '</div>';
     return h + '</div>';
   }
 
@@ -504,6 +583,12 @@
     return out.length || mechs.length ? h : '<p class="empty-note">No connections found.</p>';
   }
   body.addEventListener('click', function (e) {
+    var mode = e.target.closest('[data-bd]');
+    if (mode) { bdMode = mode.dataset.bd; try { localStorage.setItem('e2-bd-mode', bdMode); } catch (x) {} renderTab(); return; }
+    if (e.target.closest('[data-quiz]')) { quiz = !quiz; try { localStorage.setItem('e2-bd-quiz', quiz ? '1' : '0'); } catch (x) {} renderTab(); return; }
+    if (e.target.closest('[data-revealall]')) { body.querySelectorAll('.cover').forEach(function (c) { c.classList.add('shown'); }); return; }
+    var cov = e.target.closest('.quiz .cover:not(.shown)');
+    if (cov) { e.preventDefault(); cov.classList.add('shown'); return; }
     var go = e.target.closest('[data-go]'); if (go) { tab = 'notes'; openTopic(go.dataset.go); return; }
     var nb = e.target.closest('[data-node]'); if (nb) { openNode(nb.dataset.node); return; }
     var w = e.target.closest('.gw'); if (w) { showPop(w); e.stopPropagation(); return; }
