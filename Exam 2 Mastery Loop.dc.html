@@ -30,6 +30,7 @@
 <script src="data/drugs-heme.js"></script>
 <script src="data/drugs-resp.js"></script>
 <script src="data/glossary.js"></script>
+<script src="data/extra-questions.js"></script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.55;">
 <div style="max-width:860px;padding:28px 20px 64px;display:flex;flex-direction:column;gap:22px;">
@@ -58,7 +59,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">1 · Diagnostic pre-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Once. Every Exam 2 topic, no set length — it keeps asking wherever you slip until it knows exactly where you are weak.</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">Once. 60 questions split like the real exam (20 on ch 34), chosen so every study-guide topic, skill and question type is tested. The report shows exactly which topics are weak.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">2 · Tell it why</div>
@@ -325,7 +326,17 @@
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">By exam topic</div>
+          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">By study-guide topic — weakest first</div>
+          <sc-for list="{{ res.subs }}" as="tp" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;">
+                <span style="display:flex;gap:8px;align-items:center;color:var(--color-neutral-100);">{{ tp.label }}<sc-if value="{{ tp.weak }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">Weak</span></sc-if></span>
+                <span style="color:var(--color-neutral-300);font-variant-numeric:tabular-nums;">{{ tp.pct }}% · {{ tp.n }}</span>
+              </div>
+              <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ tp.w }};background:{{ tp.fill }};"></div></div>
+            </div>
+          </sc-for>
+          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);margin-top:10px;">By chapter</div>
           <sc-for list="{{ res.topics }}" as="tp" hint-placeholder-count="6">
             <div style="display:flex;flex-direction:column;gap:4px;">
               <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;">
@@ -465,6 +476,21 @@ const KW = {
   '30': /hypertensi|blood pressure|\bBP\b|\bPAD\b|peripheral arter|claudication|ankle-brachial|DVT|deep vein|VTE|thrombo|anticoag|heparin|warfarin|enoxaparin/i
 };
 const SKILLS = ['Drugs & mechanisms', 'Pathophysiology', 'Priority & safety', 'Recognizing cues'];
+// The pre-test is a fixed 60 questions, split like the real exam (BP).
+const PRE_LEN = 60;
+// Study-guide topics inside each chapter, so the pre-test covers every one and the report scores each.
+const SUB = {
+  '22': [['Health promotion & smoking', /smok|vaccin|health promotion|prevent|exposure|cessation|nicotine|hookah|vap/i], ['Pack-years', /pack[- ]?year|packs/i], ['Respiratory aging changes', /older|aging|age-related|elderly|\d\d-year-old/i]],
+  '24': [['Asthma', /asthma|albuterol|SABA|peak flow|silent chest|status asthmaticus/i], ['COPD', /COPD|emphysema|bronchitis|pursed|barrel|88–92|tiotropium/i]],
+  '25': [['Pneumonia', /pneumonia|consolidat|infiltrat|aspiration|incentive spirometr/i]],
+  '27': [['Cardiac aging changes', /older|aging|age-related|elderly|orthostatic|\d\d-year-old/i]],
+  '28': [['ECG recording', /lead|electrode|artifact|telemetry|monitor|strip/i], ['ECG analysis', /P wave|QRS|PR interval|QT|ST segment|rhythm|sinus|fibrillation|tachycardia|bradycardia|heart block|SVT|asystole/i]],
+  '29': [['Heart failure', /heart failure|\bHF\b|BNP|daily weight|pulmonary edema|orthopnea|furosemide|digoxin|frothy/i]],
+  '30': [['Hypertension', /hypertens|blood pressure|BP \d|DASH|crisis/i], ['PAD', /\bPAD\b|peripheral arter|claudication|arterial|pedal pulse|bypass|ABI/i], ['DVT', /DVT|deep vein|VTE|thrombo|heparin|warfarin|enoxaparin|embol|anticoag|HIT/i]],
+  '34': [['Lab values & anemia types', /MCV|ferritin|reticulocyte|\bHgb\b|hemoglobin|CBC|\bANC\b|lab/i], ['Sickle cell', /sickle|vaso-occlusive|acute chest/i], ['Anemias — iron, B₁₂, folate', /iron|B₁₂|B12|pernicious|folic|folate|anemi/i], ['Leukemia — infection & bleeding risk', /leukemi|neutropen|ANC|platelet|bleeding precaution/i]]
+};
+// Ch 33 questions that test ch 34 study-guide topics (lab interpretation, neutropenia, bleeding risk).
+const CH33_FOR_34 = /ANC calculation|Lab interpretation|Neutropenic|Bleeding precautions|Prioritize clients|Compare|Select all that apply/;
 const REASONS = [
   ['words', 'Didn’t know what a word means', -1],
   ['drug', 'Didn’t know the drug — name, class or action', 0],
@@ -569,7 +595,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     const tryLoad = () => {
-      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY) return false;
+      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY || !window.EXTRA_Q) return false;
       if (!CHS.every(c => window.NGN_EXTRA[c] || window.RECALL_EXTRA[c])) return false;
       this.build();
       let S = null; try { S = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
@@ -588,7 +614,10 @@ class Component extends DCLogic {
     CHS.forEach(ch => {
       (window.NGN_EXTRA[ch] || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|n|' + i, ch, src: x.f })));
       ((window.RECALL_EXTRA[ch] || {}).nclex || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|c|' + i, ch, src: 'mcq' })));
+      (window.EXTRA_Q[ch] || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|x|' + i, ch, src: x.f || 'mcq' })));
     });
+    (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (CH33_FOR_34.test(x.t || '')) bank.push(Object.assign({}, x, { id: '33|n|' + i, ch: '34', src: x.f })); });
+    ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (CH33_FOR_34.test(x.t || '') && /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x))) bank.push(Object.assign({}, x, { id: '33|c|' + i, ch: '34', src: 'mcq' })); });
     const drugs = (window.DRUG_DATA.drugs || []).map(d => {
       const names = [d.n, d.g].concat(String(d.b || '').split(/[,/]/)).map(s => String(s || '').trim()).filter(s => s.length >= 5);
       return names.length ? { d, re: new RegExp('\\b(' + [...new Set(names)].map(esc).join('|') + ')\\b', 'i') } : null;
@@ -597,6 +626,7 @@ class Component extends DCLogic {
     bank.forEach(b => {
       const txt = [b.t, b.q, JSON.stringify(b.o || b.rows || b.parts || [b.cond, b.act, b.mon]), b.rule, b.phys].join(' ');
       b.kw = KW[b.ch].test(txt); b.words = words(b.t + ' ' + b.q + ' ' + (b.rule || '') + ' ' + (b.phys || ''));
+      b.subs = (SUB[b.ch] || []).filter(s => s[1].test(txt)).map(s => s[0]);
       const k = b.src;
       b.kind = ['sata', 'matrix', 'order', 'bow', 'cloze'].includes(k) ? k : (Array.isArray(b.a) && b.a.length > 1 ? 'sata' : 'single');
       b.drugs = drugs.filter(x => x.re.test(txt)).map(x => x.d);
@@ -630,7 +660,7 @@ class Component extends DCLogic {
       const its = T.items.filter(p => p.ch === ch && T.checked[p.id]);
       const n = its.length, s = its.reduce((a, p) => a + eff(T, p.id), 0), acc = n ? s / n : 0;
       const minN = MIN_N[ch] + (T.boost && T.boost[ch] ? 1 : 0);
-      const resolved = !!T.exhausted[ch] || n >= MAX_N[ch] || (n >= minN && (acc >= 0.85 || acc <= 0.5));
+      const resolved = (!!T.plan && n > 0) || !!T.exhausted[ch] || n >= MAX_N[ch] || (n >= minN && (acc >= 0.85 || acc <= 0.5));
       const status = !n ? 'Not yet' : !resolved ? 'Probing' : acc >= 0.85 ? 'Solid' : acc <= 0.5 ? 'Weak' : 'Borderline';
       st[ch] = { n, s, acc, resolved, status };
     });
@@ -644,11 +674,44 @@ class Component extends DCLogic {
     const posts = S.history.filter(h => h.kind === 'post').length;
     const T = { kind, name: kind === 'pre' ? 'Pre-test' : 'Post-test ' + (posts + 1), items: [], resp: {}, scores: {}, checked: {}, why: {}, conf: {}, probe: {}, exhausted: {}, probeRun: 0, boost,
       lastIds: last ? last.test.items.map(p => p.id) : [], repeatIds: last ? last.test.items.filter(p => eff(last.test, p.id) < 1).map(p => p.id) : [] };
+    if (kind === 'pre') T.plan = this.makePlan();
     const P = this.nextItem(T); if (P) T.items.push(P);
     return T;
   }
 
+  // Fixed pre-test: BP[ch] questions per chapter, chosen greedily so every
+  // study-guide topic, skill and question format is covered before repeats.
+  makePlan() {
+    const total = CHS.reduce((a, ch) => a + BP[ch], 0);
+    const ids = [];
+    CHS.forEach(ch => {
+      const want = Math.round(PRE_LEN * BP[ch] / total);
+      let pool = this.bank.filter(b => b.ch === ch);
+      const cov = {};
+      const bump = k => { cov[k] = (cov[k] || 0) + 1; };
+      const val = b => {
+        let v = 0;
+        b.subs.forEach(s => { v += 3 / (1 + (cov['s:' + s] || 0)); });
+        if (!b.subs.length) v -= 1.5;
+        v += 1 / (1 + (cov['k:' + b.skill] || 0)) + 0.6 / (1 + (cov['f:' + b.kind] || 0));
+        return v + (b.hy ? 0.4 : 0) + Math.random() * 0.3;
+      };
+      for (let i = 0; i < want && pool.length; i++) {
+        const best = pool.reduce((a, b) => (val(b) > val(a) ? b : a));
+        ids.push(best.id);
+        best.subs.forEach(s => bump('s:' + s)); bump('k:' + best.skill); bump('f:' + best.kind);
+        pool = pool.filter(b => b !== best);
+      }
+    });
+    return shuffle(ids);
+  }
+
   nextItem(T) {
+    if (T.plan) {
+      const used = new Set(T.items.map(p => p.id));
+      const id = T.plan.find(x => !used.has(x));
+      return id ? this.present(this.byId[id]) : null;
+    }
     for (let guard = 0; guard < 12; guard++) {
       const st = this.stats(T);
       const open = CHS.filter(ch => !st[ch].resolved);
@@ -847,10 +910,19 @@ class Component extends DCLogic {
     if (v.isTest) {
       const T = S.test, P = T.items[T.items.length - 1], R = T.resp[P.id], ck = !!T.checked[P.id];
       const st = this.stats(T), settled = CHS.filter(c => st[c].resolved).length;
-      v.testName = T.name; v.qNum = T.items.length;
-      v.settledLabel = settled + ' of ' + CHS.length + ' topics settled';
-      v.progW = Math.round(100 * settled / CHS.length) + '%';
-      v.chips = CHS.map(ch => { const s = st[ch]; const on = ch === P.ch; return { label: 'Ch ' + ch + ' · ' + s.status, title: TOPIC[ch] + (s.n ? ' — ' + Math.round(s.acc * 100) + '% on ' + s.n : ''), bd: on ? A : (s.status === 'Weak' ? 'var(--color-accent-700)' : N), fg: s.status === 'Solid' ? 'var(--color-neutral-100)' : s.status === 'Weak' ? 'var(--color-accent-200)' : 'var(--color-neutral-400)', bg: s.status === 'Weak' ? 'var(--color-accent-900)' : 'transparent' }; });
+      v.testName = T.name;
+      if (T.plan) {
+        const done = T.items.filter(p => T.checked[p.id]).length;
+        v.qNum = T.items.length + ' of ' + T.plan.length;
+        v.settledLabel = done + ' answered';
+        v.progW = Math.round(100 * done / T.plan.length) + '%';
+      } else {
+        v.qNum = T.items.length;
+        v.settledLabel = settled + ' of ' + CHS.length + ' topics settled';
+        v.progW = Math.round(100 * settled / CHS.length) + '%';
+      }
+      const planN = ch => T.plan ? T.plan.filter(id => this.byId[id].ch === ch).length : 0;
+      v.chips = CHS.map(ch => { const s = st[ch]; const on = ch === P.ch; return { label: 'Ch ' + ch + ' · ' + (T.plan ? s.n + '/' + planN(ch) + (s.n ? ' · ' + Math.round(s.acc * 100) + '%' : '') : s.status), title: TOPIC[ch] + (s.n ? ' — ' + Math.round(s.acc * 100) + '% on ' + s.n : ''), bd: on ? A : (s.status === 'Weak' ? 'var(--color-accent-700)' : N), fg: s.status === 'Solid' ? 'var(--color-neutral-100)' : s.status === 'Weak' ? 'var(--color-accent-200)' : 'var(--color-neutral-400)', bg: s.status === 'Weak' ? 'var(--color-accent-900)' : 'transparent' }; });
       v.checked = ck; v.notChecked = !ck; v.cantCheck = !answered(P, R);
       const mark = (sel, multi, isC) => {
         if (!ck) return { bg: sel ? 'var(--color-accent-900)' : 'transparent', bd: sel ? A : N, mr: multi ? '4px' : '50%', mf: sel ? A : 'transparent' };
@@ -889,7 +961,8 @@ class Component extends DCLogic {
           conf: [['sure', 'Knew it'], ['guess', 'Guessed — add to repair deck']].map(([k, label]) => { const on = conf === k; return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { S.test.conf[P.id] = S.test.conf[P.id] === k ? null : k; }) }; })
         };
         const stAfter = this.stats(T);
-        v.nextLabel = CHS.every(c => stAfter[c].resolved) ? 'Finish — see report' : 'Next question';
+        const last = T.plan ? T.items.length >= T.plan.length : CHS.every(c => stAfter[c].resolved);
+        v.nextLabel = last ? 'Finish — see report' : 'Next question';
       }
       v.dots = T.items.map((p, i) => { const c = T.checked[p.id], e = eff(T, p.id); const isCur = i === T.items.length - 1; return { n: i + 1, label: 'Q' + (i + 1) + ' · Ch ' + p.ch + (c ? ' · ' + Math.round(e * 100) + '%' : ''), bd: isCur ? A : N, bg: !c ? 'transparent' : e >= 1 ? 'var(--color-neutral-700)' : 'var(--color-accent-800)', fg: !c ? 'var(--color-neutral-400)' : e >= 1 ? 'var(--color-neutral-100)' : 'var(--color-accent-100)' }; });
     }
@@ -899,6 +972,8 @@ class Component extends DCLogic {
       const Rz = S.result, T = Rz.test, items = T.items;
       const bar = (label, s, n, status) => { const pct = Math.round(100 * s / n); return { label, pct, n: n + ' q', w: pct + '%', weak: pct < 85, status: status || 'Focus', fill: pct < 85 ? 'var(--color-accent-500)' : 'var(--color-neutral-300)' }; };
       const topics = CHS.filter(c => Rz.topics[c].n).map(c => bar(TOPIC[c], Rz.topics[c].s, Rz.topics[c].n, Rz.topics[c].status === 'Solid' ? '' : Rz.topics[c].status)).sort((a, b) => a.pct - b.pct);
+      const sb = {}; items.forEach(P => { const b = this.byId[P.id] || {}; (b.subs || []).forEach(s => { const k = 'Ch ' + P.ch + ' · ' + s; (sb[k] = sb[k] || { s: 0, n: 0 }); sb[k].s += eff(T, P.id); sb[k].n++; }); });
+      const subs = Object.keys(sb).map(k => bar(k, sb[k].s, sb[k].n)).sort((a, b) => a.pct - b.pct);
       const sk = {}; items.forEach(P => { const k = (this.byId[P.id] || {}).skill || SKILLS[3]; (sk[k] = sk[k] || { s: 0, n: 0 }); sk[k].s += eff(T, P.id); sk[k].n++; });
       const skills = SKILLS.filter(s => sk[s]).map(s => bar(s, sk[s].s, sk[s].n)).sort((a, b) => a.pct - b.pct);
       const rc = {}; Object.values(T.why).forEach(w => (w || []).forEach(k => { rc[k] = (rc[k] || 0) + 1; }));
@@ -914,7 +989,7 @@ class Component extends DCLogic {
         pct: Rz.pct, raw: Rz.raw + '% raw',
         verdict: pass ? 'Goal reached.' : (goal - Rz.pct) + ' points to the ' + goal + '% goal.',
         sub: (untested ? untested + ' topic' + (untested > 1 ? 's' : '') + ' not reached — test ended early. ' : '') + (pass ? 'Run one more post-test on fresh questions to confirm it holds.' : (weakList.length ? 'Weakest: ' + weakList.join(' and ') + '. Clear the repair deck, then the post-test starts deeper on these.' : 'Clear the repair deck, then retest.')),
-        topics, skills, reasons, hasReasons: reasons.length > 0,
+        topics, subs, skills, reasons, hasReasons: reasons.length > 0,
         hasMissed: missed.length > 0, missedCount: missed.length,
         hasDeck: S.deck.length > 0,
         remedLabel: S.deckDone ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Start repair deck (' + S.deck.length + ' cards)',
