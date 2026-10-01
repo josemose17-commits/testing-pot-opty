@@ -1,6 +1,6 @@
 # Exam 2 study hub — NRS 114 Med-Surg 1
 
-Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claude Design with the Nocturne design system. Open `index.html` to start.
+Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claude Design, restyled in Essex County College green, gold and white with frosted-glass panels. Open `index.html` to start.
 
 | Page | What it does |
 | --- | --- |
@@ -15,7 +15,8 @@ Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claud
 
 - `data/` — question banks and drug data the pages load (`ngn-*`, `recall-*`, `drugs-*`).
 - `support.js` — the Claude Design page runtime every `.dc.html` page loads.
-- `_ds/nocturne-…/` — the Nocturne stylesheet and bundle.
+- `_ds/nocturne-…/styles.css` — the shared theme (colors at the top; glass layer and tab bar at the bottom).
+- `nav.js` — the floating tab bar on every page.
 - `offline/` — single-file copies that open without the rest of the folder.
 - `notes/` — audio notes and the instructor's study guide.
 
