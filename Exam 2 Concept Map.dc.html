@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; background: var(--color-bg); color: var(--color-text); -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+  a { color: var(--color-accent-300); text-underline-offset: 2px; }
+  a:hover { color: var(--color-accent-200); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+</style>
+</helmet>
+<div style="height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(120% 70% at 50% 0%, var(--color-accent-900), var(--color-bg) 65%);font-family:var(--font-body);font-size:15px;line-height:1.45">
+
+  <div style="flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px clamp(10px,3vw,24px);border-bottom:1px solid var(--color-divider)">
+    <div style="flex:1 1 180px;min-width:0">
+      <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-300)">Exam 2 · tap any node</div>
+      <div style="font-family:var(--font-heading);font-weight:500;font-size:20px;letter-spacing:-.01em;color:var(--color-neutral-100)">Concept map</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button onClick="{{ zoomOut }}" aria-label="Zoom out" style="cursor:pointer;width:40px;height:40px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-200);font-size:18px" style-hover="border-color:var(--color-accent-400)">−</button>
+      <button onClick="{{ zoomFit }}" style="cursor:pointer;height:40px;padding:0 12px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-200);font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-transform:uppercase" style-hover="border-color:var(--color-accent-400)">Fit</button>
+      <button onClick="{{ zoomIn }}" aria-label="Zoom in" style="cursor:pointer;width:40px;height:40px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-200);font-size:18px" style-hover="border-color:var(--color-accent-400)">+</button>
+      <a class="btn btn-ghost" href="Exam 2 Recall.dc.html" style="font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none">Recall</a>
+      <a class="btn btn-ghost" href="Exam 2 Info.dc.html" style="font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none">Notes</a>
+    </div>
+  </div>
+
+  <div style="flex:1;min-height:0;display:flex;position:relative">
+    <div ref="{{ canvasRef }}" style="flex:1;min-width:0;overflow:auto;-webkit-overflow-scrolling:touch;position:relative">
+      <div style="position:relative;width:{{ worldW }};height:{{ worldH }}">
+        <div style="position:absolute;left:0;top:0;width:1400px;height:1000px;transform:{{ worldTf }};transform-origin:0 0">
+          <div style="position:absolute;left:700px;top:120px;transform:translateX(-50%);font-family:var(--font-heading);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--color-accent-300);white-space:nowrap">Mechanisms · how the drugs work</div>
+          <svg width="1400" height="1000" style="position:absolute;left:0;top:0;overflow:visible">
+            <sc-for list="{{ edges }}" as="e" hint-placeholder-count="0">
+              <path d="{{ e.d }}" style="fill:none;stroke:{{ e.stroke }};stroke-width:{{ e.w }};stroke-dasharray:{{ e.dash }};opacity:{{ e.op }}"></path>
+            </sc-for>
+          </svg>
+          <sc-for list="{{ edgeLabels }}" as="l" hint-placeholder-count="0">
+            <span style="position:absolute;left:{{ l.left }};top:{{ l.top }};transform:translate(-50%,-50%);white-space:nowrap;padding:2px 7px;border-radius:4px;background:var(--color-bg);border:1px solid var(--color-accent-700);font-size:12.5px;font-weight:500;color:var(--color-accent-100);pointer-events:none;z-index:2">{{ l.t }}</span>
+          </sc-for>
+          <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="0">
+            <button onClick="{{ n.pick }}" style="position:absolute;left:{{ n.x }};top:{{ n.y }};transform:translate(-50%,-50%);width:{{ n.w }};cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:1px;padding:8px 12px;border-radius:{{ n.r }};border:1px solid {{ n.bc }};background:{{ n.bg }};box-shadow:{{ n.sh }};opacity:{{ n.op }};transition:opacity .15s, box-shadow .15s" style-hover="border-color:var(--color-accent-300)">
+              <span style="font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:{{ n.kfg }}">{{ n.kicker }}</span>
+              <span style="font-family:var(--font-heading);font-size:{{ n.fs }};font-weight:500;color:var(--color-neutral-100);line-height:1.25">{{ n.name }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+      <div style="position:{{ p.pos }};left:{{ p.left }};right:0;bottom:0;height:{{ p.h }};width:{{ p.w }};flex:{{ p.flex }};z-index:50;display:flex;flex-direction:column;background:var(--color-surface);border-left:{{ p.bl }};border-top:{{ p.bt }};border-radius:{{ p.r }};box-shadow:{{ p.sh }};min-height:0">
+        <div style="flex:0 0 auto;padding:12px 16px 0;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">{{ cur.kicker }}</div>
+              <div style="font-family:var(--font-heading);font-weight:500;font-size:22px;color:var(--color-neutral-100);letter-spacing:-.01em;line-height:1.2">{{ cur.name }}</div>
+            </div>
+            <button onClick="{{ close }}" aria-label="Close" style="cursor:pointer;flex:0 0 40px;height:40px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-300);font-size:18px">×</button>
+          </div>
+          <sc-if value="{{ cur.hasSteps }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ cur.openWalk }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 14px;border-radius:var(--radius-md);border:1px solid var(--color-accent-300);background:var(--color-accent-900);color:var(--color-neutral-100);font-family:var(--font-heading);font-size:14px;font-weight:500;box-shadow:0 0 16px color-mix(in oklch, var(--color-accent) 30%, transparent)" style-hover="background:var(--color-accent-800)"><span>{{ cur.stepsLabel }}</span><span style="color:var(--color-accent-200)">▸</span></button>
+          </sc-if>
+          <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;border-bottom:1px solid var(--color-divider)">
+            <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+              <button onClick="{{ tb.go }}" style="cursor:pointer;flex:0 0 auto;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:8px 12px;min-height:36px;border-radius:999px;border:1px solid {{ tb.bc }};background:{{ tb.bg }};color:{{ tb.fg }}">{{ tb.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div ref="{{ panelRef }}" style="flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px">
+
+          <sc-if value="{{ t.overview }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:var(--radius-md);background:var(--color-bg);border:1px solid var(--color-accent-500)">
+              <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">In plain words</span>
+              <span style="font-size:16px;color:var(--color-neutral-100);text-wrap:pretty">{{ cur.plain }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:var(--radius-md);background:var(--color-accent-900);border:1px solid var(--color-accent-700)">
+              <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">Exam version</span>
+              <span style="font-size:15px;color:var(--color-neutral-100);text-wrap:pretty">{{ cur.core }}</span>
+            </div>
+            <div style="font-size:13.5px;color:var(--color-neutral-400)">Stuck on a word below? Open the <b style="color:var(--color-accent-200);font-weight:500">Words</b> tab.</div>
+            <div style="font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-400)">Zoom in · organ → molecule</div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ cur.zoom }}" as="z" hint-placeholder-count="4">
+                <div style="display:flex;align-items:stretch;padding-left:{{ z.indent }}">
+                  <div style="flex:0 0 22px;display:flex;flex-direction:column;align-items:center">
+                    <span style="width:1px;flex:0 0 12px;background:{{ z.lineTop }}"></span>
+                    <span style="width:11px;height:11px;border-radius:50%;border:1px solid var(--color-accent-300);background:{{ z.dot }};box-shadow:0 0 10px color-mix(in oklch, var(--color-accent) 50%, transparent)"></span>
+                    <span style="width:1px;flex:1;background:{{ z.lineBot }}"></span>
+                  </div>
+                  <div style="flex:1;min-width:0;padding:6px 0 10px 8px">
+                    <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">{{ z.lvl }}</div>
+                    <div style="font-size:14.5px;color:var(--color-neutral-200);text-wrap:pretty">{{ z.t }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ cur.isTopic }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <a class="btn btn-secondary" href="{{ cur.drill }}" style="font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none">Drill CH {{ cur.ch }}</a>
+                <a class="btn btn-ghost" href="{{ cur.notes }}" style="font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none">Full notes</a>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ t.words }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.words }}" as="w" hint-placeholder-count="6">
+              <div style="display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--color-divider);background:var(--color-bg)">
+                <span style="font-family:var(--font-heading);font-size:15px;font-weight:500;color:var(--color-accent-200)">{{ w.term }}</span>
+                <span style="font-size:14.5px;color:var(--color-neutral-200);text-wrap:pretty">{{ w.def }}</span>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ t.chains }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.chains }}" as="ch" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:0;padding:10px 12px;border:1px solid var(--color-divider);border-radius:var(--radius-md);background:var(--color-bg)">
+                <sc-for list="{{ ch }}" as="s" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;align-items:flex-start">
+                    <span style="font-size:14.5px;padding:5px 10px;border-radius:var(--radius-sm);border:1px solid {{ s.bc }};background:{{ s.bg }};color:{{ s.fg }}">{{ s.t }}</span>
+                    <span style="color:var(--color-accent-400);font-size:13px;line-height:1;padding:3px 0 3px 14px">{{ s.arrow }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ t.clinical }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.nodes }}" as="n" hint-placeholder-count="4">
+              <div style="border:1px solid var(--color-divider);border-top:2px solid var(--color-accent-500);border-radius:var(--radius-md);background:var(--color-bg);padding:10px 12px">
+                <div style="font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:6px">{{ n.k }}</div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <sc-for list="{{ n.items }}" as="x" hint-placeholder-count="3">
+                    <div style="font-size:14.5px;color:var(--color-neutral-200);padding-left:10px;border-left:1px solid var(--color-neutral-700);text-wrap:pretty">{{ x }}</div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <div style="display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-radius:var(--radius-md);border:1px solid #c97f78;background:color-mix(in oklch, #c97f78 10%, transparent)">
+              <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#e3aaa4">Red flag</span>
+              <span style="font-size:14.5px;color:var(--color-neutral-100)">{{ cur.flag }}</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ t.drugs }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.meds }}" as="d" hint-placeholder-count="3">
+              <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);background:var(--color-bg);padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+                <div style="font-family:var(--font-heading);font-size:15px;font-weight:500;color:var(--color-neutral-100)">{{ d.name }}</div>
+                <div style="display:flex;gap:8px"><span style="flex:0 0 52px;font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-300);padding-top:2px">Hits</span><span style="font-size:14px;color:var(--color-neutral-200)">{{ d.target }}</span></div>
+                <div style="display:flex;gap:8px"><span style="flex:0 0 52px;font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-300);padding-top:2px">So</span><span style="font-size:14px;color:var(--color-neutral-200)">{{ d.effect }}</span></div>
+                <div style="display:flex;gap:8px"><span style="flex:0 0 52px;font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e3aaa4;padding-top:2px">Watch</span><span style="font-size:14px;color:var(--color-neutral-200)">{{ d.watch }}</span></div>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ t.tables }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.tables }}" as="tb" hint-placeholder-count="1">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-400)">{{ tb.title }}</div>
+                <div style="overflow-x:auto">
+                  <div style="display:grid;grid-template-columns:{{ tb.cols }};min-width:{{ tb.minW }};border:1px solid var(--color-divider);border-radius:var(--radius-md);overflow:hidden">
+                    <sc-for list="{{ tb.cells }}" as="cell" hint-placeholder-count="8">
+                      <div style="padding:8px 10px;font-size:13.5px;border-bottom:1px solid var(--color-divider);background:{{ cell.bg }};color:{{ cell.fg }};font-family:{{ cell.ff }}">{{ cell.v }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ t.links }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ cur.links }}" as="l" hint-placeholder-count="3">
+              <button onClick="{{ l.pick }}" style="cursor:pointer;text-align:left;font-family:var(--font-body);padding:10px 12px;border-radius:var(--radius-md);border:1px dashed var(--color-accent-500);background:transparent;display:flex;flex-direction:column;gap:2px" style-hover="background:var(--color-accent-900)">
+                <span style="font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-400)">{{ l.kind }}</span>
+                <span style="font-size:15px;font-weight:500;color:var(--color-accent-200)">{{ l.label }}</span>
+                <span style="font-size:14px;color:var(--color-neutral-300)">{{ l.why }}</span>
+              </button>
+            </sc-for>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+<sc-if value="{{ walkOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--color-bg);font-family:var(--font-body);line-height:1.5">
+    <div style="flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:10px clamp(12px,3vw,24px);border-bottom:1px solid var(--color-divider)">
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">{{ walk.n }}</div>
+        <div style="font-family:var(--font-heading);font-size:18px;font-weight:500;color:var(--color-neutral-100)">{{ walk.title }}</div>
+      </div>
+      <button onClick="{{ walk.close }}" aria-label="Close" style="cursor:pointer;width:44px;height:44px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-300);font-size:20px">×</button>
+    </div>
+    <div style="flex:0 0 auto;display:flex;gap:4px;padding:8px clamp(12px,3vw,24px)">
+      <sc-for list="{{ walk.dots }}" as="d" hint-placeholder-count="8">
+        <button onClick="{{ d.go }}" aria-label="Go to step" style="cursor:pointer;flex:1;height:14px;padding:5px 0;border:none;background:transparent"><span style="display:block;height:4px;border-radius:2px;background:{{ d.bg }}"></span></button>
+      </sc-for>
+    </div>
+    <div id="walk-scroll" style="flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px clamp(12px,3vw,24px) 20px">
+      <div style="max-width:1100px;display:flex;flex-direction:column;gap:14px">
+        <sc-if value="{{ walk.hasEcg }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start">
+            <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:6px">
+              <div style="position:relative;overflow:hidden;border:1px solid var(--color-divider);border-radius:var(--radius-md)">
+                <svg viewBox="0 0 900 210" style="display:block;width:100%;height:auto;background:var(--color-surface)">
+                  <path d="{{ walk.small }}" style="fill:none;stroke:var(--color-neutral-800);stroke-width:.6"></path>
+                  <path d="{{ walk.big }}" style="fill:none;stroke:var(--color-neutral-700);stroke-width:1"></path>
+                  <rect x="{{ walk.hx }}" y="0" width="{{ walk.hw }}" height="210" style="fill:color-mix(in oklch, var(--color-accent) 24%, transparent);stroke:var(--color-accent-300);stroke-width:1;opacity:{{ walk.hiOp }}"></rect>
+                  <path d="{{ walk.path }}" style="fill:none;stroke:var(--color-accent-100);stroke-width:2.4;stroke-linejoin:round"></path>
+                  <sc-for list="{{ walk.marks }}" as="m" hint-placeholder-count="0">
+                    <circle cx="{{ m.x }}" cy="70" r="{{ m.r }}" style="fill:var(--color-accent-300);opacity:{{ m.op }}"></circle>
+                  </sc-for>
+                </svg>
+                <sc-for list="{{ walk.marks }}" as="m" hint-placeholder-count="0">
+                  <span style="position:absolute;left:{{ m.left }};top:16%;transform:translate(-50%,-100%);font-family:var(--font-heading);font-size:clamp(11px,2.4vw,15px);font-weight:600;color:var(--color-accent-100);opacity:{{ m.op }};pointer-events:none">{{ m.t }}</span>
+                </sc-for>
+                <span style="position:absolute;left:{{ walk.lleft }};top:3%;transform:translateX(-50%);white-space:nowrap;padding:1px 6px;border-radius:4px;background:var(--color-surface);font-family:var(--font-heading);font-size:clamp(11px,2.4vw,14px);font-weight:600;color:var(--color-accent-100);opacity:{{ walk.hiOp }};pointer-events:none">{{ walk.lt }}</span>
+                <span style="position:absolute;left:50%;bottom:4%;transform:translateX(-50%);white-space:nowrap;padding:1px 6px;border-radius:4px;background:var(--color-surface);font-family:var(--font-heading);font-size:clamp(11px,2.4vw,14px);font-weight:600;color:var(--color-accent-100);pointer-events:none">{{ walk.countLabel }}</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--color-neutral-400)">6-second strip · 30 big boxes · each big box 0.20 s</div>
+            </div>
+            <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+              <div style="position:relative;width:260px;height:232px">
+                <sc-for list="{{ walk.parts }}" as="p" hint-placeholder-count="0">
+                  <div style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.w }};height:{{ p.h }};border-radius:{{ p.r }};border:1px solid {{ p.bc }};background:{{ p.bg }};box-shadow:{{ p.sh }};display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--font-heading);font-size:11.5px;font-weight:500;color:{{ p.fg }};transition:background .2s, box-shadow .2s">{{ p.l }}</div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:260px">
+                <sc-for list="{{ walk.legend }}" as="g" hint-placeholder-count="0">
+                  <span style="font-size:11.5px;padding:3px 8px;border-radius:999px;border:1px solid {{ g.bc }};background:{{ g.bg }};color:{{ g.fg }}">{{ g.l }}</span>
+                </sc-for>
+              </div>
+              <div style="font-size:13.5px;font-weight:500;color:var(--color-accent-200);max-width:260px">{{ walk.hcap }}</div>
+            </div>
+          </div>
+        </sc-if>
+        <div style="font-family:var(--font-heading);font-size:clamp(20px,4.5vw,26px);font-weight:500;color:var(--color-neutral-100);letter-spacing:-.01em">{{ walk.h }}</div>
+        <div style="font-size:16.5px;color:var(--color-neutral-200);white-space:pre-line;text-wrap:pretty;max-width:68ch">{{ walk.body }}</div>
+        <sc-if value="{{ walk.hasPic }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:var(--radius-md);border:1px solid var(--color-accent-600);background:var(--color-accent-900);max-width:68ch">
+            <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300)">Picture it</span>
+            <span style="font-size:15.5px;color:var(--color-neutral-100)">{{ walk.pic }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div style="flex:0 0 auto;display:flex;gap:10px;padding:10px clamp(12px,3vw,24px) max(10px, env(safe-area-inset-bottom));border-top:1px solid var(--color-divider)">
+      <button onClick="{{ walk.back }}" style="cursor:pointer;flex:1;min-height:48px;border-radius:var(--radius-md);border:1px solid var(--color-neutral-700);background:transparent;color:var(--color-neutral-200);font-family:var(--font-heading);font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:{{ walk.backOp }}">Back</button>
+      <button onClick="{{ walk.next }}" style="cursor:pointer;flex:2;min-height:48px;border-radius:var(--radius-md);border:1px solid var(--color-accent-300);background:var(--color-accent-900);color:var(--color-neutral-100);font-family:var(--font-heading);font-size:14px;letter-spacing:.06em;text-transform:uppercase" style-hover="background:var(--color-accent-800)">{{ walk.nextLabel }}</button>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const T = [
+{id:"promo", ch:22, name:"Health promotion",
+ core:"Prevention means stopping the injury before cells change. Most respiratory questions here come down to smoke, vaccines and exposures.",
+ zoom:[["Organ","Lungs take in ~10,000 L of air a day; everything inhaled lands on the airway lining."],
+  ["Tissue","Mucociliary escalator: ciliated epithelium + goblet cells trap and sweep particles up and out."],
+  ["Cell","Smoke paralyzes cilia, makes goblet cells multiply (more mucus) and weakens alveolar macrophages."],
+  ["Molecule","Nicotine binds nicotinic ACh receptors → dopamine release (addiction). Tar carcinogens (benzo[a]pyrene) bind DNA → p53 mutations. CO binds hemoglobin ~200× tighter than O₂."]],
+ chains:[["Smoke","Cilia paralyzed","Mucus pools","Bacteria stay","Infection risk ↑"],
+  ["CO inhaled","Carboxyhemoglobin","O₂ can't bind","Pulse ox reads falsely normal","Use co-oximetry"],
+  ["Vaccine antigen","Memory B + T cells","Antibodies ready","Fewer pneumonias"]],
+ see:["Smoking / vaping history","Occupational dust, fumes, asbestos, radon","Secondhand smoke","Missed vaccines"],
+ labs:["Pack-years","COHb level if smoke exposure"],
+ do:["5 A's: Ask, Advise, Assess, Assist, Arrange","Screen every visit","Offer counseling + meds together"],
+ teach:["CO clears within ~12–24 h of quitting","Cilia recover over weeks–months","Flu yearly; pneumococcal ≥65 or high risk; COVID/RSV per age & risk","Masks + ventilation at work"],
+ meds:[["Nicotine replacement (patch, gum)","Nicotinic ACh receptors","Steady nicotine → less withdrawal","No smoking on patch (toxicity); rotate sites; chew-and-park gum"],
+  ["Varenicline","Partial agonist at α4β2 nicotinic receptor","Less craving AND less reward from smoking","Nausea, vivid dreams, mood changes"],
+  ["Bupropion","Dopamine + norepinephrine reuptake inhibitor","Less craving","Lowers seizure threshold — avoid with seizure or eating disorder"]],
+ flag:"Hemoptysis, weight loss or a changed chronic cough in a smoker → workup for lung cancer.",
+ links:[["packyr","Quantifies the exposure"],["copd","Smoke → proteases destroy elastin"],["pna","Lost cilia → bacteria stay in the lung"]]},
+
+{id:"packyr", ch:22, name:"Pack-years",
+ core:"Packs per day × years smoked = pack-years. It measures the cumulative dose of carcinogens and oxidants.",
+ zoom:[["Organ","Every pack adds to lung damage and cancer risk."],
+  ["Tissue","Bronchial lining changes: ciliated columnar → squamous metaplasia → dysplasia."],
+  ["Cell","DNA mutations accumulate with each exposure."],
+  ["Molecule","Carcinogen–DNA adducts + oxidant free radicals; more pack-years = more hits."]],
+ chains:[["More pack-years","More DNA hits","Metaplasia → dysplasia","Lung cancer risk ↑","Low-dose CT screening"],
+  ["More pack-years","More protease, less elastin","Emphysema","COPD"]],
+ see:["1 ppd × 20 yr = 20","1.5 ppd × 20 yr = 30","2 ppd × 15 yr = 30","10 cigarettes/day × 40 yr = ½ × 40 = 20"],
+ labs:[],
+ do:["Convert cigarettes to packs (20 = 1 pack)","Multiply by years smoked","Document in history"],
+ teach:["Screening: age 50–80, ≥20 pack-years, smoking now or quit within 15 yr → yearly low-dose CT"],
+ meds:[], flag:"Higher pack-years = higher COPD and lung cancer risk; screen eligible patients.",
+ links:[["promo","Cessation lowers future risk"],["copd","Dose drives elastin loss"]]},
+
+{id:"resp-age", ch:22, name:"Age-related respiratory changes",
+ core:"A stiffer chest, less recoil and a weaker cough mean more trapped air, more aspiration and late warning signs.",
+ zoom:[["Organ","Chest wall stiffens, kyphosis, ↑ AP diameter; lungs lose recoil."],
+  ["Tissue","Costal cartilage calcifies. Alveoli enlarge with fewer capillaries → less surface area."],
+  ["Cell","Fewer cilia, weaker respiratory muscle fibers, less effective macrophages."],
+  ["Molecule","Elastin fragments + collagen cross-links ↑ → less recoil. Chemoreceptors respond less to low O₂ / high CO₂."]],
+ chains:[["Elastin ↓","Less recoil","Residual volume ↑","Air trapped","PaO₂ slightly ↓"],
+  ["Cough + cilia ↓","Secretions stay","Pneumonia risk ↑","HOB up, cough & deep breathe"],
+  ["Chemoreceptors blunted","Slow response to hypoxia","Late signs","Confusion may be first"]],
+ see:["↑ AP diameter, kyphosis","Weaker cough","Dyspnea with exertion","Lower SpO₂ baseline"],
+ labs:["PaO₂ falls slightly with age; PaCO₂ stays normal"],
+ do:["Incentive spirometer, turn, ambulate","Upright for meals","Watch for silent aspiration"],
+ teach:["Report infection early — fever may be absent","Stay vaccinated","Hydrate to thin secretions"],
+ meds:[], flag:"New confusion in an older adult can be the first sign of pneumonia or hypoxia.",
+ links:[["pna","Weak cough → aspiration pneumonia"],["cv-age","Same aging, heart side"]]},
+
+{id:"asthma", ch:24, name:"Asthma",
+ core:"Inflammation narrows the airway from inside; hyperresponsive smooth muscle squeezes from outside. Reversible. Air gets trapped on the way out.",
+ zoom:[["Organ","Lungs: reversible, episodic obstruction with air trapping."],
+  ["Tissue","Bronchial wall: smooth muscle spasm, mucosal edema, mucus plugs; long term, remodeling (thick basement membrane)."],
+  ["Cell","Mast cells degranulate; eosinophils (IL-5 type, ~50%) or neutrophils (IL-17 type); Th2 cells; goblet cells."],
+  ["Molecule","Allergen cross-links IgE on mast cells → histamine, leukotrienes, prostaglandins → bronchospasm + leak. IL-4/IL-13 → more IgE + mucus. β₂ receptor → ↑ cAMP → relaxation."]],
+ chains:[["Allergen + IgE","Mast cell degranulates","Histamine + leukotrienes","Bronchospasm + edema","Wheeze, tight chest"],
+  ["Albuterol","β₂ → ↑ cAMP","Smooth muscle relaxes","Airway opens in minutes","β on heart → tachycardia, tremor"],
+  ["Air trapped","Work of breathing ↑","Fatigue","CO₂ rises","Silent chest = emergency"],
+  ["ICS","↓ inflammatory gene transcription","Less edema + eosinophils","Control over weeks","Thrush (local immune ↓)"]],
+ see:["Expiratory wheeze, cough","Chest tightness, dyspnea","Prolonged exhalation","Worse at night / with triggers"],
+ labs:["PFT: FEV₁/FVC ↓","≥12% FEV₁ rise after bronchodilator = reversible = asthma","ABG early: ↓ PaCO₂ (hyperventilating)","Normal → rising PaCO₂ in attack = tiring","↑ eosinophils, ↑ IgE"],
+ do:["Sit upright","O₂","SABA now","Reassess breath sounds + work of breathing"],
+ teach:["Peak flow: green ≥80%, yellow 50–79%, red <50% of personal best","Bronchodilator first, wait ~5 min, then steroid","Rinse mouth after ICS","SABA >2 days/wk = poor control"],
+ meds:[["Albuterol (SABA)","β₂ agonist → ↑ cAMP","Rescue: opens airway in minutes","Tremor, tachycardia, ↓ K⁺ (shifts K⁺ into cells)"],
+  ["Fluticasone (ICS)","Glucocorticoid receptor → ↓ cytokine genes","Controller over weeks","Thrush, hoarseness → rinse mouth"],
+  ["Salmeterol / formoterol (LABA)","Long-acting β₂","12-h bronchodilation","Never alone in asthma — masks worsening inflammation"],
+  ["Montelukast","Blocks leukotriene receptor","Less bronchospasm + mucus","Mood changes, suicidal thoughts"],
+  ["Ipratropium","Blocks muscarinic (ACh) receptors","Less vagal bronchoconstriction","Dry mouth"],
+  ["Prednisone","Systemic glucocorticoid","Stops a flare","Hyperglycemia, infection; taper"],
+  ["Mepolizumab / omalizumab","Anti-IL-5 / anti-IgE antibodies","Fewer eosinophilic / allergic attacks","Injection reactions; anaphylaxis (omalizumab)"]],
+ flag:"Silent chest, drowsiness or a normal-to-rising PaCO₂ mid-attack = airway closing, patient tiring. Emergency.",
+ links:[["copd","Compare: reversible vs progressive"],["promo","Smoke and allergens are triggers"]]},
+
+{id:"copd", ch:24, name:"COPD",
+ core:"Smoke tips proteases over alpha₁-antitrypsin, destroying elastin (emphysema) and inflaming airways (chronic bronchitis). Progressive, poorly reversible.",
+ zoom:[["Organ","Hyperinflated lungs, flat diaphragm, accessory muscles; right heart strain."],
+  ["Tissue","Emphysema: alveolar walls destroyed → bullae, less surface area. Chronic bronchitis: thick airway walls, mucous gland hyperplasia."],
+  ["Cell","Smoke recruits neutrophils + macrophages; goblet cells multiply; cilia lost."],
+  ["Molecule","Neutrophil elastase + MMPs outrun alpha₁-antitrypsin → elastin destroyed. Oxidants inactivate AAT. Chronic CO₂ → kidney retains HCO₃⁻."]],
+ chains:[["Smoke","Elastase ↑, AAT ↓","Elastin destroyed","No recoil, air trapped","Barrel chest, long exhale"],
+  ["Low alveolar O₂","Pulmonary vessels constrict","Pulmonary HTN","RV fails (cor pulmonale)","JVD, leg edema"],
+  ["Chronic hypoxia","Kidney releases EPO","Polycythemia","↑ Hct, clot risk"],
+  ["CO₂ retained","Carbonic acid ↑","Respiratory acidosis","Kidney keeps HCO₃⁻","pH near normal (compensated)"]],
+ see:["Barrel chest, tripod position","Pursed-lip breathing","Prolonged exhalation, diminished sounds","Clubbing, weight loss","Chronic productive cough (bronchitis)"],
+ labs:["FEV₁/FVC <0.70 after bronchodilator","ABG: ↑ PaCO₂, ↑ HCO₃⁻, pH near normal","↑ Hct","AAT level if <40 yr or nonsmoker"],
+ do:["O₂ low flow to SpO₂ 88–92%","Upright / tripod","Pursed-lip + diaphragmatic breathing","Airway clearance, hydration"],
+ teach:["Quitting smoking = #1 intervention","High-calorie, high-protein small meals; rest before eating","Energy conservation","Vaccines; recognize flare early"],
+ meds:[["Tiotropium (LAMA)","Blocks M3 muscarinic receptors","Bronchodilation 24 h","Dry mouth, urinary retention; caution glaucoma"],
+  ["Salmeterol (LABA)","β₂ agonist → ↑ cAMP","Long bronchodilation","Tachycardia, tremor"],
+  ["ICS (for frequent flares)","Glucocorticoid receptor","Fewer exacerbations","Thrush, pneumonia risk"],
+  ["Roflumilast","PDE4 inhibitor → ↑ cAMP in inflammatory cells","Less inflammation","Weight loss, diarrhea"],
+  ["Prednisone + antibiotics","Steroid / kill bacteria","Treat exacerbation","Hyperglycemia; finish course"]],
+ tables:[{title:"Asthma vs COPD", cols:["","Asthma","COPD"], rows:[
+   ["Onset","Any age, often childhood","Usually >40, smoker"],
+   ["Reversible","Yes (≥12% FEV₁)","Poorly"],
+   ["Main cells","Mast cells, eosinophils","Neutrophils, macrophages"],
+   ["Pattern","Episodic, triggers","Progressive"],
+   ["O₂ target","Normal (≥92–94%)","88–92%"],
+   ["Core drugs","SABA + ICS","LAMA / LABA"]]}],
+ flag:"Drowsy or confused = rising CO₂. JVD + edema = right heart failure (cor pulmonale).",
+ links:[["asthma","Compare the two"],["packyr","Dose of smoke"],["hf","Cor pulmonale = right HF"],["labs","Chronic hypoxia → polycythemia"]]},
+
+{id:"pna", ch:25, name:"Pneumonia",
+ core:"Microbes in the alveoli trigger inflammation that fills the air spaces with exudate. Blood passes unventilated alveoli → hypoxemia.",
+ zoom:[["Organ","A lobe or segment consolidates."],
+  ["Tissue","Alveoli fill with fluid, WBCs and fibrin → V/Q mismatch and shunt."],
+  ["Cell","Alveolar macrophages detect bacteria → recruit neutrophils; type II pneumocytes damaged → less surfactant."],
+  ["Molecule","Bacterial PAMPs → toll-like receptors → IL-1, IL-6, TNF-α → capillary leak; IL-1 → PGE₂ in hypothalamus → fever."]],
+ chains:[["Bacteria in alveoli","Macrophage → cytokines","Capillary leak + neutrophils","Exudate fills alveoli","Crackles, dull percussion, ↓ SpO₂"],
+  ["IL-1 / TNF","Hypothalamus PGE₂","Set point ↑","Fever, chills"],
+  ["Perfused, not ventilated","Shunt","Hypoxemia","RR ↑ → early resp alkalosis"],
+  ["Cytokines spill systemically","Vasodilation + leak","↓ BP, ↑ lactate","Sepsis"]],
+ see:["Fever, productive cough","Crackles, ↓ breath sounds","Dull percussion, ↑ tactile fremitus","Pleuritic chest pain, tachypnea","Older adult: confusion, maybe no fever"],
+ labs:["WBC >10,000 with left shift (bands)","CXR: infiltrate / consolidation","Sputum C&S BEFORE antibiotics","Blood cultures","Lactate >2 = sepsis concern"],
+ do:["Cultures first, then antibiotics fast","O₂, HOB up","Cough, deep breathe, incentive spirometer","Fluids 2–3 L unless restricted; ambulate"],
+ teach:["Finish full antibiotic course","Vaccines","Aspiration prevention: oral care, swallow screen, HOB ≥30°"],
+ meds:[["Ceftriaxone (β-lactam)","Binds penicillin-binding proteins → blocks cell wall","Bacteria lyse","Allergy check, C. diff"],
+  ["Azithromycin (macrolide)","50S ribosome → stops protein synthesis","Covers atypicals","QT prolongation"],
+  ["Levofloxacin (fluoroquinolone)","DNA gyrase","Broad coverage","Tendon rupture, QT"],
+  ["Vancomycin","Blocks cell-wall precursors (MRSA)","Gram-positive kill","Trough levels, kidney/ear toxicity, infuse slowly"],
+  ["Acetaminophen","↓ PGE₂ in CNS","Fever down","Max 3–4 g/day (liver)"]],
+ flag:"Low BP, falling SpO₂, new confusion, lactate >2 = sepsis.",
+ links:[["resp-age","Older lungs clear poorly"],["promo","Vaccines + cessation prevent it"]]},
+
+{id:"cv-age", ch:27, name:"CV changes with aging",
+ core:"Stiffer vessels, fewer pacemaker cells, slower reflexes. Expect a higher systolic BP, orthostatic drops and atypical symptoms.",
+ zoom:[["Organ","LV thickens slightly; aorta stiffens; valves thicken."],
+  ["Tissue","Arterial media: elastin fragments, collagen ↑, calcification. Aortic and mitral valves calcify."],
+  ["Cell","SA node loses pacemaker cells (most gone by 75); conduction fibrosis; baroreceptors less sensitive."],
+  ["Molecule","Collagen cross-links (AGEs) stiffen walls; ↓ β-adrenergic responsiveness; ↓ endothelial nitric oxide."]],
+ chains:[["Elastin → collagen","Stiff aorta","Pulse wave returns early","Systolic ↑, wide pulse pressure","Isolated systolic HTN"],
+  ["Baroreceptors dull","Slow response on standing","BP drops","Dizzy, falls","Dangle, rise slowly"],
+  ["Pacemaker cells ↓","Conduction fibrosis","AF, heart blocks","Check apical pulse"],
+  ["β-response ↓","Less HR rise with stress","Fatigue with exertion","Longer warm-up"]],
+ see:["↑ systolic BP, wider pulse pressure","Orthostatic hypotension","Murmurs; S₄ (stiff LV)","Irregular rhythms"],
+ labs:["Orthostatic vitals: ↓ SBP ≥20 or DBP ≥10 within 3 min = positive"],
+ do:["Orthostatic vitals","Fall precautions","Rise slowly, dangle first"],
+ teach:["MI may show as fatigue, dyspnea or confusion — not chest pain","Hydrate; review BP meds for dizziness"],
+ meds:[], flag:"Atypical MI: new fatigue, dyspnea or confusion in an older adult — don't wait for chest pain.",
+ links:[["htn","Stiff arteries → systolic HTN"],["ecg-a","Conduction changes on the strip"],["resp-age","Same aging, lung side"]]},
+
+{id:"ecg-r", ch:28, name:"ECG recording",
+ core:"An ECG records the heart's summed voltage from skin electrodes. Correct placement + clean skin = a trustworthy strip.",
+ zoom:[["Organ","Each lead is a camera angle on the heart's electrical field."],
+  ["Tissue","Conduction: SA node → AV node → bundle of His → bundle branches → Purkinje fibers."],
+  ["Cell","Myocyte action potential: depolarize (contract) → repolarize (reset)."],
+  ["Molecule","Phase 0 Na⁺ rushes in; plateau Ca⁺⁺ in; K⁺ out repolarizes. Electrodes pick up the summed charge."]],
+ chains:[["SA node fires","Atria depolarize","P wave"],
+  ["AV node delays","PR interval"],
+  ["Ventricles depolarize (Na⁺)","QRS"],
+  ["Ventricles repolarize (K⁺)","T wave"],
+  ["Loose lead / movement / shivering","Noise","Artifact mimics VF","Check the patient first"]],
+ see:["Artifact: movement, shivering, loose or dry electrodes, hair"],
+ labs:["Small box = 0.04 s · big box = 0.20 s","5 big boxes = 1 s","6-s strip = 30 big boxes","Vertical: 1 small box = 0.1 mV"],
+ do:["Clip hair, clean, dry skin","Supine, still, arms relaxed, breathe normally","Label time + symptoms"],
+ teach:["Explain it's painless, takes minutes"],
+ meds:[],
+ tables:[{title:"Electrode placement", cols:["Lead","Spot"], rows:[
+   ["V1","4th ICS, right sternal border"],["V2","4th ICS, left sternal border"],["V3","Between V2 and V4"],
+   ["V4","5th ICS, left midclavicular"],["V5","Anterior axillary line, level of V4"],["V6","Midaxillary line, level of V4"],
+   ["5-lead","White R upper · Black L upper · Red L lower · Green R lower · Brown chest (\"smoke over fire\")"]]}],
+ flag:"Flat line or chaos on the monitor? Check the patient and leads before calling a code.",
+ links:[["ecg-a","Then read the strip"]]},
+
+{id:"ecg-a", ch:28, name:"ECG analysis",
+ core:"Same steps on every strip: rate, rhythm, P, PR, QRS, then QT/ST. Electrolytes and ischemia change the waves.",
+ zoom:[["Organ","Heart rate + rhythm = cardiac output."],
+  ["Tissue","Where the impulse starts (SA, atria, AV, ventricle) shapes the waves."],
+  ["Cell","Narrow QRS = normal conduction path; wide QRS = ventricular origin or block."],
+  ["Molecule","K⁺ sets resting potential: ↑ K⁺ → peaked T; ↓ K⁺ → flat T, U wave. Ca⁺⁺/Mg⁺⁺ affect QT."]],
+ chains:[["↑ K⁺","Peaked T","Wide QRS","VF risk"],
+  ["↓ K⁺","Flat T, U wave","Dysrhythmias","Digoxin toxicity ↑"],
+  ["↓ Mg⁺⁺ / ↓ Ca⁺⁺ / drugs","Long QT","Torsades"],
+  ["Ischemia","ST depression, T inversion"],
+  ["Infarction","ST elevation","Cath lab now"]],
+ see:["1 · Rate: count R waves in a 6-s strip × 10, or 300 ÷ big boxes between two R waves","2 · Rhythm: R-R regular?","3 · P before every QRS?","4 · PR 0.12–0.20 s","5 · QRS 0.06–0.10 (<0.12) s","6 · QT < half the R-R"],
+ labs:["K⁺ 3.5–5.0","Mg⁺⁺ 1.5–2.5","Ca⁺⁺ 9–10.5","Troponin for MI"],
+ do:["Treat the patient, not the monitor","Pulse, BP, symptoms first","Compare to baseline strip"],
+ teach:["Report palpitations, dizziness, syncope"],
+ meds:[],
+ tables:[{title:"Rhythms to recognize", cols:["Rhythm","Clue","Action"], rows:[
+   ["Sinus brady","<60, normal waves","Treat if symptomatic: atropine"],
+   ["Sinus tach",">100, normal waves","Find cause (pain, fever, bleed)"],
+   ["Atrial fib","Irregularly irregular, no P","Rate control, anticoagulate"],
+   ["V tach","Wide, fast, regular","Pulse? → cardiovert; no pulse → defib/CPR"],
+   ["V fib","Chaos, no pulse","CPR + defibrillate"]]}],
+ flag:"ST elevation, VT or VF = act now.",
+ links:[["ecg-r","Good strip first"],["hf","Digoxin + K⁺ show on the strip"],["cv-age","Aging conduction system"]]},
+
+{id:"hf", ch:29, name:"Heart failure",
+ core:"A weak or stiff pump lowers output. The body compensates (RAAS, SNS), holding fluid that backs up: left side → lungs, right side → body.",
+ zoom:[["Organ","Weak (HFrEF) or stiff (HFpEF) ventricle → ↓ cardiac output, congestion."],
+  ["Tissue","Myocardium remodels: dilates or thickens; fibrosis."],
+  ["Cell","Stretched myocytes; kidney juxtaglomerular cells sense low flow → renin."],
+  ["Molecule","Renin → angiotensin I → (ACE) → angiotensin II → vasoconstriction + aldosterone (Na⁺/water retention) + remodeling. Norepinephrine on β₁ ↑ HR. Stretch releases BNP."]],
+ chains:[["↓ Cardiac output","Kidney senses low flow","Renin → Ang II → aldosterone","Na⁺ + water kept","Edema, weight ↑"],
+  ["LV fails","Backs into pulmonary veins","Fluid leaks into alveoli","Crackles, orthopnea, pink frothy sputum"],
+  ["RV fails","Backs into vena cava","JVD, liver congestion, leg edema"],
+  ["Ventricle stretched","BNP released","BNP >100 supports HF"],
+  ["Chronic SNS","β₁ overstimulated","Tachycardia, remodeling","β-blocker protects"]],
+ see:["Left: dyspnea, orthopnea, PND, crackles, S₃, fatigue","Right: JVD, dependent edema, hepatomegaly, ascites","Weight gain","↓ output: confusion, oliguria"],
+ labs:["BNP >100 pg/mL","Echo EF ≤40% = HFrEF","CXR congestion","K⁺, Na⁺, creatinine","Digoxin 0.5–2.0 ng/mL"],
+ do:["High Fowler's, O₂","Daily weight: same time, scale, clothes","I&O, diuretics","Check apical pulse before digoxin"],
+ teach:["Report +2–3 lb in a day or +5 lb in a week","Low sodium; fluid limit as ordered","Rise slowly (BP meds)"],
+ meds:[["Lisinopril (ACEI)","Blocks ACE → ↓ Ang II, ↓ aldosterone","Less afterload + fluid","Dry cough (bradykinin ↑), angioedema, ↑ K⁺"],
+  ["Losartan (ARB)","Blocks AT₁ receptor","Same as ACEI, no bradykinin","↑ K⁺, hypotension"],
+  ["Sacubitril/valsartan (ARNI)","Neprilysin inhibitor (↑ BNP effect) + ARB","More natriuresis, less remodeling","36 h after last ACEI; angioedema"],
+  ["Metoprolol succ. / carvedilol","Block β₁ (carvedilol also α₁)","Slower HR, less remodeling","Bradycardia, hypotension; don't stop abruptly"],
+  ["Furosemide (loop)","Blocks Na-K-2Cl in loop of Henle","Big diuresis","↓ K⁺, dehydration, ototoxicity"],
+  ["Spironolactone","Blocks aldosterone receptor","Diuresis, anti-remodeling","↑ K⁺, gynecomastia"],
+  ["Dapagliflozin (SGLT2i)","Blocks Na⁺/glucose reabsorption in proximal tubule","Fewer HF admissions","Genital yeast/UTI, dehydration"],
+  ["Digoxin","Inhibits Na⁺/K⁺-ATPase → ↑ cell Ca⁺⁺; ↑ vagal tone","Stronger squeeze, slower AV","Hold apical <60; toxicity: N/V, halos; ↓ K⁺ ↑ toxicity"]],
+ tables:[{title:"Left vs right failure", cols:["","Left","Right"], rows:[
+   ["Backs into","Lungs","Body (venous system)"],["Key signs","Crackles, orthopnea, frothy sputum","JVD, edema, ascites, liver"],["Common cause","MI, HTN","Left HF, COPD (cor pulmonale)"]]}],
+ flag:"Pink frothy sputum + severe dyspnea + anxiety = acute pulmonary edema.",
+ links:[["htn","Chronic afterload → LVH → HF"],["copd","Cor pulmonale = right HF"],["ecg-a","Digoxin + K⁺ on the strip"]]},
+
+{id:"htn", ch:30, name:"Hypertension",
+ core:"BP = cardiac output × resistance. Constant high pressure injures the endothelium and target organs: heart, brain, kidneys, eyes. Usually silent.",
+ zoom:[["Organ","Target organs: heart (LVH), brain (stroke), kidneys (CKD), eyes (retinopathy)."],
+  ["Tissue","Arteriole walls thicken; endothelium damaged → atherosclerosis."],
+  ["Cell","Endothelial dysfunction; vascular smooth muscle proliferates."],
+  ["Molecule","↓ nitric oxide, ↑ endothelin, Ang II at AT₁, norepinephrine at α₁, Na⁺ retention."]],
+ chains:[["Ang II + SNS","Vasoconstriction","SVR ↑","BP ↑"],
+  ["BP ↑ for years","LV pumps against more","LVH","Heart failure"],
+  ["Kidney arterioles damaged","GFR ↓","Renin ↑","BP ↑ more (cycle)"],
+  ["Endothelium injured","LDL enters wall","Plaque","MI, stroke, PAD"]],
+ see:["Usually none","Severe: headache, vision change, chest pain","Retinal changes"],
+ labs:["BMP: K⁺, creatinine, BUN","Urine protein","Lipids, A1C","ECG for LVH"],
+ do:["Right cuff size; seated 5 min","Arm at heart level, feet flat, back supported","Average 2+ readings, both arms first visit"],
+ teach:["DASH diet; sodium <1,500–2,300 mg","Exercise 150 min/wk; lose weight","Limit alcohol, quit smoking","Don't stop meds abruptly; rise slowly"],
+ meds:[["Hydrochlorothiazide","Blocks Na-Cl transporter in distal tubule","Less volume","↓ K⁺, ↑ glucose, ↑ uric acid, ↑ Ca⁺⁺"],
+  ["Lisinopril (ACEI)","Blocks ACE","↓ Ang II, vasodilation","Cough, angioedema, ↑ K⁺; not in pregnancy"],
+  ["Losartan (ARB)","Blocks AT₁ receptor","Vasodilation","↑ K⁺; not in pregnancy"],
+  ["Amlodipine (CCB)","Blocks L-type Ca⁺⁺ channels in arteriole muscle","Vasodilation","Ankle edema, flushing; avoid grapefruit"],
+  ["Metoprolol (β-blocker)","Blocks β₁","↓ HR, ↓ renin","Bradycardia; masks hypoglycemia"],
+  ["Nicardipine / labetalol IV","CCB / α+β block","Crisis control","Titrate; arterial line"]],
+ tables:[{title:"BP categories (mm Hg)", cols:["Category","Systolic","","Diastolic"], rows:[
+   ["Normal","<120","and","<80"],["Elevated","120–129","and","<80"],["Stage 1","130–139","or","80–89"],["Stage 2","≥140","or","≥90"],["Crisis",">180","and/or",">120"]]}],
+ flag:"Crisis: lower BP no more than 25% in the first hour — too fast causes stroke or MI.",
+ links:[["hf","Afterload → LVH → HF"],["cv-age","Stiff arteries → systolic HTN"],["pad","Same plaque in leg arteries"]]},
+
+{id:"pad", ch:30, name:"PAD",
+ core:"Arterial plaque narrows leg arteries; blood can't get IN. Muscles starve when demand rises.",
+ zoom:[["Organ","Legs underperfused, worse with activity."],
+  ["Tissue","Plaque in arterial intima narrows the lumen."],
+  ["Cell","Macrophages eat oxidized LDL → foam cells; smooth muscle migrates in; platelets stick."],
+  ["Molecule","Oxidized LDL, inflammatory cytokines, thromboxane A₂ (platelet aggregation)."]],
+ chains:[["Oxidized LDL in wall","Foam cells","Plaque narrows lumen","Demand > supply when walking","Claudication"],
+  ["Severe narrowing","No flow even at rest","Rest pain, dependent rubor","Legs down helps (gravity)"],
+  ["Plaque ruptures","Platelets + thrombus","Acute ischemia: 6 Ps","Emergency"]],
+ see:["Claudication; relieved by rest","Cool, pale on elevation, rubor when dependent","Weak/absent pulses","Shiny hairless skin, thick nails","Toe ulcers: painful, punched-out"],
+ labs:["ABI <0.90 = PAD; ≤0.40 = severe","Doppler","Lipids"],
+ do:["Legs dependent, not elevated","Walking program to pain, rest, repeat","Keep warm — no direct heat"],
+ teach:["Quit smoking","No crossed legs, no tight socks","Daily foot checks, good shoes"],
+ meds:[["Aspirin","Irreversibly blocks COX-1 → ↓ thromboxane A₂","Platelets less sticky","Bleeding, GI ulcer"],
+  ["Clopidogrel","Blocks P2Y12 ADP receptor","Antiplatelet","Bleeding"],
+  ["Cilostazol","PDE3 inhibitor → ↑ cAMP","Vasodilation + antiplatelet → longer walking","Contraindicated in HF; headache"],
+  ["Atorvastatin","HMG-CoA reductase inhibitor","↓ LDL, stabilizes plaque","Muscle pain, liver enzymes"]],
+ tables:[{title:"PAD vs DVT", cols:["","PAD (arterial)","DVT (venous)"], rows:[
+   ["Problem","Blood can't get in","Blood can't get out"],["Skin","Cool, pale, shiny, hairless","Warm, red, swollen"],
+   ["Pulses","Weak or absent","Normal"],["Pain","Claudication; better dangling","Aching; better elevated"],["Position","Legs down","Legs up"],["Drug","Antiplatelet","Anticoagulant"]]}],
+ flag:"6 Ps (pain, pallor, pulselessness, paresthesia, paralysis, poikilothermia) = acute arterial occlusion.",
+ links:[["dvt","Opposite problem: vein"],["htn","Same atherosclerosis"]]},
+
+{id:"dvt", ch:30, name:"DVT",
+ core:"A clot in a deep vein; blood can't get OUT. Virchow's triad: stasis, vessel injury, hypercoagulability.",
+ zoom:[["Organ","Usually one leg (calf/thigh); can travel to lungs."],
+  ["Tissue","Deep vein wall injured or blood pooling behind valves."],
+  ["Cell","Platelets adhere; endothelium exposes tissue factor."],
+  ["Molecule","Coagulation cascade → factor Xa → thrombin → fibrinogen to fibrin mesh. Estrogen ↑ clotting factors; factor V Leiden resists protein C."]],
+ chains:[["Stasis / injury / hypercoagulable","Tissue factor exposed","Thrombin → fibrin","Clot in deep vein","Swelling, warmth, pain"],
+  ["Clot breaks off","Right heart → lungs","Pulmonary embolism","Sudden dyspnea, chest pain, ↑ HR"],
+  ["Heparin + antithrombin","Inactivates thrombin + Xa","Clot stops growing","Body dissolves it"]],
+ see:["One leg swollen, warm, red","Calf pain, tenderness","Risk: immobility, surgery, estrogen, cancer, smoking"],
+ labs:["D-dimer: negative helps rule out","Venous duplex ultrasound = diagnosis","aPTT 1.5–2.5× control (heparin)","INR 2–3 (warfarin)","Platelets: drop >50% → HIT"],
+ do:["Elevate leg; never massage","Anticoagulant on time","Bleeding precautions"],
+ teach:["Ambulate, SCDs, fluids","Consistent vitamin K intake on warfarin","Report bleeding, black stools"],
+ meds:[["Heparin (IV)","Activates antithrombin → inactivates thrombin + Xa","Stops clot growth","aPTT; antidote protamine; HIT"],
+  ["Enoxaparin (LMWH)","Antithrombin → mostly Xa","SubQ, predictable","Don't aspirate or rub; anti-Xa level"],
+  ["Warfarin","Blocks vitamin K epoxide reductase → ↓ factors II, VII, IX, X","Long-term","INR 2–3; antidote vitamin K; takes days"],
+  ["Apixaban / rivaroxaban","Direct factor Xa inhibitors","No routine labs","Bleeding; reversal andexanet alfa"]],
+ tables:[{title:"PAD vs DVT", cols:["","PAD (arterial)","DVT (venous)"], rows:[
+   ["Problem","Blood can't get in","Blood can't get out"],["Skin","Cool, pale, shiny, hairless","Warm, red, swollen"],
+   ["Pulses","Weak or absent","Normal"],["Pain","Claudication; better dangling","Aching; better elevated"],["Position","Legs down","Legs up"],["Drug","Antiplatelet","Anticoagulant"]]}],
+ flag:"DVT + sudden dyspnea, chest pain, tachycardia = pulmonary embolism.",
+ links:[["pad","Opposite problem: artery"],["sickle","Vaso-occlusion is a cousin"],["copd","Polycythemia ↑ clot risk"]]},
+
+{id:"labs", ch:34, name:"Lab interpretation",
+ core:"Anemia type comes from cell size (MCV): small cells = iron problem; big cells = B12 or folate problem. Retics tell you if the marrow is responding.",
+ zoom:[["Organ","Bone marrow makes cells; kidney EPO drives RBC production."],
+  ["Tissue","Red marrow: erythropoiesis, myelopoiesis, megakaryocytes."],
+  ["Cell","RBC lives ~120 days; reticulocyte = young RBC; WBCs; platelets."],
+  ["Molecule","Hemoglobin = heme (Fe²⁺) + globin, carries O₂. B12 + folate needed for DNA synthesis. Ferritin = iron storage protein."]],
+ chains:[["No iron","Can't make heme","Cells divide extra before Hgb fills","Small, pale cells (↓ MCV, ↓ MCHC)"],
+  ["No B12 or folate","DNA synthesis stalls","Nucleus lags, cytoplasm grows","Big cells (↑ MCV), megaloblasts"],
+  ["Marrow responding","Retics ↑","Blood loss or hemolysis"],
+  ["Marrow not responding","Retics ↓","Deficiency, aplastic, marrow invaded"],
+  ["Hemolysis","Hgb breaks down","↑ bilirubin, ↑ LDH","Jaundice"]],
+ see:["ANC = WBC × (% neutrophils + % bands)","e.g. 2,000 × (40% + 5%) = 900","ANC <1,000 → neutropenic precautions","<500 = severe"],
+ labs:["Iron deficiency: ↓ ferritin, ↓ iron, ↑ TIBC","B12: ↑ methylmalonic acid + ↑ homocysteine","Folate: ↑ homocysteine only (MMA normal)","Hemolysis: ↑ retics, ↑ bilirubin, ↑ LDH"],
+ do:["Platelets <50k → bleeding precautions","Platelets <20k → spontaneous bleed risk","Compare trend, not one value"],
+ teach:["Fatigue with low Hgb: pace activity"],
+ meds:[],
+ tables:[{title:"Normal values", cols:["Lab","Normal","Means"], rows:[
+   ["Hgb","F 12–16 · M 14–18 g/dL","O₂ carrying"],["Hct","F 37–47 · M 42–52%","% RBC volume"],
+   ["MCV","80–100 fL","Cell size"],["MCHC","32–36 g/dL","Hgb per cell (color)"],
+   ["Reticulocytes","0.5–2%","Marrow output"],["Ferritin","F 12–150 · M 12–300 ng/mL","Iron stores"],
+   ["WBC","5,000–10,000/mm³","Immunity"],["Platelets","150,000–400,000/mm³","Clotting"]]},
+  {title:"Anemia types", cols:["","Iron deficiency","Pernicious (B12)","Folic acid"], rows:[
+   ["MCV","<80 (small)",">100 (big)",">100 (big)"],["Cause","Blood loss, diet","No intrinsic factor","Alcohol, diet, pregnancy"],
+   ["Key cue","Spoon nails, pica","Numbness, beefy tongue","No neuro signs"],["Lab","↓ ferritin","↑ MMA","Normal MMA"],["Treat","Oral iron + vit C","B12 injection, lifelong","Oral folate"]]}],
+ flag:"Platelets <50k → bleeding precautions. ANC <500 → severe infection risk; fever = emergency.",
+ links:[["anemia","What the numbers mean clinically"],["leuk","WBC + ANC in leukemia"],["sickle","Hemolysis pattern"],["copd","Chronic hypoxia → ↑ Hct"]]},
+
+{id:"anemia", ch:34, name:"Anemias (Table 34.1)",
+ core:"Less hemoglobin = less O₂ delivered. The heart speeds up to compensate. Fast-dividing tissues (marrow, tongue, gut) show the deficiency first.",
+ zoom:[["Organ","Every organ gets less O₂; heart compensates with ↑ HR and output."],
+  ["Tissue","Marrow; fast-turnover epithelium (tongue, GI); nerves (B12 only)."],
+  ["Cell","Iron: small pale RBCs. B12/folate: big megaloblasts that die early."],
+  ["Molecule","Fe²⁺ in heme binds O₂. Intrinsic factor (parietal cells) binds B12 for ileum absorption. B12 needed for methionine synthase (DNA) AND methylmalonyl-CoA mutase (myelin). Folate only in the DNA pathway."]],
+ chains:[["↓ Hgb","↓ O₂ carrying","Tissue hypoxia","Fatigue, pallor, SOB","HR ↑ to compensate"],
+  ["Autoimmune attack on parietal cells","No intrinsic factor","B12 not absorbed","Methylmalonic acid builds","Myelin damage → numbness, poor balance"],
+  ["Folate low","DNA synthesis ↓","Macrocytic","Myelin pathway fine → no neuro"],
+  ["Iron low","Epithelium starved","Spoon nails, glossitis, cheilitis","Pica"]],
+ see:["All: fatigue, pallor, tachycardia, SOB on exertion","Iron: spoon nails, glossitis, pica","B12: paresthesias, poor balance, smooth beefy red tongue","Folate: like B12 but NO neuro signs"],
+ labs:["See Lab interpretation table","Pernicious: intrinsic factor / parietal cell antibodies"],
+ do:["Pace activity; fall precautions","Find cause (GI bleed, menses, diet, gastrectomy)"],
+ teach:["Iron foods: red meat, beans, leafy greens","Folate: greens, fortified grains, liver","B12 injections are lifelong"],
+ meds:[["Ferrous sulfate","Supplies Fe²⁺ for heme; absorbed in duodenum","Hgb rises in weeks","Empty stomach + vit C; no milk/antacids/tea; black stools; constipation; liquid via straw"],
+  ["IV iron (sucrose, dextran)","Bypasses gut","Faster repletion","Anaphylaxis (test dose for dextran)"],
+  ["Cyanocobalamin IM / nasal","Bypasses intrinsic factor","Fixes anemia + stops nerve damage","Oral won't absorb without IF"],
+  ["Folic acid PO","Restores DNA synthesis","Corrects macrocytosis","Folate alone in B12 deficiency hides anemia while nerves worsen"]],
+ tables:[{title:"Anemia types", cols:["","Iron deficiency","Pernicious (B12)","Folic acid"], rows:[
+   ["MCV","<80 (small)",">100 (big)",">100 (big)"],["Cause","Blood loss, diet, pregnancy","No intrinsic factor","Alcohol, diet, pregnancy"],
+   ["Key cue","Spoon nails, pica","Numbness, beefy tongue","No neuro signs"],["Treat","Oral iron + vit C","B12 injection, lifelong","Oral folate"]]}],
+ flag:"Untreated B12 deficiency → permanent nerve damage.",
+ links:[["labs","Read the numbers"],["sickle","Hemolytic anemia"],["leuk","Anemia from crowded marrow"]]},
+
+{id:"sickle", ch:34, name:"Sickle cell education",
+ core:"One amino acid swap makes hemoglobin polymerize when deoxygenated. Rigid sickled cells block vessels (pain, organ damage) and die early (anemia).",
+ zoom:[["Organ","Spleen infarcts (autosplenectomy) → infection risk; lungs, kidneys, brain, bones damaged."],
+  ["Tissue","Microvessels occluded → ischemia, infarction."],
+  ["Cell","RBC sickles, rigid; lives 10–20 days instead of 120 → hemolytic anemia."],
+  ["Molecule","HbS: glutamic acid → valine at position 6 of β-globin. Deoxygenated HbS polymerizes into rigid fibers. Autosomal recessive."]],
+ chains:[["Hypoxia, dehydration, cold, acidosis","HbS deoxygenates","Polymerizes","RBC sickles","Vessel blocked → pain, ischemia"],
+  ["Sickled cells destroyed","Hemolysis","↓ Hgb, ↑ bilirubin","Jaundice, gallstones"],
+  ["Spleen infarcts","Can't filter encapsulated bacteria","Infection risk","Fever = ER"],
+  ["Sickling in lung","Acute chest syndrome","Chest pain, fever, ↓ SpO₂","Emergency"],
+  ["Hydroxyurea","↑ fetal Hb (HbF)","HbF doesn't polymerize","Fewer crises"]],
+ see:["Pain crises (bones, chest, abdomen)","Jaundice, fatigue","Triggers: dehydration, infection, cold, altitude, stress, hard exercise"],
+ labs:["Hgb electrophoresis (HbS) = diagnosis","Low Hgb, ↑ retics","↑ bilirubin, ↑ LDH"],
+ do:["Crisis: hydrate, O₂, opioids (often PCA)","Warmth — no cold packs","Assess for infection, acute chest"],
+ teach:["Drink 3–4 L/day","Avoid cold, high altitude, unpressurized flights","Handwashing, vaccines","Both parents carriers → 25% chance each pregnancy"],
+ meds:[["Hydroxyurea","↑ HbF production","Fewer crises, fewer transfusions","Myelosuppression (CBC); teratogenic → contraception"],
+  ["Opioids","μ-opioid receptors","Crisis pain control","Sedation, resp depression"],
+  ["Folic acid","Supports high RBC turnover","Prevents folate deficiency","—"],
+  ["Penicillin (children), vaccines","Prevent encapsulated bacteria","Fewer deadly infections","Allergy"]],
+ flag:"Fever, chest pain + SOB (acute chest), priapism, or stroke signs → emergency care now.",
+ links:[["anemia","Hemolytic anemia"],["dvt","Vessel occlusion"],["labs","Hemolysis labs"]]},
+
+{id:"leuk", ch:34, name:"Leukemia",
+ core:"A mutated stem cell makes immature WBCs (blasts) that crowd the marrow. Normal lines drop: anemia, bleeding, infection.",
+ zoom:[["Organ","Marrow packed; spleen, liver, lymph nodes enlarge."],
+  ["Tissue","Marrow replaced by blasts."],
+  ["Cell","Clonal blasts proliferate and don't mature; normal RBC, platelet, neutrophil precursors crowded out."],
+  ["Molecule","Gene mutations drive uncontrolled division, e.g. Philadelphia chromosome t(9;22) → BCR-ABL tyrosine kinase (CML). Chemo damages DNA of fast-dividing cells."]],
+ chains:[["Stem cell mutation","Blasts proliferate","Marrow crowded"],
+  ["↓ RBC","Anemia","Fatigue, pallor"],
+  ["↓ Platelets","Bleeding","Petechiae, bruising, gum bleeding"],
+  ["↓ Working neutrophils","Infection","Fever may be the only sign"],
+  ["Chemo kills many cells","K⁺, phosphate, uric acid released","Tumor lysis syndrome","Dysrhythmia, kidney injury"],
+  ["Imatinib","Blocks BCR-ABL","CML controlled"]],
+ see:["Fatigue, pallor","Bruising, petechiae, nosebleeds","Frequent infections, fever","Bone pain, enlarged nodes/spleen"],
+ labs:["CBC: WBC high, low or normal — but blasts","Bone marrow biopsy = diagnosis","ANC","Tumor lysis: ↑ K⁺, ↑ uric acid, ↑ phos, ↓ Ca⁺⁺"],
+ do:["Neutropenic precautions, strict hand hygiene","Bleeding precautions: soft brush, electric razor, no IM, no rectal","Temp every 4 h"],
+ teach:["Avoid crowds and sick contacts","Report temp ≥100.4°F immediately","Food safety"],
+ meds:[["Allopurinol","Xanthine oxidase inhibitor","↓ uric acid production","Rash; hydrate"],
+  ["Rasburicase","Converts uric acid → allantoin","Fast uric acid drop","Hemolysis in G6PD deficiency"],
+  ["Filgrastim (G-CSF)","Stimulates neutrophil production","Shorter neutropenia","Bone pain"],
+  ["Imatinib","BCR-ABL tyrosine kinase inhibitor","Controls CML","Edema, myelosuppression"]],
+ tables:[{title:"Four types", cols:["","Who","Cell","Clue"], rows:[
+   ["ALL","Children","Lymphoblasts","Most common childhood cancer"],["AML","Adults","Myeloblasts","Auer rods"],
+   ["CML","Adults","Myeloid, mature-ish","Philadelphia chromosome → imatinib"],["CLL","Older adults","Mature lymphocytes","Often no symptoms; smudge cells"]]}],
+ flag:"Fever in neutropenia = emergency (cultures + antibiotics within 1 h). Tumor lysis: ↑ K⁺ → dysrhythmia.",
+ links:[["labs","Read the CBC + ANC"],["anemia","Anemia from crowded marrow"]]}
+];
+const M = [
+{id:"beta", name:"β receptors", short:"β₁ heart · β₂ lungs",
+ core:"β₁ = 1 heart, β₂ = 2 lungs. Stimulate β₁ → faster, stronger heart + renin release. Stimulate β₂ → airways open. A drug aimed at one can spill onto the other — that's why albuterol causes tachycardia and nonselective β-blockers cause bronchospasm.",
+ zoom:[["Organ","Heart (β₁), kidney juxtaglomerular cells (β₁ → renin), lungs (β₂), muscle vessels + liver (β₂)."],
+  ["Tissue","SA/AV node + myocardium; bronchial smooth muscle."],
+  ["Cell","Epinephrine / norepinephrine bind β receptors on the cell surface."],
+  ["Molecule","β receptor → Gs protein → adenylyl cyclase → ↑ cAMP → protein kinase A. Heart: more Ca²⁺ entry → faster, stronger beat. Airway muscle: cAMP relaxes it → bronchodilation."]],
+ chains:[["Albuterol","β₂ in lungs","↑ cAMP","Bronchodilation"],
+  ["Albuterol spills over","β₁ in heart","Tachycardia, palpitations"],
+  ["Albuterol","β₂ pushes K⁺ into cells","↓ serum K⁺"],
+  ["Metoprolol","Blocks β₁","↓ HR, ↓ contractility, ↓ renin","↓ BP, ↓ O₂ demand"],
+  ["Propranolol (nonselective)","Also blocks β₂ in lungs","Bronchoconstriction","Dangerous in asthma"],
+  ["Any β-blocker","Blocks tremor + tachycardia","Hypoglycemia warning signs hidden","Check glucose (sweating still occurs)"]],
+ see:["Cardioselective (β₁): atenolol, metoprolol, bisoprolol, esmolol — mostly A–M","Nonselective: propranolol, nadolol, sotalol — mostly N–Z","Selectivity fades at high doses"],
+ do:["Apical pulse + BP before giving","Hold + report HR <60 or SBP <90 (per order)","Listen for wheeze in lung patients"],
+ teach:["Don't stop suddenly → rebound tachycardia, angina, MI","Rise slowly","Diabetics: check glucose — shakiness/racing heart may not appear"],
+ meds:[["Albuterol, salmeterol","β₂ agonist","Airways open","Tachycardia, tremor, ↓ K⁺"],
+  ["Metoprolol, atenolol, bisoprolol","β₁-selective blockers","↓ HR, BP, O₂ demand; HF + post-MI","Bradycardia, fatigue; safer in lung disease"],
+  ["Propranolol, nadolol","Nonselective β₁ + β₂ blockers","↓ HR, BP","Bronchospasm — avoid in asthma"],
+  ["Carvedilol, labetalol","β₁ + β₂ + α₁ blockers","↓ HR + vasodilation (HF, HTN crisis)","Orthostatic hypotension, bronchospasm"],
+  ["Dobutamine","β₁ agonist","Stronger squeeze in acute HF","Tachycardia, dysrhythmias"]],
+ tables:[{title:"Why β-blockers are used", cols:["Condition","Why it helps"], rows:[
+  ["Hypertension","↓ cardiac output + ↓ renin → ↓ BP"],["Heart failure","Blocks chronic SNS overdrive that remodels the heart (start low, go slow)"],
+  ["Angina / after MI","Slower HR = less O₂ demand, longer filling time"],["AF / tachycardia","Slows AV node → controls rate"],["Asthma / COPD","Use β₁-selective only, if needed"]]}],
+ flag:"Never stop a β-blocker abruptly. HR <60 or SBP <90 → hold and report (per order).",
+ links:[["asthma","Albuterol → β₂; nonselective → bronchospasm"],["copd","β₂ agonists; β₁-selective OK"],["hf","β₁ block stops remodeling"],["htn","↓ output + ↓ renin"],["ecg-a","Slows SA/AV → brady"],["cv-age","Older hearts respond less to β"],["raas","β₁ releases renin"],["potassium","β₂ shifts K⁺ into cells"],["musc","Opposite branch: SNS vs vagus"]]},
+
+{id:"calcium", name:"Calcium & smooth muscle", short:"Ca²⁺ & calcium channel blockers",
+ core:"Calcium is the squeeze signal. More Ca²⁺ entering arteriole smooth muscle → vessels constrict → resistance ↑ → BP ↑. Calcium channel blockers keep Ca²⁺ out → vessels relax → BP ↓. In the heart, Ca²⁺ drives squeeze strength and SA/AV conduction.",
+ zoom:[["Organ","Arterioles set resistance (SVR). Heart muscle and SA/AV nodes also run on Ca²⁺."],
+  ["Tissue","Vascular smooth muscle in arteriole walls; myocardium; nodal tissue."],
+  ["Cell","L-type Ca²⁺ channels open when the cell depolarizes; Ca²⁺ floods in."],
+  ["Molecule","Ca²⁺ + calmodulin → myosin light-chain kinase → myosin grabs actin → contraction. Heart: Ca²⁺ triggers more Ca²⁺ release → stronger beat. Nodes: Ca²⁺ carries the impulse."]],
+ chains:[["Ca²⁺ enters arteriole muscle","Calmodulin → MLCK","Contraction","Vasoconstriction","SVR ↑ → BP ↑"],
+  ["Amlodipine","Blocks L-type channel in arterioles","Less Ca²⁺ in","Vasodilation","BP ↓"],
+  ["Vasodilation","Fluid shifts into tissue","Ankle edema, flushing, headache"],
+  ["BP falls fast (nifedipine)","Baroreceptors fire","Reflex tachycardia"],
+  ["Diltiazem / verapamil","Block Ca²⁺ in SA/AV node","Slower HR + AV conduction","Rate control in AF"],
+  ["Diltiazem / verapamil","Less Ca²⁺ in myocardium","Weaker squeeze","Avoid in HFrEF"],
+  ["Ca²⁺ deposits in artery wall (aging, plaque)","Stiff arteries","↑ systolic BP","Different problem — CCBs relax muscle, they don't remove deposits"]],
+ see:["-dipine = vessels (amlodipine, nifedipine)","Diltiazem, verapamil = heart + vessels"],
+ do:["BP + HR before giving","Check ankles for edema","Watch HR with β-blocker combo"],
+ teach:["Avoid grapefruit juice","Rise slowly","Don't crush extended-release","Verapamil → fiber, fluids (constipation)"],
+ meds:[["Amlodipine, nifedipine","Dihydropyridine CCB: arterioles > heart","Vasodilation → ↓ BP, angina relief","Ankle edema, flushing, headache, reflex tachycardia"],
+  ["Diltiazem, verapamil","Non-dihydropyridine CCB: heart + vessels","↓ HR, ↓ AV conduction, ↓ BP","Bradycardia, heart block; avoid in HFrEF"],
+  ["Digoxin (contrast)","↑ Ca²⁺ inside heart cells via Na⁺/K⁺-ATPase","Stronger squeeze","Opposite direction to CCBs in the heart"]],
+ tables:[{title:"Two kinds of CCB", cols:["","Amlodipine type","Diltiazem / verapamil"], rows:[
+  ["Acts on","Arterioles","Heart + arterioles"],["Heart rate","↑ (reflex)","↓"],["Used for","HTN, angina","AF rate control, HTN, angina"],["Avoid","—","HFrEF, heart block"]]}],
+ flag:"Diltiazem/verapamil + β-blocker → severe bradycardia or heart block. Check HR + BP first.",
+ links:[["htn","CCBs relax arterioles"],["ecg-a","Diltiazem slows AV node (AF)"],["hf","Non-DHP weakens squeeze"],["cv-age","Calcified, stiff arteries"],["beta","Both lower HR — additive"],["alpha","Both routes end in Ca²⁺"]]},
+
+{id:"alpha", name:"α₁ receptors", short:"α₁ vessels",
+ core:"α₁ on arteriole smooth muscle = constrict. Norepinephrine on α₁ raises resistance and BP. Block α₁ → vessels dilate → BP drops, especially on standing.",
+ zoom:[["Organ","Arterioles + veins body-wide; bladder neck and prostate."],
+  ["Tissue","Vascular smooth muscle."],
+  ["Cell","Norepinephrine from sympathetic nerves binds α₁."],
+  ["Molecule","α₁ → Gq → IP₃ → Ca²⁺ released inside the cell → contraction. Same Ca²⁺ endpoint as the channel route."]],
+ chains:[["SNS → norepinephrine","α₁ on arterioles","IP₃ → ↑ Ca²⁺","Vasoconstriction","BP ↑"],
+  ["Prazosin / doxazosin","Block α₁","Vasodilation","First-dose orthostatic hypotension"],
+  ["Standing up","α₁ squeeze normally holds BP","Aging baroreflex + α₁ blocker","Dizziness, falls"]],
+ meds:[["Prazosin, doxazosin, terazosin","α₁ blockers","↓ BP; relax prostate (BPH)","First dose at bedtime; rise slowly"],
+  ["Carvedilol, labetalol","α₁ + β blockers","Vasodilation + ↓ HR","Orthostatic hypotension"],
+  ["Phenylephrine, norepinephrine","α₁ agonists","Raise BP in shock","Tissue ischemia, extravasation"]],
+ flag:"First dose of an α₁ blocker can cause syncope — give at bedtime, rise slowly.",
+ links:[["htn","α₁ block lowers SVR"],["cv-age","Orthostatic fall risk"],["calcium","Both end in Ca²⁺"],["beta","Combined in carvedilol, labetalol"]]},
+
+{id:"musc", name:"Muscarinic (vagus)", short:"Muscarinic · vagus nerve",
+ core:"ACh from the vagus nerve: lungs → bronchoconstriction + mucus (M₃); heart → slows SA/AV node (M₂). Anticholinergics block it: open airways, speed the heart.",
+ zoom:[["Organ","Lungs (vagal tone narrows airways), heart (vagus slows rate)."],
+  ["Tissue","Bronchial smooth muscle + mucous glands; SA/AV node."],
+  ["Cell","ACh binds muscarinic receptors."],
+  ["Molecule","M₃ → Gq → ↑ Ca²⁺ → airway contraction + secretion. M₂ → Gi → ↓ cAMP + K⁺ channels open → slower firing."]],
+ chains:[["Vagus → ACh","M₃ in airway","Bronchoconstriction + mucus"],
+  ["Ipratropium / tiotropium","Block M₃","Bronchodilation, less mucus","Dry mouth"],
+  ["Vagus → ACh","M₂ on SA node","↓ HR"],
+  ["Atropine","Blocks M₂","↑ HR","Treats symptomatic bradycardia"],
+  ["Digoxin","↑ vagal tone","Slower AV conduction"]],
+ meds:[["Ipratropium (SAMA)","Short M₃ block","Add-on bronchodilator","Dry mouth; keep spray out of eyes"],
+  ["Tiotropium (LAMA)","24-h M₃ block","COPD maintenance","Dry mouth, urinary retention"],
+  ["Atropine","M₂ block","↑ HR in symptomatic brady","Dry mouth, retention, confusion, tachycardia"]],
+ flag:"Anticholinergics: caution with glaucoma and BPH (urinary retention).",
+ links:[["copd","LAMA = first-line maintenance"],["asthma","Add-on bronchodilator"],["ecg-a","Atropine for brady"],["beta","Opposite branch"]]},
+
+{id:"raas", name:"RAAS", short:"Renin-angiotensin-aldosterone",
+ core:"Low kidney flow → renin → angiotensin II + aldosterone: squeeze vessels, hold salt and water. Helpful short-term, harmful long-term in HF and HTN — so we block it.",
+ zoom:[["Organ","Kidney (renin), liver (angiotensinogen), lung (ACE), adrenal (aldosterone)."],
+  ["Tissue","Juxtaglomerular apparatus; adrenal cortex."],
+  ["Cell","JG cells release renin when perfusion falls or β₁ is stimulated."],
+  ["Molecule","Angiotensinogen → (renin) → Ang I → (ACE) → Ang II → AT₁: vasoconstriction, aldosterone, ADH, thirst, remodeling. ACE also breaks down bradykinin."]],
+ chains:[["Low kidney flow / β₁","Renin","Ang I → Ang II","Vasoconstriction + aldosterone","BP ↑, fluid ↑"],
+  ["ACE inhibitor","Less Ang II","Vasodilation, less aldosterone","BP ↓, K⁺ ↑"],
+  ["ACE inhibitor","Bradykinin builds up","Dry cough, angioedema"],
+  ["ARB","Blocks AT₁","Same benefit","No bradykinin cough"],
+  ["Aldosterone","Na⁺ kept, K⁺ lost","Spironolactone blocks it","K⁺ ↑"]],
+ meds:[["Lisinopril (-pril)","ACE inhibitor","↓ Ang II + aldosterone","Cough, angioedema, ↑ K⁺; not in pregnancy"],
+  ["Losartan (-sartan)","AT₁ blocker","Same, no cough","↑ K⁺; not in pregnancy"],
+  ["Sacubitril/valsartan","Neprilysin inhibitor + ARB","More natriuresis in HF","36 h off ACEI first"],
+  ["Spironolactone","Aldosterone receptor blocker","Diuresis, anti-remodeling","↑ K⁺, gynecomastia"]],
+ flag:"ACEI angioedema (lip/tongue swelling) = airway emergency. ACEI/ARB contraindicated in pregnancy.",
+ links:[["hf","Blocking RAAS = core HF therapy"],["htn","ACEI/ARB first-line"],["beta","β₁ releases renin"],["potassium","ACEI/ARB/spironolactone ↑ K⁺"]]},
+
+{id:"potassium", name:"Kidney, diuretics & K⁺", short:"Diuretics & K⁺",
+ core:"Where a diuretic acts in the nephron decides how much fluid it pulls and which way K⁺ moves. K⁺ sets the heart's resting voltage — too low or too high → dysrhythmias.",
+ zoom:[["Organ","Kidney nephron; heart."],
+  ["Tissue","Proximal tubule → loop of Henle → distal tubule → collecting duct."],
+  ["Cell","Tubule cells reabsorb Na⁺ (water follows). More Na⁺ reaching the collecting duct = more K⁺ lost."],
+  ["Molecule","SGLT2 (proximal) · Na-K-2Cl (loop) · Na-Cl (distal) · aldosterone → ENaC + Na⁺/K⁺-ATPase (collecting duct)."]],
+ chains:[["Furosemide","Blocks Na-K-2Cl","Big Na⁺ + water loss","More Na⁺ downstream → K⁺ wasted","↓ K⁺ → dysrhythmia, digoxin toxicity"],
+  ["Spironolactone","Blocks aldosterone","Na⁺ out, K⁺ kept","↑ K⁺"],
+  ["↑ K⁺","Peaked T, wide QRS","VF risk"],
+  ["Albuterol / insulin","Shift K⁺ into cells","↓ serum K⁺"],
+  ["Tumor lysis","Cells burst","K⁺ released","↑ K⁺"]],
+ meds:[["Furosemide","Loop: Na-K-2Cl","Strong diuresis (HF, edema)","↓ K⁺, dehydration, ototoxicity"],
+  ["Hydrochlorothiazide","Distal: Na-Cl","Mild diuresis (HTN)","↓ K⁺, ↑ glucose, ↑ uric acid, ↑ Ca²⁺"],
+  ["Spironolactone","Aldosterone blocker (K⁺-sparing)","Diuresis, anti-remodeling","↑ K⁺"],
+  ["Dapagliflozin","SGLT2: proximal Na⁺/glucose","Fewer HF admissions","Genital yeast/UTI, dehydration"],
+  ["Potassium chloride","Replaces K⁺","Corrects ↓ K⁺","Never IV push; PO with food"]],
+ tables:[{title:"Low vs high K⁺", cols:["","Low (<3.5)","High (>5.0)"], rows:[
+  ["Causes","Loop/thiazide, vomiting, albuterol","ACEI/ARB, spironolactone, kidney failure, tumor lysis"],
+  ["ECG","Flat T, U wave","Peaked T, wide QRS"],["Muscle","Weakness, cramps","Weakness, paralysis"],["Danger","Digoxin toxicity","VF / asystole"]]}],
+ flag:"K⁺ <3.5 on digoxin → toxicity risk. K⁺ >6 with ECG changes → emergency.",
+ links:[["hf","Diuretics remove fluid"],["htn","Thiazides first-line"],["ecg-a","K⁺ changes the waves"],["leuk","Tumor lysis → ↑ K⁺"],["asthma","Albuterol → ↓ K⁺"],["raas","Aldosterone wastes K⁺"]]},
+
+{id:"clot", name:"Platelets vs clotting cascade", short:"Platelets vs clotting",
+ core:"Arteries clot with platelets (fast flow, plaque rupture) → antiplatelets. Veins and fibrillating atria clot with fibrin (slow flow) → anticoagulants.",
+ zoom:[["Organ","Arteries (PAD, MI, stroke) vs veins (DVT, PE) and the atria in AF."],
+  ["Tissue","Damaged endothelium exposes collagen + tissue factor."],
+  ["Cell","Platelets adhere, activate, aggregate."],
+  ["Molecule","COX-1 → thromboxane A₂ and ADP (P2Y12) recruit platelets. Cascade: tissue factor → Xa → thrombin → fibrinogen → fibrin. Vitamin K needed for factors II, VII, IX, X."]],
+ chains:[["Plaque ruptures (artery)","Platelets → TXA₂, ADP","Platelet clot","MI, stroke, limb ischemia"],
+  ["Stasis (vein / AF)","Cascade → thrombin","Fibrin clot","DVT, PE, stroke from AF"],
+  ["Aspirin","COX-1 off for platelet's life (7–10 d)","↓ TXA₂"],
+  ["Warfarin","Vitamin K recycling blocked","↓ II, VII, IX, X","INR ↑"],
+  ["Heparin","Boosts antithrombin","Thrombin + Xa off","aPTT ↑"]],
+ meds:[["Aspirin","Irreversible COX-1 block","Antiplatelet","Bleeding, GI ulcer"],
+  ["Clopidogrel","P2Y12 block","Antiplatelet","Bleeding"],
+  ["Heparin","Antithrombin → thrombin + Xa","Anticoagulant","aPTT; protamine; HIT"],
+  ["Warfarin","Vitamin K antagonist","Anticoagulant","INR 2–3; vitamin K"],
+  ["Apixaban, rivaroxaban","Direct Xa inhibitors","Anticoagulant","Andexanet alfa"]],
+ tables:[{title:"Monitor + antidote", cols:["Drug","Monitor","Antidote"], rows:[
+  ["Heparin","aPTT, platelets","Protamine"],["Enoxaparin","Anti-Xa, platelets","Protamine (partial)"],["Warfarin","INR 2–3","Vitamin K"],
+  ["Apixaban / rivaroxaban","None routine","Andexanet alfa"],["Dabigatran","None routine","Idarucizumab"]]}],
+ flag:"Any anticoagulant: black stools, blood in urine, sudden severe headache → report now.",
+ links:[["pad","Artery → antiplatelet"],["dvt","Vein → anticoagulant"],["ecg-a","AF → atrial clot → anticoagulate"],["sickle","Vaso-occlusion"],["labs","Platelet count"]]},
+
+{id:"o2", name:"Oxygen & hemoglobin", short:"O₂ & hemoglobin",
+ core:"O₂ delivery needs three links: air in (ventilation), across the membrane (diffusion), and hemoglobin to carry it. Every topic on this map breaks one link.",
+ zoom:[["Organ","Lungs load O₂; heart pumps it; tissues unload it."],
+  ["Tissue","Alveolar–capillary membrane."],
+  ["Cell","Each RBC holds ~270 million hemoglobin molecules."],
+  ["Molecule","Each Hgb binds 4 O₂ on Fe²⁺. Right shift (↑ CO₂, ↑ temp, ↓ pH) → unloads more to tissue. CO takes the binding site. HbS polymerizes when it gives up O₂."]],
+ chains:[["Airway narrowed (asthma, COPD)","Ventilation ↓","PaO₂ ↓"],
+  ["Alveoli full (pneumonia)","Diffusion blocked","Shunt → hypoxemia"],
+  ["Too little Hgb (anemia)","Carrying capacity ↓","SpO₂ normal but tissues starve"],
+  ["CO bound","SpO₂ falsely normal","Need co-oximetry"],
+  ["Chronic hypoxia","EPO ↑","Polycythemia"]],
+ see:["SpO₂ = % saturated, not amount — an anemic patient can read 98% and still be hypoxic"],
+ labs:["PaO₂ 80–100 mm Hg","SaO₂ 95–100%","PaCO₂ 35–45","pH 7.35–7.45","HCO₃⁻ 21–28"],
+ meds:[["Oxygen","↑ FiO₂ → ↑ PaO₂","Corrects hypoxemia","COPD target 88–92%; fire risk"]],
+ flag:"Restless, confused, tachycardic = hypoxia until proven otherwise.",
+ links:[["asthma","Ventilation link"],["copd","Ventilation + CO₂"],["pna","Diffusion link"],["anemia","Carrier link"],["sickle","HbS"],["promo","CO from smoke"],["labs","Hgb, Hct"]]}
+];
+T.forEach(t => t.kind = "topic"); M.forEach(m => m.kind = "mech");
+const ALL = T.concat(M);
+const byId = Object.fromEntries(ALL.map(t => [t.id, t]));
+const HUBS = [{id:"h-gas", name:"Gas exchange", sub:"CH 22 · 24 · 25 · 18 q", chs:[22,24,25]},
+  {id:"h-heart", name:"Heart & vessels", sub:"CH 27–30 · 22 q", chs:[27,28,29,30]},
+  {id:"h-blood", name:"Blood", sub:"CH 34 · 20 q", chs:[34]}];
+const P = {"h-gas":[140,60], promo:[140,170], packyr:[140,265], "resp-age":[140,365], asthma:[140,500], copd:[140,610], pna:[140,735],
+  "h-heart":[1260,60], "cv-age":[1260,165], "ecg-r":[1260,265], "ecg-a":[1260,365], hf:[1260,480], htn:[1260,590], pad:[1260,700], dvt:[1260,805],
+  "h-blood":[700,830], labs:[340,935], anemia:[580,935], sickle:[820,935], leuk:[1060,935],
+  beta:[520,230], musc:[520,390], potassium:[520,550], o2:[520,700], alpha:[880,230], calcium:[880,390], raas:[880,550], clot:[880,700]};
+const W = 1400, H = 1000;
+const EDGES = []; const seen = new Set();
+const addE = (a, b, label, type) => { if (!P[a] || !P[b]) return; const k = [a, b].sort().join("|"); if (seen.has(k)) return; seen.add(k); EDGES.push({ a, b, label, type }); };
+HUBS.forEach(hb => T.filter(t => hb.chs.includes(t.ch)).forEach(t => addE(hb.id, t.id, "", "hub")));
+M.forEach(m => m.links.forEach(l => addE(m.id, l[0], l[1], "mech")));
+T.forEach(t => (t.links || []).forEach(l => addE(t.id, l[0], l[1], "topic")));
+EDGES.forEach(e => {
+  const [ax, ay] = P[e.a], [bx, by] = P[e.b], dx = bx - ax, dy = by - ay;
+  const c1 = Math.abs(dx) >= Math.abs(dy) ? [ax + dx * .45, ay] : [ax, ay + dy * .45];
+  const c2 = Math.abs(dx) >= Math.abs(dy) ? [bx - dx * .45, by] : [bx, by - dy * .45];
+  e.d = "M" + ax + " " + ay + " C" + c1[0] + " " + c1[1] + " " + c2[0] + " " + c2[1] + " " + bx + " " + by;
+  e.mx = (ax + 3 * c1[0] + 3 * c2[0] + bx) / 8; e.my = (ay + 3 * c1[1] + 3 * c2[1] + by) / 8;
+});
+const BRN = ch => HUBS.find(hb => hb.chs.includes(ch)).name;
+
+const PL = {
+ promo:"Your airways have a self-cleaning conveyor belt (tiny hairs + mucus). Smoke breaks the belt, so germs and gunk stay in. Nicotine is addictive because it tricks the brain's reward system. Vaccines teach your immune system the germ ahead of time.",
+ packyr:"A way to measure how much smoke someone has taken in over their life. More pack-years = more damage built up = higher risk of COPD and cancer.",
+ "resp-age":"With age the chest gets stiffer and the lungs lose their springiness, so they don't empty as well. The cough gets weaker, so food and germs aren't cleared — older adults get pneumonia more easily, often without a fever.",
+ asthma:"The airways are oversensitive. A trigger (pollen, cold air, smoke) makes them swell inside and squeeze outside. Air gets in but has trouble getting out — that's the wheeze. Rescue inhaler relaxes the squeeze; steroid inhaler calms the swelling over time.",
+ copd:"Years of smoke wear out the lungs. The tiny air sacs lose their stretch (like an old balloon that won't deflate), so air gets trapped. The airways also fill with mucus. It doesn't go away like asthma — it slowly gets worse.",
+ pna:"An infection in the tiny air sacs. The body fights it by flooding the sacs with fluid and white blood cells — now that part of the lung can't take in oxygen.",
+ "cv-age":"With age, arteries get stiff like old garden hoses and the body's automatic BP adjustment gets slow. So top BP number rises, and standing up quickly can make someone dizzy and fall.",
+ "ecg-r":"An ECG is a recording of the heart's electricity, picked up by stickers on the skin. Put the stickers in the right places on clean, dry skin or the tracing is garbage.",
+ "ecg-a":"Read every strip the same way: How fast? Steady beat? Is there a P wave before each spike? Are the gaps the right length? Potassium levels change the shape of the waves.",
+ hf:"The heart is a weak pump. Blood backs up behind it. Left side backs up into the lungs (short of breath, crackles). Right side backs up into the body (swollen legs, neck veins). The kidneys think the body is dry and hold onto more water, making it worse.",
+ htn:"Blood pushes too hard against artery walls all the time. You usually feel nothing, but over years it damages the heart, brain, kidneys and eyes.",
+ pad:"Leg arteries are clogged with plaque, so blood can't get DOWN into the legs. Walking makes the muscles hungry for blood and they hurt. Hanging legs down lets gravity help.",
+ dvt:"A blood clot in a deep leg vein, so blood can't get back UP to the heart. The leg swells. Danger: a piece breaks off and lodges in the lungs (PE).",
+ labs:"The CBC is a headcount of your blood cells. Cell SIZE (MCV) tells you which anemia: small cells = not enough iron; big cells = not enough B12 or folate.",
+ anemia:"Not enough hemoglobin, so the blood carries less oxygen. The person is tired and pale, and the heart beats faster to make up for it.",
+ sickle:"A tiny change in the hemoglobin recipe makes red cells bend into stiff sickle shapes when oxygen is low. They jam in small blood vessels (pain) and break apart early (anemia).",
+ leuk:"Cancer of the bone marrow. It pumps out useless immature white cells that crowd out the good cells: fewer red cells (tired), fewer platelets (bleeding), fewer working white cells (infections).",
+ beta:"β receptors are like 'go' switches. β₁ (1 heart) speeds up the heart. β₂ (2 lungs) opens airways. Albuterol flips the lung switch ON. β-blockers turn the heart switch OFF to slow it and lower BP — but nonselective ones also turn the lung switch off and can trigger an asthma attack.",
+ calcium:"Calcium is the 'squeeze' signal for muscle. When calcium enters the muscle in artery walls, the artery tightens and BP goes up. Calcium channel blockers close the door calcium uses, so arteries relax and BP drops.",
+ alpha:"α₁ receptors are 'tighten' switches on blood vessels. Adrenaline flips them on → vessels narrow → BP up. α-blockers turn them off → vessels relax → BP down, especially when standing.",
+ musc:"The vagus nerve is the body's brake pedal. Its messenger (ACh) narrows the airways and slows the heart. Drugs that block it open the airways (tiotropium) or speed up a too-slow heart (atropine).",
+ raas:"When the kidney thinks blood flow is low, it sets off a hormone chain that tightens vessels and holds onto salt and water to raise BP. Good in a bleed, bad in HF and HTN — so we block it with -prils and -sartans.",
+ potassium:"Diuretics make you pee out salt and water, but most also flush out potassium. Potassium controls the heart's electrical rhythm, so too little OR too much is dangerous.",
+ clot:"Two kinds of clots. Fast-flowing arteries clot with sticky platelets → use antiplatelets (aspirin). Slow-flowing veins clot with fibrin mesh → use blood thinners (heparin, warfarin).",
+ o2:"Getting oxygen to tissue takes three steps: air into the lungs, oxygen across into the blood, and hemoglobin to carry it. Every disease here breaks one of those steps."
+};
+const G = [
+ ["ACh (acetylcholine)",["ACh"],"A chemical messenger nerves release. It's the main signal of the 'rest and digest' (vagus) system: slows the heart, narrows airways. Nicotine mimics it at nicotinic receptors."],
+ ["Dopamine",["dopamine"],"The brain's reward chemical — it makes something feel good so you want it again. Nicotine triggers a dopamine burst, which is why smoking is addictive."],
+ ["Nicotinic receptor",["nicotinic"],"A 'lock' on nerve cells that normally opens for ACh. Nicotine fits the same lock — in the brain's reward area that releases dopamine."],
+ ["Receptor",["receptor"],"A lock on the cell surface. The right chemical (the key) fits it and tells the cell to do something."],
+ ["Agonist",["agonist"],"A drug that turns a receptor ON — a key that opens the lock."],
+ ["Partial agonist",["Partial agonist"],"Turns the receptor on a little, and blocks stronger keys from getting in."],
+ ["Blocker / antagonist",["block","Block"],"A drug that sits in the lock without turning it, so the body's own key can't get in. Receptor stays OFF."],
+ ["Epinephrine / norepinephrine",["pinephrine"],"Adrenaline — the 'fight or flight' chemicals. They speed the heart, raise BP and open airways."],
+ ["SNS (sympathetic)",["SNS","sympathetic"],"Fight-or-flight nervous system: faster heart, higher BP, open airways."],
+ ["Vagus nerve",["vagus","Vagus","vagal"],"Main nerve of the rest-and-digest system. The body's brake: slows heart rate, narrows airways, more mucus."],
+ ["cAMP",["cAMP"],"A messenger inside the cell. When a receptor is switched on, cAMP carries the message. In airway muscle, more cAMP = relax. In the heart, more cAMP = beat harder and faster."],
+ ["G protein (Gs, Gq, Gi)",["Gs ","Gq","Gi "],"The switch just inside the cell that a receptor flips. Gs raises cAMP, Gq raises calcium, Gi lowers cAMP."],
+ ["Adenylyl cyclase / PKA",["adenylyl","protein kinase"],"Enzymes that make cAMP and carry out its message."],
+ ["IP₃",["IP₃"],"A messenger that releases calcium stored inside the cell, so muscle squeezes."],
+ ["Calmodulin / MLCK",["almodulin","MLCK"],"Proteins that turn incoming calcium into a muscle squeeze."],
+ ["Actin / myosin",["actin"],"Muscle's moving fibers. Myosin grabs actin and pulls → contraction."],
+ ["Calcium channel (L-type)",["L-type"],"A door in the cell membrane that lets calcium in. Calcium channel blockers close it."],
+ ["Smooth muscle",["smooth muscle","Smooth muscle"],"Automatic muscle in airway and blood vessel walls. Tight = narrow tube."],
+ ["Bronchoconstriction / bronchospasm",["ronchoconstriction","ronchospasm"],"Airway muscle squeezes → airway narrows → wheeze."],
+ ["Bronchodilation",["ronchodilat"],"Airway muscle relaxes → airway opens."],
+ ["Vasoconstriction / vasodilation",["asoconstrict","asodilat"],"Blood vessel tightens (BP up) / relaxes (BP down)."],
+ ["SVR (resistance)",["SVR","resistance"],"How hard it is to push blood through tightened small arteries. Higher resistance = higher BP."],
+ ["Arteriole",["rteriole"],"The smallest arteries. They set BP by tightening or relaxing."],
+ ["Cardiac output",["ardiac output"],"Blood the heart pumps per minute = heart rate × amount per beat."],
+ ["Afterload / preload",["fterload","reload"],"Afterload = pressure the heart pushes against. Preload = how full the heart gets before it squeezes."],
+ ["Contractility",["ontractility","squeeze"],"How strongly the heart muscle squeezes."],
+ ["Renin",["enin"],"Hormone the kidney releases when it senses low blood flow. Starts the RAAS chain."],
+ ["Angiotensin II (Ang II)",["Ang II","ngiotensin"],"Powerful hormone that tightens blood vessels and triggers aldosterone. Raises BP."],
+ ["ACE",["ACE"],"Enzyme (mostly in lungs) that makes angiotensin II. It also breaks down bradykinin. ACE inhibitors (-prils) block it."],
+ ["AT₁ receptor",["AT₁"],"The receptor angiotensin II acts on. ARBs (-sartans) block it."],
+ ["Aldosterone",["ldosterone"],"Adrenal hormone that makes the kidney keep sodium (and water) and dump potassium."],
+ ["ADH",["ADH"],"Hormone that makes the kidney keep water."],
+ ["Bradykinin",["radykinin"],"A chemical that dilates vessels and irritates airways. ACE inhibitors let it build up → dry cough, angioedema."],
+ ["BNP",["BNP"],"Hormone released when heart walls are stretched by too much fluid. High BNP supports heart failure."],
+ ["Natriuresis",["atriure"],"Peeing out sodium — water follows."],
+ ["Remodeling",["emodel"],"The heart changing shape (stretching or thickening) under long-term strain. Makes HF worse over time."],
+ ["HFrEF / HFpEF / EF",["HFrEF","HFpEF","EF ≤"],"EF = % of blood squeezed out each beat (normal ~55–70%). HFrEF = weak squeeze (EF ≤40%). HFpEF = stiff heart, normal EF."],
+ ["LVH",["LVH"],"Left ventricle muscle thickens from pushing against high pressure — like a weightlifter's arm, but it gets stiff."],
+ ["Cor pulmonale",["cor pulmonale"],"Right-side heart failure caused by lung disease."],
+ ["JVD",["JVD"],"Bulging neck veins — blood backing up from the right heart."],
+ ["IgE",["IgE"],"Allergy antibody. It sits on mast cells waiting for an allergen."],
+ ["Mast cell",["ast cell"],"Immune cell packed with histamine. When an allergen hits its IgE, it bursts open (degranulates)."],
+ ["Histamine",["istamine"],"Released by mast cells → swelling, leaky vessels, airway squeeze."],
+ ["Leukotrienes",["eukotriene"],"Inflammation chemicals that strongly squeeze airways and add mucus. Montelukast blocks them."],
+ ["Prostaglandins / PGE₂",["rostaglandin","PGE₂"],"Inflammation messengers. PGE₂ in the brain raises the body's temperature set point → fever."],
+ ["Eosinophil",["osinophil"],"White blood cell involved in allergy and asthma inflammation."],
+ ["Neutrophil",["eutrophil"],"Most common white blood cell; first responder to bacteria. Low count = high infection risk."],
+ ["Macrophage",["acrophage"],"Big 'eater' immune cell that swallows germs and debris, then calls for backup."],
+ ["Cytokines / interleukins (IL-) / TNF",["ytokine","IL-","TNF"],"Messenger proteins immune cells use to call for help and cause inflammation and fever."],
+ ["Th2 cells",["Th2"],"Helper immune cells that drive allergic inflammation."],
+ ["PAMPs / toll-like receptors",["PAMP","toll-like"],"Germ 'fingerprints' and the immune sensors that recognize them."],
+ ["Cilia",["ilia"],"Tiny hairs lining airways that sweep mucus and trapped particles upward."],
+ ["Goblet cells",["oblet"],"Mucus-making cells in the airway lining."],
+ ["Mucociliary escalator",["escalator"],"Mucus traps particles; cilia sweep it up to be coughed out or swallowed."],
+ ["Epithelium",["pitheli"],"The lining layer of a surface (airway, tongue, gut, skin)."],
+ ["Elastin / elastic recoil",["lastin","recoil"],"Stretchy protein in lungs and arteries. It snaps back like a rubber band — that's what empties the lungs."],
+ ["Protease / elastase / MMPs",["rotease","lastase","MMP"],"Enzymes that chop up proteins. Smoke increases them and they chew up the lung's elastin."],
+ ["Alpha₁-antitrypsin (AAT)",["antitrypsin","AAT"],"Protein that protects the lung by blocking proteases. Low AAT (genetic) = emphysema at a young age."],
+ ["Oxidants / free radicals",["xidant","free radical"],"Unstable molecules in smoke that damage cells and DNA."],
+ ["Bullae",["ullae"],"Large, floppy, useless air pockets left when alveolar walls are destroyed."],
+ ["AP diameter",["AP diameter"],"Front-to-back chest width. Increased = barrel chest."],
+ ["Alveoli",["lveol"],"Tiny air sacs where oxygen crosses into blood."],
+ ["Carcinogen / DNA adducts / p53",["arcinogen","adduct","p53"],"Cancer-causing chemicals stick to DNA (adducts) and cause mutations; p53 is a gene that normally stops damaged cells — when it's mutated, cancer can grow."],
+ ["Metaplasia / dysplasia",["etaplasia","ysplasia"],"Metaplasia: cells change to a tougher type. Dysplasia: cells start looking abnormal — a step toward cancer."],
+ ["CO / carboxyhemoglobin",["Carboxyhemoglobin","CO bound","CO binds","CO inhaled","CO clears","CO takes","CO from"],"Carbon monoxide grabs hemoglobin far tighter than oxygen. The pulse ox can't tell the difference, so it reads falsely normal."],
+ ["Co-oximetry",["o-oximetry"],"A blood test that measures carboxyhemoglobin; pulse ox can't."],
+ ["Surfactant / type II pneumocytes",["urfactant","pneumocyte"],"Soapy coating made by type II cells that keeps alveoli from collapsing."],
+ ["Exudate / consolidation",["xudate","onsolidat"],"Fluid, pus and cells filling alveoli; on x-ray that area looks solid."],
+ ["V/Q mismatch / shunt",["V/Q","hunt"],"Blood flows past alveoli that have no air in them, so it doesn't pick up oxygen."],
+ ["Chemoreceptors / baroreceptors",["hemoreceptor","aroreceptor","aroreflex"],"Sensors: chemoreceptors watch O₂/CO₂ and adjust breathing; baroreceptors watch BP and adjust heart rate and vessel tone."],
+ ["AGEs",["AGEs"],"Sugar-protein cross-links that build up with age and stiffen tissues."],
+ ["Nitric oxide / endothelin",["itric oxide","ndothelin"],"Chemicals from the vessel lining: nitric oxide relaxes vessels; endothelin tightens them."],
+ ["Endothelium",["ndotheli"],"Inner lining of blood vessels."],
+ ["LDL / oxidized LDL / foam cells",["LDL","oam cell"],"'Bad' cholesterol. When it gets damaged (oxidized) in the artery wall, macrophages eat it and become fat-filled foam cells → plaque."],
+ ["Atherosclerosis / plaque",["laque","therosclerosis"],"Fatty buildup inside artery walls that narrows them."],
+ ["Claudication",["laudication"],"Leg pain when walking from not enough arterial blood; goes away with rest."],
+ ["ABI",["ABI"],"Ankle BP ÷ arm BP. Under 0.90 = PAD."],
+ ["Platelets",["latelet"],"Cell fragments that stick together to plug a leak — first step in clotting."],
+ ["COX-1 / thromboxane A₂",["COX","hromboxane","TXA₂"],"COX-1 is an enzyme platelets use to make thromboxane, a signal that makes more platelets stick. Aspirin shuts COX-1 off."],
+ ["P2Y12 / ADP",["P2Y12","ADP"],"Another 'stick together' receptor on platelets. Clopidogrel blocks it."],
+ ["Coagulation cascade",["ascade"],"A chain of clotting proteins (factors) that ends in a fibrin mesh."],
+ ["Thrombin / fibrin / fibrinogen",["hrombin","ibrin"],"Thrombin turns fibrinogen into fibrin — the mesh that holds a clot together."],
+ ["Factor Xa",["Xa"],"Clotting protein just before thrombin. Apixaban, rivaroxaban and enoxaparin target it."],
+ ["Antithrombin",["ntithrombin"],"The body's own anti-clot protein. Heparin supercharges it."],
+ ["Vitamin K",["itamin K"],"Liver needs it to make clotting factors II, VII, IX, X. Warfarin blocks it; vitamin K reverses warfarin."],
+ ["Tissue factor",["issue factor"],"Protein exposed when a vessel is injured; starts the clotting cascade."],
+ ["INR / aPTT",["INR","aPTT"],"Clotting-time tests. INR tracks warfarin (goal 2–3). aPTT tracks heparin."],
+ ["D-dimer",["D-dimer"],"Breakdown piece of a clot. Negative helps rule out DVT/PE."],
+ ["HIT",["HIT"],"Heparin-induced thrombocytopenia: immune reaction where platelets drop and clots form. Stop heparin."],
+ ["Factor V Leiden / protein C",["Leiden"],"Inherited clotting factor that resists the body's off switch (protein C) → clots more easily."],
+ ["Hemoglobin (Hgb) / heme / Fe²⁺",["emoglobin","heme","Fe²⁺"],"The oxygen-carrying protein in red cells. Heme is the part with iron (Fe²⁺) that holds oxygen."],
+ ["Reticulocyte",["etic"],"Young red blood cell. High count = marrow working hard to replace losses."],
+ ["MCV / MCHC",["MCV","MCHC"],"MCV = red cell size. MCHC = how much hemoglobin is in each cell (its color)."],
+ ["Ferritin / TIBC",["erritin","TIBC"],"Ferritin = stored iron (low in iron deficiency). TIBC = how much iron the blood could carry (high when iron is low)."],
+ ["Intrinsic factor / parietal cells",["ntrinsic factor","arietal"],"Stomach cells (parietal) make intrinsic factor, which B12 must attach to before it can be absorbed."],
+ ["Megaloblast / macrocytic / microcytic",["egaloblast","acrocytic","icrocytic"],"Micro = small cells (iron). Macro = big cells (B12/folate). Megaloblasts = oversized immature red cells."],
+ ["Myelin",["yelin"],"Fatty insulation around nerves. B12 deficiency damages it → numbness, poor balance."],
+ ["Methylmalonic acid (MMA) / homocysteine",["ethylmalonic","MMA","omocysteine"],"Waste products that build up without B12 (both) or folate (homocysteine only). High MMA points to B12."],
+ ["EPO (erythropoietin)",["EPO"],"Kidney hormone that tells the marrow to make red cells. Rises with chronic low oxygen."],
+ ["Polycythemia",["olycythemia"],"Too many red cells → thick blood → clot risk."],
+ ["Hemolysis / bilirubin / LDH",["emoly","ilirubin","LDH"],"Red cells breaking apart. Released hemoglobin becomes bilirubin (yellow → jaundice); LDH leaks out of broken cells."],
+ ["HbS / HbF / β-globin",["HbS","HbF","β-globin"],"HbS = sickle hemoglobin. HbF = fetal hemoglobin, which doesn't sickle. β-globin is the protein chain where the sickle mutation is."],
+ ["Autosomal recessive",["recessive"],"Need a bad gene copy from BOTH parents to have the disease. Two carriers → 25% chance per child."],
+ ["Blasts",["last"],"Immature white cells that never grow up. In leukemia they fill the marrow."],
+ ["ANC",["ANC"],"Absolute neutrophil count — the real number of infection-fighting white cells."],
+ ["Philadelphia chromosome / BCR-ABL / tyrosine kinase",["hiladelphia","BCR-ABL","yrosine"],"Swapped chromosome pieces create BCR-ABL, an always-on 'grow' switch (tyrosine kinase) that drives CML. Imatinib turns it off."],
+ ["Tumor lysis / uric acid / xanthine oxidase",["umor lysis","ric acid","anthine"],"Chemo bursts many cancer cells at once, dumping K⁺, phosphate and uric acid into the blood. Allopurinol blocks xanthine oxidase, the enzyme that makes uric acid."],
+ ["Depolarize / repolarize / action potential",["epolariz","ction potential"],"Heart cells fire by letting charged particles in (depolarize → contract) and then reset (repolarize)."],
+ ["SA node / AV node / Purkinje",["SA node","AV node","Purkinje","SA/AV"],"SA node = natural pacemaker. AV node = gate that delays the signal. Purkinje fibers spread it through the ventricles."],
+ ["P / QRS / T / PR / QT / ST",["QRS","P wave","T wave","PR ","QT"],"P = atria fire. QRS = ventricles fire. T = ventricles reset. PR = travel time to ventricles. QT = ventricle fire-and-reset time. ST = should be flat."],
+ ["Na⁺/K⁺-ATPase",["ATPase"],"Pump that pushes sodium out of cells and potassium in. Digoxin partly blocks it."],
+ ["Nephron / tubule / loop of Henle",["ephron","ubule","loop of Henle","Henle"],"The kidney's filtering units. Different diuretics block sodium reabsorption at different parts of the tube."],
+ ["Na-K-2Cl / Na-Cl / ENaC / SGLT2",["Na-K-2Cl","Na-Cl","ENaC","SGLT2"],"Sodium transporters in the nephron. Furosemide blocks Na-K-2Cl, thiazides block Na-Cl, aldosterone drives ENaC, SGLT2 drugs block SGLT2."],
+ ["Muscarinic receptors (M₂, M₃)",["uscarinic","M₂","M₃"],"ACh's receptors on organs. M₃ in airways = constrict + mucus. M₂ in heart = slow down."],
+ ["β₁ / β₂ / α₁",["β₁","β₂","α₁"],"Adrenaline receptors. β₁ heart (faster, stronger). β₂ lungs (open airways). α₁ vessels (tighten)."],
+ ["Glucocorticoid receptor",["lucocorticoid"],"Steroid receptor inside cells; steroids use it to switch off inflammation genes."],
+ ["PDE (phosphodiesterase)",["PDE"],"Enzyme that breaks down cAMP. Blocking it keeps cAMP high → relaxed muscle, less inflammation."],
+ ["FEV₁/FVC / PFT",["FEV₁","PFT"],"Breathing tests. FEV₁ = air blown out in 1 second; FVC = total. Low ratio = air can't get out (asthma, COPD)."],
+ ["ABG: PaO₂ / PaCO₂ / HCO₃⁻",["PaO₂","PaCO₂","HCO₃⁻"],"Arterial blood gas. PaO₂ = oxygen. PaCO₂ = CO₂ (acid from lungs). HCO₃⁻ = bicarbonate (base from kidneys)."],
+ ["Respiratory acidosis / alkalosis",["acidosis","alkalosis"],"Acidosis = CO₂ building up (breathing too little). Alkalosis = CO₂ blown off (breathing too fast)."],
+ ["Hypercapnia",["ypercapnia","CO₂ retain","CO₂ rises"],"Too much CO₂ in the blood → drowsy, confused."],
+ ["Shift (O₂ curve)",["Right shift"],"When tissues are hot, acidic or full of CO₂, hemoglobin lets go of oxygen more easily — delivering more where it's needed."],
+ ["Pack-year",["pack-year"],"Packs per day × years smoked."]
+];
+function glossFor(t) {
+  const txt = JSON.stringify([t.core, t.zoom, t.chains, t.see, t.labs, t.do, t.teach, t.meds, t.flag, t.tables]);
+  return G.filter(g => g[1].some(m => txt.includes(m))).map(g => ({ term: g[0], def: g[2] }));
+}
+
+const ECGR = [60, 180, 300, 420, 540, 660, 780];
+const ECG_PATH = (() => { let d = "M0 130"; ECGR.forEach(R => { d += " L" + (R - 30) + " 130 Q" + (R - 24) + " 100 " + (R - 18) + " 130 L" + (R - 6) + " 130 L" + (R - 4) + " 135 L" + R + " 70 L" + (R + 4) + " 148 L" + (R + 6) + " 130 L" + (R + 18) + " 130 Q" + (R + 30) + " 90 " + (R + 42) + " 130"; }); return d + " L900 130"; })();
+const GRID = (step) => { let d = ""; for (let x = 0; x <= 900; x += step) d += "M" + x + " 0V210"; for (let y = 0; y <= 210; y += step) d += "M0 " + y + "H900"; return d; };
+const G_SMALL = GRID(6), G_BIG = GRID(30);
+const SEG = { P: [270, 12, "P wave"], PR: [270, 24, "PR 0.16 s"], QRS: [294, 12, "QRS 0.08 s"], R: [295, 10, "R"], ST: [306, 12, "ST"], T: [318, 24, "T wave"], QT: [294, 48, "QT 0.32 s"], RR: [300, 120, "R to R = 4 big boxes = 0.8 s"], grid: [480, 30, "1 big box = 0.20 s"] };
+const HEART = [
+  { id: "RA", x: 8, y: 8, w: 112, h: 84, r: "44px 16px 10px 16px", l: "Right atrium" },
+  { id: "LA", x: 140, y: 8, w: 112, h: 84, r: "16px 44px 16px 10px", l: "Left atrium" },
+  { id: "RV", x: 8, y: 104, w: 112, h: 122, r: "10px 10px 16px 70px", l: "Right ventricle" },
+  { id: "LV", x: 140, y: 104, w: 112, h: 122, r: "10px 10px 70px 16px", l: "Left ventricle" },
+  { id: "SA", x: 18, y: 16, w: 36, h: 22, r: "11px", l: "SA" },
+  { id: "AV", x: 110, y: 82, w: 40, h: 22, r: "11px", l: "AV" },
+  { id: "HIS", x: 123, y: 108, w: 14, h: 34, r: "4px", l: "" },
+  { id: "BB", x: 123, y: 146, w: 14, h: 62, r: "4px", l: "" },
+  { id: "PK", x: 30, y: 214, w: 200, h: 8, r: "4px", l: "" }];
+const ALLP = HEART.map(p => p.id);
+const ACT = { P: ["SA", "RA", "LA"], PR: ["SA", "RA", "LA", "AV", "HIS"], QRS: ["HIS", "BB", "PK", "RV", "LV"], R: ["BB", "PK", "RV", "LV"], ST: ["RV", "LV"], T: ["RV", "LV"], QT: ["RV", "LV", "HIS", "BB", "PK"], RR: ALLP, count: ["RV", "LV"], grid: [], none: [] };
+const HCAP = { P: "Atria firing → small squeeze", PR: "Signal waiting in the AV node", QRS: "Ventricles firing", R: "Main ventricle mass firing = one beat", ST: "Ventricles holding the squeeze", T: "Ventricles resetting (K⁺ out)", QT: "Ventricles fire + reset", RR: "One full heartbeat, start to finish", count: "Each R = one ventricular beat", grid: "", none: "" };
+const LEG = [["SA", "SA node"], ["AV", "AV node"], ["HIS", "Bundle of His"], ["BB", "Bundle branches"], ["PK", "Purkinje fibers"]];
+
+const ST = {
+"ecg-r": [
+ ["What an ECG is", "Every heartbeat starts as an electrical signal. As it spreads through the heart muscle, a tiny voltage reaches the skin. The stickers (electrodes) pick it up and the machine draws it over time. The line goes UP when electricity travels toward a sticker, DOWN when it travels away, and stays FLAT when nothing is moving.", "A wave moving through a stadium crowd, with a camera filming it. The ECG is that film.", "none"],
+ ["The heart's wiring", "1 · SA node (top of the right atrium) fires 60–100×/min — the natural pacemaker.\n2 · The signal spreads across both atria.\n3 · AV node HOLDS it ~0.1 s so the atria can finish emptying.\n4 · Bundle of His carries it down the wall between the ventricles (septum).\n5 · Right + left bundle branches split it to each side.\n6 · Purkinje fibers spread it through the ventricle walls from the BOTTOM up, so blood is squeezed up and out.", "Spark at the top right → slow gate in the middle → lightning down the middle → spreads through the walls. Like squeezing toothpaste from the bottom of the tube.", "RR"],
+ ["Electricity first, squeeze second", "Firing (depolarization) happens a split second BEFORE the muscle squeezes. Resetting (repolarization) lets it relax. The ECG only shows electricity — it can't prove blood is moving. That's why you always check a pulse.", "The ECG is the spark plug firing, not the engine running.", "none"],
+ ["P wave = atria fire", "The small rounded bump. The SA node fired and the signal is spreading through both atria, which then squeeze and top off the ventricles (the 'atrial kick', ~20–30% of filling).\n\nUpright, same-shaped P before every QRS = the beat started in the SA node = 'sinus'. No clear P waves = the SA node isn't in charge (atrial fibrillation).", "The two small top chambers giving a little squeeze.", "P"],
+ ["PR interval = AV node pause", "From the START of the P wave to the START of the QRS. Normal 0.12–0.20 s (3–5 small boxes). Most of this time is the AV node holding the signal so the ventricles can fill.\n\nLonger than 0.20 s = the gate is slow = first-degree AV block.", "A toll booth: each car (signal) stops briefly, then goes.", "PR"],
+ ["QRS = ventricles fire", "Q = small dip first (the septum fires).\nR = tall spike UP (the main mass of the ventricles, mostly the thick left ventricle).\nS = dip after (the last parts, near the top of the ventricles).\n\nIt's the biggest wave because the ventricles have the most muscle. Normal width under 0.12 s (under 3 small boxes). The atria reset at the same time, hidden inside the QRS.", "The big pump's light switch flicking on.", "QRS"],
+ ["R wave = the one you count", "The R wave is the first upward spike of the QRS. It's the tallest, sharpest point on the strip, so it's the easiest to find.\n\nEvery R = one ventricular beat = one pulse you'd feel at the wrist. Heart RATE and RHYTHM are both measured from R wave to R wave.", "Each R spike is one thump of the heart.", "R"],
+ ["ST segment = ventricles squeezing", "From the end of the QRS (J point) to the start of the T. The ventricles are fully fired and holding the squeeze (calcium flowing in keeps them contracted). It should be FLAT, level with the baseline.\n\nRaised (ST elevation) = muscle being injured right now → MI.\nLowered (ST depression) = muscle short on oxygen → ischemia.", "Flat line = every muscle cell evenly charged. Damaged muscle leaks current and bends the line.", "ST"],
+ ["T wave = ventricles reset", "Repolarization: potassium flows out of the cells, recharging them to fire again. The ventricles relax and refill.\n\nThe heart is fragile here — an early beat landing on the T (R-on-T) can start VT/VF.\nTall peaked T = high K⁺. Flat T + extra U wave = low K⁺.", "Recharging the battery before the next beat.", "T"],
+ ["QT = total ventricle time", "Start of QRS to end of T: the ventricles fire AND reset. It should be less than half the R-to-R distance.\n\nLong QT (low K⁺ / Mg²⁺ / Ca²⁺, or drugs like azithromycin, levofloxacin, amiodarone) → torsades de pointes.", "How long the ventricles take to fire and fully recharge.", "QT"],
+ ["The paper is a clock", "Paper runs at 25 mm/s. Left → right = time.\n1 small box = 0.04 s\n1 big box (5 small) = 0.20 s\n5 big boxes = 1 second\n30 big boxes = a 6-second strip\nUp/down = voltage (1 small box = 0.1 mV).", "Each big box is one-fifth of a second ticking by.", "grid"],
+ ["Getting a clean strip", "Clip hair, clean and dry the skin. Patient lying still, breathing normally. Shivering, moving, loose or dry stickers = artifact that can look like VF.\n\n12-lead: V1 4th ICS right of sternum · V2 4th ICS left · V4 5th ICS midclavicular · V6 midaxillary at V4 level.\n5-lead: white right-upper, black left-upper, red left-lower ('smoke over fire'), green right-lower, brown chest.", "Bad stickers = a shaky camera.", "none"]],
+"ecg-a": [
+ ["Step 1 · Find the R waves", "Scan the strip for the tall, sharp upward spikes. Those are R waves. Mark each one — almost everything else is measured from them.", "Find the heartbeats first, then study them.", "count"],
+ ["Step 2 · Rate: 6-second method", "Count the R waves in a 6-second strip (30 big boxes) and multiply by 10.\n\nThis strip: 7 R waves × 10 ≈ 70/min.\n\nWorks for regular AND irregular rhythms — use this one for atrial fibrillation. Count R waves, not P waves (P waves give the atrial rate).", "How many thumps in 6 seconds, × 10 for a minute.", "count"],
+ ["Step 2 · Rate: 300 method", "Count the BIG boxes between two R waves, then 300 ÷ that number.\n\nThis strip: 4 big boxes → 300 ÷ 4 = 75/min.\nMemorize: 1 box 300 · 2 = 150 · 3 = 100 · 4 = 75 · 5 = 60 · 6 = 50.\nExact version: 1,500 ÷ small boxes (20) = 75.\n\nRegular rhythms only. (The 6-second method gave ~70 because it's an estimate.)", "Closer R waves = faster heart.", "RR"],
+ ["Step 3 · Rhythm", "Measure R to R across the whole strip (mark two R waves on paper, slide it along). All gaps equal = regular.\n\nIrregular with a pattern = look for dropped beats or early beats (PVCs).\nIrregularly irregular, no pattern = atrial fibrillation.", "A metronome — is the tick steady?", "RR"],
+ ["Step 4 · P waves", "Is there one P before every QRS? All the same shape? Upright?\n\nYes = the SA node started the beat = sinus.\nNo P, wavy baseline = atrial fibrillation (atria quivering).\nSawtooth waves = atrial flutter.\nMore P waves than QRS = signals being blocked at the AV node.", "Is the pacemaker at the top right doing its job?", "P"],
+ ["Step 5 · PR interval", "Normal 0.12–0.20 s (3–5 small boxes), and the same every beat.\n\nLong but constant = 1st-degree AV block.\nGets longer, longer, then a QRS drops = 2nd-degree type I (Wenckebach).\nP waves and QRS march separately = 3rd-degree (complete) block.", "How long the toll booth holds each car.", "PR"],
+ ["Step 6 · QRS width", "Under 0.12 s (under 3 small boxes) = narrow = the signal came down the normal wiring (started above the ventricles).\n\nWide = the beat started IN the ventricle (PVC, ventricular tachycardia) or a bundle branch is blocked — the signal crawls through muscle instead of the fast wiring.", "Narrow = took the highway. Wide = took back roads.", "QRS"],
+ ["Step 7 · ST, T and QT", "ST elevation = MI happening → cath lab now.\nST depression or T inversion = ischemia.\nPeaked T = high K⁺. Flat T + U wave = low K⁺.\nQT longer than half the R-R = prolonged → torsades risk.", "This is where you look for injured muscle and electrolyte problems.", "ST"],
+ ["Step 8 · Name it, then check the patient", "Normal sinus rhythm = rate 60–100, regular, one upright P before every QRS, PR 0.12–0.20, QRS under 0.12.\n\nThen look at the PERSON: pulse, BP, symptoms. Treat the patient, not the monitor.", "The strip is a clue, the patient is the answer.", "none"],
+ ["How each rhythm affects the heart", "Sinus brady (<60): SA fires slowly → less output → dizzy, low BP. Atropine if symptomatic.\nSinus tach (>100): less time to fill → less output, more O₂ demand. Find the cause.\nAtrial fib: atria quiver, no atrial kick, blood pools → clots → stroke. Rate control + anticoagulant.\nV tach: ventricles fire on their own too fast to fill → may lose pulse.\nV fib: ventricles quiver, no pump, no pulse → CPR + defibrillate.\nAsystole: no electricity → CPR + epinephrine, NOT shockable.", "Every rhythm problem becomes a pumping problem.", "none"]],
+promo: [
+ ["Your lungs clean themselves", "The airways are lined with tiny hairs (cilia) and a thin layer of mucus. Mucus traps dust and germs; the cilia beat upward and carry it to the throat, where you cough or swallow it.", "A conveyor belt carrying trash out of the lungs.", null],
+ ["What smoke breaks", "Smoke paralyzes the cilia and makes the mucus cells multiply. More mucus, no belt to move it → smoker's cough, trapped germs, more infections. The 'eater' cells (macrophages) also work worse.", "The belt has stopped and trash is piling up.", null],
+ ["Why nicotine is addictive", "Nerves normally talk with a messenger called ACh. Nicotine fits ACh's lock (the nicotinic receptor) in the brain's reward area → the brain releases dopamine (the 'feels good, do it again' chemical). When nicotine wears off, dopamine drops → craving, irritability.", "Nicotine is a fake key that opens the brain's reward door.", null],
+ ["How quit-smoking drugs work", "Nicotine patch/gum: steady nicotine without tar or CO, tapered down. Never smoke on the patch.\nVarenicline: half-turns the nicotine lock (less craving) AND blocks real nicotine (smoking feels less rewarding).\nBupropion: raises dopamine + norepinephrine → less craving. Avoid with seizures.", "Patch = slow drip. Varenicline = a key stuck halfway in the lock.", null],
+ ["Carbon monoxide", "CO in smoke binds hemoglobin ~200× tighter than oxygen. The pulse ox can't tell the difference → reads falsely normal. Check carboxyhemoglobin by co-oximetry. CO clears ~12–24 h after quitting.", "CO steals oxygen's seat on the bus and the pulse ox only counts full seats.", null],
+ ["Vaccines", "A vaccine shows the immune system a harmless piece of the germ → memory cells form → a fast, strong response next time. Flu yearly (the virus changes). Pneumococcal for ≥65 or high risk. COVID/RSV per age and risk.", "A wanted poster shown to the immune system ahead of time.", null],
+ ["The 5 A's", "Ask about tobacco every visit → Advise to quit → Assess readiness → Assist (counseling + meds together) → Arrange follow-up.", null, null]],
+packyr: [
+ ["The formula", "Packs per day × years smoked = pack-years. 20 cigarettes = 1 pack.", null, null],
+ ["Worked examples", "1 pack/day × 20 years = 20\n1.5 packs/day × 20 years = 30\n10 cigarettes/day (½ pack) × 40 years = 20\n2 packs/day × 15 years = 30", null, null],
+ ["Why it matters", "Every pack adds more DNA damage to the airway lining (cells change: metaplasia → dysplasia → cancer) and more elastin destruction (COPD). Higher pack-years = higher risk of both.", "A running total of damage.", null],
+ ["Screening rule", "Age 50–80 + ≥20 pack-years + smoking now OR quit within 15 years → yearly low-dose CT scan for lung cancer.", null, null]],
+"resp-age": [
+ ["Stiffer chest", "Rib cartilage hardens, the spine curves (kyphosis), and the chest gets rounder (↑ AP diameter). The chest can't expand as much.", "Breathing inside a stiffer box.", null],
+ ["Lungs lose their spring", "Elastin breaks down, so the lungs don't snap back after a breath. Air stays behind (↑ residual volume) → oxygen level runs slightly lower.", "An old rubber band that stretches but won't snap back.", null],
+ ["Weaker defenses", "Weaker cough, fewer cilia, weaker swallow → food, saliva and germs aren't cleared → aspiration and pneumonia.", "The cleaning crew is short-staffed.", null],
+ ["Slow alarms", "The sensors that detect low O₂ / high CO₂ respond slowly. Infection may show up as confusion instead of fever or shortness of breath.", "A smoke alarm with a weak battery.", null],
+ ["Nursing", "Incentive spirometer, cough + deep breathe, turn and walk, upright for meals, vaccines, report infections early.", null, null]],
+asthma: [
+ ["The normal airway", "Each airway is a tube with muscle wrapped around it, a lining inside, and a thin layer of mucus.", "A garden hose with a rubber band around it.", null],
+ ["Trigger → mast cell bursts", "In asthma, allergy antibodies (IgE) sit on mast cells. A trigger (pollen, dust, cold air, smoke, exercise) hits them → the mast cell bursts → histamine and leukotrienes pour out.", "A tripwire setting off a chemical alarm.", null],
+ ["Three things narrow the tube", "1 · The muscle squeezes (bronchospasm)\n2 · The lining swells (edema)\n3 · Thick mucus plugs it\nAll three are REVERSIBLE — that's what separates asthma from COPD.", "A straw that's pinched, swollen inside, and clogged.", null],
+ ["Why the wheeze is on breathing OUT", "Airways naturally get a bit narrower when you breathe out. Already-narrow airways close → air is trapped → whistling (wheeze), long exhale, tight chest.", "Easy to suck air in through a pinched straw, hard to blow it out.", null],
+ ["The blood gas tells the story", "Early: breathing fast → blowing off CO₂ → PaCO₂ LOW.\nLater: patient is exhausted → CO₂ climbs to 'normal' and then high = DANGER.\nSilent chest = so little air moving there's no wheeze = emergency.", "A 'normal' CO₂ in a struggling asthmatic means they're tiring.", null],
+ ["Rescue vs control", "Albuterol (SABA) turns ON β₂ receptors on airway muscle → cAMP rises inside → muscle relaxes in minutes. RESCUE.\nInhaled steroid (ICS) turns OFF inflammation genes → less swelling over days–weeks. CONTROL. Rinse mouth (thrush).\nTwo inhalers: bronchodilator first, wait ~5 min, then steroid — open the door, then let the steroid in deeper.", "Albuterol opens the hose. The steroid calms the swelling.", null],
+ ["Peak flow zones", "Green ≥80% of personal best = keep going.\nYellow 50–79% = use rescue, follow the action plan.\nRed <50% = rescue + get help now.\nUsing rescue >2 days a week = poorly controlled.", "A traffic light for breathing.", null],
+ ["Why LABA is never used alone", "A long-acting bronchodilator opens the airway but does nothing for the swelling. The patient feels better while inflammation quietly worsens → severe attacks. Always paired with an ICS.", "Turning off the smoke alarm while the fire keeps burning.", null]],
+copd: [
+ ["The protector gets overpowered", "Lungs contain enzymes that chew proteins (proteases), held in check by a protector protein (alpha₁-antitrypsin, AAT). Smoke brings in more protease-making white cells AND disables AAT → elastin gets destroyed.", "The demolition crew outnumbers the security guard.", null],
+ ["Emphysema", "Walls between alveoli break down → big floppy sacs → less surface for O₂ and no spring to push air out → air trapped → barrel chest, flat diaphragm, pursed lips, long exhale.", "An old balloon that won't deflate.", null],
+ ["Chronic bronchitis", "Airways stay inflamed; mucus glands enlarge; cilia are lost → productive cough most days for ≥3 months in 2 years.", "A clogged pipe with no cleaning crew.", null],
+ ["CO₂ builds up", "Air can't get out → CO₂ stays in → blood becomes acidic (respiratory acidosis). Over time the kidneys hold onto bicarbonate (base) to balance it → pH near normal, but CO₂ and HCO₃⁻ both high = 'compensated'.", "The kidneys add baking soda to balance the acid.", null],
+ ["Why the O₂ target is 88–92%", "These patients live with low O₂. Pushing high oxygen can worsen V/Q matching and let CO₂ rise further → drowsy, confused. Give O₂ when needed, aim for 88–92%.", "Enough oxygen, not maximum oxygen.", null],
+ ["Heart connection", "Low oxygen in the alveoli makes lung blood vessels clamp down → pressure in the lung arteries rises → the right ventricle strains → right heart failure (cor pulmonale): JVD, leg edema.", "The right heart pushing against a closing door.", null],
+ ["Blood connection", "Chronic low O₂ → kidneys release EPO → marrow makes extra red cells (polycythemia) → thick blood, clot risk.", null, null],
+ ["Breathing techniques", "Pursed lips create back-pressure that holds the airways open longer → more air gets out. Diaphragmatic breathing uses the main breathing muscle more efficiently.", "Blowing through pursed lips keeps the floppy tubes from collapsing.", null],
+ ["Drugs", "Tiotropium (LAMA) blocks the vagus nerve's 'narrow' signal (M₃).\nLABA turns on β₂ to open airways.\nAdd ICS if frequent flares. Steroids + antibiotics for exacerbations.\nQuitting smoking is the #1 intervention.", null, null]],
+pna: [
+ ["The germ gets in", "Usually inhaled or aspirated. It happens when the defenses (cough, cilia, macrophages) are weakened or overwhelmed.", null, null],
+ ["The alarm", "Macrophages in the alveoli spot the germ → release cytokines → neutrophils rush in and the capillaries leak.", "Security calls for backup and opens the gates.", null],
+ ["The air sacs flood", "Fluid, pus and cells (exudate) fill the alveoli. Blood still flows past but there's no air to pick up → low O₂ (shunt).\nCrackles = fluid popping open. Dull percussion = solid lung.", "Sponges filled with soup instead of air.", null],
+ ["Fever", "Cytokines (IL-1) reach the brain → PGE₂ → the body's thermostat is set higher → fever, chills.", "Someone turned the thermostat up.", null],
+ ["Sepsis link", "If cytokines spill into the whole body → vessels dilate and leak → low BP, high lactate, confusion = sepsis.", "The alarm goes off in the whole building, not one room.", null],
+ ["Order of care", "Sputum culture FIRST, then antibiotics fast (antibiotics first would kill the sample). O₂, HOB up, cough + deep breathe, incentive spirometer, fluids, walk. Finish the full antibiotic course.", null, null],
+ ["Older adults", "May have NO fever. New confusion, falls or not eating can be the first sign.", null, null]],
+"cv-age": [
+ ["Stiff arteries", "Elastin is replaced by collagen and calcium deposits → arteries can't stretch with each beat → top BP number rises, pulse pressure widens.", "An old stiff garden hose: same water, more pressure.", null],
+ ["Slow BP reflex", "Baroreceptors (BP sensors in the neck and aorta) respond slowly → standing up drops BP before the body catches it → dizzy, falls.", "A thermostat that reacts late.", null],
+ ["Wiring changes", "The SA node loses pacemaker cells and the wiring gets scarred → slow rates, heart blocks, atrial fibrillation.", null, null],
+ ["Less response to adrenaline", "β receptors respond less → heart rate doesn't rise much with exercise or stress → tires sooner.", null, null],
+ ["Atypical MI", "Older adults may have an MI with fatigue, shortness of breath or confusion instead of chest pain.", null, null]],
+hf: [
+ ["Two pumps side by side", "Right side pumps blood to the lungs. Left side pumps blood to the body. When one side fails, blood BACKS UP behind it.", "Two pumps in a row — if one slows, water backs up behind it.", null],
+ ["Left fails → lungs", "LV can't empty → pressure backs into the left atrium → lung veins → fluid leaks into the alveoli → crackles, short of breath, can't lie flat (orthopnea), pink frothy sputum.", "Left = Lungs.", null],
+ ["Right fails → body", "RV can't empty → blood backs into the vena cava → bulging neck veins (JVD), swollen liver, leg edema, weight gain.", "Right = the Rest of the body.", null],
+ ["The kidney gets fooled", "Low output → the kidney thinks the body is dry → RAAS: angiotensin II tightens vessels (harder for the heart to push) and aldosterone holds salt and water (more fluid). The SNS also speeds the heart. All of this makes HF worse over time.", "The kidney 'helps' by adding water to an overflowing tub.", null],
+ ["Why each drug", "ACEI/ARB/ARNI → block angiotensin II.\nβ-blocker → block the SNS overdrive.\nSpironolactone → block aldosterone.\nFurosemide → pee out the extra fluid (watch low K⁺).\nSGLT2 inhibitor → extra salt + sugar out in urine.\nDigoxin → stronger squeeze, slower AV node.", "Each drug blocks one part of the vicious cycle.", null],
+ ["Weight = fluid", "1 L of fluid ≈ 1 kg (2.2 lb). Weigh daily, same time, same scale, same clothes. Report +2–3 lb in a day or +5 lb in a week.", null, null],
+ ["BNP", "A stretched ventricle releases BNP. High BNP (>100) supports HF.", "The heart sending a 'too full' signal.", null],
+ ["Digoxin safety", "Hold if apical pulse <60. Toxicity: nausea, vomiting, yellow-green halos. Low K⁺ makes toxicity more likely (furosemide!).", null, null]],
+htn: [
+ ["BP = pump × pipes", "BP = cardiac output (how much the heart pushes) × resistance (how tight the small arteries are). Raise either one → BP goes up.", "Faster faucet or narrower hose = more pressure.", null],
+ ["What raises it", "Angiotensin II and adrenaline (α₁) tighten arterioles. Calcium entering arteriole muscle makes it squeeze. Salt + water add volume. Stiff arteries raise the top number.", null, null],
+ ["Damage over years", "Heart: pushing harder thickens the LV (LVH) → stiff → HF.\nBrain: stroke. Kidneys: damage → less filtering → more renin → higher BP.\nEyes: retinopathy. Usually no symptoms — 'silent killer'.", null, null],
+ ["Each drug lowers one part", "Thiazide → less volume (watch low K⁺).\nACEI / ARB → less angiotensin II.\nCalcium channel blocker → less calcium into arteriole muscle → vessels relax.\nβ-blocker → slower heart + less renin.", null, null],
+ ["Measuring right", "Seated 5 min, back supported, feet flat, arm at heart level, correct cuff. Too-small cuff = falsely high. Average 2+ readings.", null, null],
+ ["Crisis", ">180 / >120. Lower BP no more than 25% in the first hour — dropping too fast starves the brain and heart of blood.", null, null]],
+pad: [
+ ["Plaque builds", "Damaged 'bad' cholesterol (oxidized LDL) gets into the artery wall → macrophages eat it and become foam cells → a plaque grows and narrows the artery.", "Grease building up inside a pipe.", null],
+ ["Supply vs demand", "At rest, the narrow artery is enough. Walking → muscles need more blood than can get through → pain (claudication) → rest → pain stops.", "A one-lane road at rush hour.", null],
+ ["Why legs DOWN", "Gravity helps push blood down into the legs. Elevating makes it worse.", null, null],
+ ["What you see", "Cool, pale skin, weak or absent pulses, shiny hairless skin, thick nails, painful punched-out toe ulcers. ABI <0.90.", "A starved leg.", null],
+ ["Drugs", "Aspirin / clopidogrel → platelets less sticky. Cilostazol → widens vessels (not in HF). Statin → lower LDL, stabilize plaque.", null, null],
+ ["Emergency", "6 Ps — pain, pallor, pulselessness, paresthesia, paralysis, poikilothermia (cold) = artery suddenly blocked.", null, null]],
+dvt: [
+ ["Virchow's triad", "Clots form with 1) slow blood (immobility), 2) a damaged vein wall (surgery, trauma), 3) blood that clots too easily (estrogen, cancer, smoking).", null, null],
+ ["How the clot builds", "Tissue factor starts a chain of clotting proteins → factor Xa → thrombin → turns fibrinogen into a fibrin mesh that traps cells.", "A fishing net catching red cells.", null],
+ ["What you see", "ONE leg swollen, warm, red, calf pain. Pulses normal. Duplex ultrasound confirms.", "Blood can't get back UP.", null],
+ ["The danger: PE", "A piece breaks off → travels through the right heart → lodges in the lungs → sudden shortness of breath, chest pain, fast HR.", null, null],
+ ["Drugs", "Heparin boosts antithrombin → stops clot growth (monitor aPTT; antidote protamine; watch platelets for HIT).\nWarfarin blocks vitamin K → fewer clotting factors (INR 2–3; antidote vitamin K; keep vitamin K intake steady).\nApixaban/rivaroxaban block Xa directly.", "They stop the clot growing; the body dissolves it.", null],
+ ["Nursing", "Elevate, never massage, walk, SCDs, fluids, bleeding precautions.", null, null]],
+labs: [
+ ["The CBC is a headcount", "Red cells carry O₂, white cells fight infection, platelets clot. Low red = anemia; low white = infection risk; low platelets = bleeding.", null, null],
+ ["Cell size tells the anemia", "MCV <80 (small) = iron problem — without iron you can't fill cells with hemoglobin, so they divide extra and end up small.\nMCV >100 (big) = B12 or folate problem — DNA can't be made, so the nucleus lags while the cell keeps growing.", "Small cells = not enough filling. Big cells = stuck before dividing.", null],
+ ["Reticulocytes", "Young red cells. High = marrow working hard (blood loss, hemolysis). Low = marrow not keeping up (deficiency, marrow problem).", null, null],
+ ["ANC", "ANC = WBC × (% neutrophils + % bands).\nExample: 2,000 × (40% + 5%) = 900.\n<1,000 → neutropenic precautions. <500 = severe.", null, null],
+ ["Platelets", "150k–400k normal. <50k → bleeding precautions. <20k → spontaneous bleeding risk.", null, null]],
+anemia: [
+ ["Less hemoglobin = less oxygen", "Fewer delivery trucks → tissues get less O₂ → tired, pale, short of breath. The heart beats faster to deliver more → tachycardia.", "Fewer delivery trucks, so the remaining ones drive faster.", null],
+ ["Iron deficiency", "Iron sits in the middle of hemoglobin and holds the O₂. No iron → small, pale cells. Fast-growing tissues suffer: spoon nails, sore tongue, cracked lips, pica (craving ice/dirt). Ferritin low.", null, null],
+ ["B12 (pernicious) anemia", "B12 needs intrinsic factor (from stomach parietal cells) to be absorbed. In pernicious anemia the immune system destroys those cells → no B12 absorbed → big cells + nerve damage (numbness, poor balance) + smooth beefy red tongue. Oral B12 won't work → injections for life.", "B12 needs a ticket (intrinsic factor) to get in. No ticket, no entry.", null],
+ ["Why B12 hurts nerves and folate doesn't", "Both are needed to make DNA → both cause big cells. But B12 has a second job: keeping myelin (nerve insulation) healthy. Folate doesn't. So folate deficiency = big cells, NO nerve signs.", null, null],
+ ["Treatment", "Iron: empty stomach + vitamin C, no milk/antacids/tea, black stools normal, liquid through a straw (stains teeth).\nB12: injection or nasal, lifelong.\nFolate: oral. Never give folate alone to a B12 patient — it fixes the blood but nerves keep dying.", null, null]],
+sickle: [
+ ["One tiny change", "One amino acid in the hemoglobin chain is swapped (glutamic acid → valine). This makes hemoglobin S (HbS). Need two copies (one from each parent) to have the disease.", "One wrong letter in the recipe.", null],
+ ["Low oxygen → sickling", "When HbS gives up its oxygen it sticks together into stiff rods → the red cell bends into a sickle shape.", "Soft beanbags turning into hard bananas.", null],
+ ["Blocked vessels", "Stiff sickle cells jam in small vessels → no blood flow downstream → severe pain and organ damage (lungs, kidneys, brain, bones).", "A traffic jam of bananas.", null],
+ ["Early breakdown", "Sickle cells live 10–20 days instead of 120 → constant anemia; broken cells release bilirubin → jaundice, gallstones.", null, null],
+ ["Triggers", "Anything that lowers O₂ or thickens blood: dehydration, infection, cold, high altitude, stress, hard exercise.", null, null],
+ ["Spleen", "Repeated blockages destroy the spleen → can't filter bacteria → fever is an emergency.", null, null],
+ ["Treatment + teaching", "Crisis: fluids, O₂, opioids, warmth (no cold packs).\nHydroxyurea: makes more fetal hemoglobin (HbF), which doesn't sickle → fewer crises; needs reliable contraception.\nTeach: drink 3–4 L/day, avoid cold and altitude, vaccines, handwashing.", null, null]],
+leuk: [
+ ["The marrow factory", "Bone marrow stem cells normally make red cells, white cells and platelets in balance.", null, null],
+ ["One cell goes rogue", "A mutation makes one stem cell copy itself endlessly as immature white cells (blasts) that never work properly. They crowd the marrow.", "One machine spitting out broken parts and filling the whole factory.", null],
+ ["Three drops, three problems", "↓ red cells → anemia → tired, pale.\n↓ platelets → bleeding, bruising, petechiae.\n↓ working neutrophils → infections.", null, null],
+ ["Neutropenic fever", "With few neutrophils, fever may be the only sign of infection. Temp ≥100.4°F = emergency: cultures + antibiotics within an hour.", null, null],
+ ["Tumor lysis", "Chemo bursts many cancer cells at once → K⁺, phosphate and uric acid flood the blood (calcium drops) → dysrhythmias, kidney injury. Prevent with fluids + allopurinol.", "Popping thousands of water balloons full of potassium at once.", null]],
+beta: [
+ ["The fight-or-flight system", "Adrenaline (epinephrine/norepinephrine) speeds the body up. It works by turning on receptors — locks on cells. β receptors are one type.", null, null],
+ ["β₁ = heart (you have 1 heart)", "Turning on β₁ → faster heart rate, stronger squeeze, faster AV conduction, and the kidney releases renin (→ BP up).", null, null],
+ ["β₂ = lungs (you have 2 lungs)", "Turning on β₂ → airway muscle relaxes → airways open. Also pushes K⁺ into cells and widens muscle blood vessels.", null, null],
+ ["Inside the cell", "β receptor → G protein → cAMP rises. In the heart, cAMP lets more calcium in → stronger, faster beat. In airway muscle, cAMP relaxes it.", "Same message (cAMP), different result depending on the room.", null],
+ ["Why albuterol speeds the heart", "Albuterol targets β₂ but isn't perfect — some spills onto β₁ → tachycardia, palpitations, tremor. It also drops K⁺.", null, null],
+ ["Why β-blockers are used", "Blocking β₁: slower heart + weaker squeeze + less renin → lower BP and less oxygen demand. Used in HTN, angina, after MI, AF rate control, and HF (protects from chronic adrenaline overdrive).", "Easing off the gas pedal.", null],
+ ["Why nonselective is dangerous in asthma", "Propranolol blocks β₂ too → airway muscle loses its 'relax' signal → bronchospasm. Use β₁-selective (metoprolol, atenolol) in lung patients. Selectivity fades at high doses.", null, null],
+ ["Hidden low blood sugar", "β-blockers mask the shaky, racing-heart warning of hypoglycemia (sweating still happens). Diabetics check glucose.", null, null],
+ ["Safety", "Check apical pulse and BP first; hold for HR <60 or SBP <90 per order. Never stop suddenly → rebound tachycardia, angina, MI.", null, null]],
+calcium: [
+ ["Calcium is the squeeze signal", "In every muscle, calcium entering the cell is what triggers the squeeze. More calcium in = harder squeeze.", "Calcium is the 'go' button for muscle.", null],
+ ["In artery walls", "Small arteries (arterioles) are wrapped in smooth muscle. Calcium flows in through L-type channels → binds calmodulin → myosin pulls actin → the muscle tightens → the artery narrows.", null, null],
+ ["The BP link", "Narrow arterioles = higher resistance = higher BP. So more calcium entering arteriole muscle → higher BP.", "Squeeze the hose → pressure rises.", null],
+ ["Calcium channel blockers", "CCBs close the calcium door → less squeeze → arterioles relax → resistance falls → BP falls. Also relaxes coronary arteries → angina relief.", "Closing the door calcium uses.", null],
+ ["Two kinds", "-dipines (amlodipine, nifedipine) → mostly arteries → lower BP; HR may rise (reflex).\nDiltiazem, verapamil → heart too → slow the SA/AV node and weaken the squeeze → AF rate control. Avoid in weak-heart HF.", null, null],
+ ["Side effects come from the mechanism", "Vessels relax → ankle edema, flushing, headache, dizziness. Diltiazem/verapamil → bradycardia, heart block; verapamil → constipation. Avoid grapefruit.", null, null],
+ ["Calcium deposits ≠ calcium channels", "With aging and plaque, calcium also deposits IN artery walls → stiff arteries → higher systolic BP. That's a different problem — CCBs relax the muscle, they don't remove deposits.", null, null]],
+alpha: [
+ ["α₁ = tighten vessels", "Norepinephrine turns on α₁ on arteriole muscle → calcium released inside → vessels narrow → BP up.", null, null],
+ ["α₁ blockers", "Prazosin, doxazosin → vessels relax → BP down. Also relax the prostate (BPH).", null, null],
+ ["Standing up", "α₁ squeeze normally keeps BP up when you stand. Block it → BP drops on standing → first dose at bedtime, rise slowly.", null, null]],
+musc: [
+ ["The brake pedal", "The vagus nerve releases ACh. On muscarinic receptors: airways narrow + more mucus (M₃); heart slows (M₂).", "Vagus = the body's brake.", null],
+ ["Block it in the lungs", "Ipratropium / tiotropium block M₃ → airways open, less mucus. Dry mouth, urinary retention; careful with glaucoma.", null, null],
+ ["Block it in the heart", "Atropine blocks M₂ → heart speeds up → used for symptomatic bradycardia.", null, null]],
+raas: [
+ ["The kidney senses low flow", "Low BP, low blood flow or β₁ stimulation → kidney releases renin.", null, null],
+ ["The chain", "Renin → angiotensin I → ACE (in the lungs) → angiotensin II → vessels tighten + aldosterone (hold salt/water, lose K⁺) + ADH + thirst.", "A chain of dominoes that ends in higher BP.", null],
+ ["Block the chain", "ACE inhibitors (-pril) stop angiotensin II being made. ARBs (-sartan) block its receptor. Spironolactone blocks aldosterone.", null, null],
+ ["Side effects from the mechanism", "ACE also breaks down bradykinin → ACEI lets it build → dry cough, angioedema. Less aldosterone → K⁺ rises. Not in pregnancy.", null, null]],
+potassium: [
+ ["Where each diuretic works", "Proximal tubule: SGLT2 inhibitors. Loop of Henle: furosemide (strongest). Distal tubule: thiazides. Collecting duct: spironolactone.", null, null],
+ ["Why most lose K⁺", "Blocking sodium upstream sends extra sodium to the collecting duct, which swaps it for K⁺ → K⁺ lost in urine. Spironolactone blocks that swap → K⁺ kept.", null, null],
+ ["Why K⁺ matters to the heart", "K⁺ sets the heart cell's resting charge. Low → flat T, U wave, dysrhythmias, digoxin toxicity. High → peaked T, wide QRS, VF.", null, null]],
+clot: [
+ ["Two kinds of clot", "Arteries (fast flow): plaque ruptures → platelets pile on → antiplatelets (aspirin, clopidogrel).\nVeins + fibrillating atria (slow flow): clotting cascade → fibrin → anticoagulants (heparin, warfarin, apixaban).", null, null],
+ ["Monitoring", "Heparin → aPTT (antidote protamine). Warfarin → INR 2–3 (antidote vitamin K). Apixaban → no routine labs.", null, null]],
+o2: [
+ ["Three links", "1 · Air in (ventilation) — broken in asthma, COPD.\n2 · Across the membrane (diffusion) — broken in pneumonia.\n3 · Carried on hemoglobin — broken in anemia, sickle cell, CO poisoning.", "Road in, loading dock, delivery trucks.", null],
+ ["SpO₂ trap", "SpO₂ is the % of hemoglobin that's full, not the amount. Anemic patients can read 98% but still be short on oxygen. CO poisoning reads falsely normal.", null, null]]
+};
+
+class Component extends DCLogic {
+  state = { sel: "beta", tab: "overview", open: true, z: 0.7, narrow: false };
+  canvasRef = React.createRef();
+  panelRef = React.createRef();
+  componentDidMount() {
+    const narrow = window.innerWidth < 900;
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem("exam2-map2") || "{}"); } catch (e) {}
+    const cw = this.canvasRef.current ? this.canvasRef.current.clientWidth : 900;
+    const fit = Math.max(0.35, Math.min(1, cw / W));
+    this.setState({ narrow, z: s.z || (narrow ? 0.62 : fit), sel: byId[s.sel] ? s.sel : "beta", open: narrow ? false : true }, () => this.center(this.state.sel, false));
+    this._rs = () => this.setState({ narrow: window.innerWidth < 900 });
+    window.addEventListener("resize", this._rs);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._rs); }
+  persist() { try { localStorage.setItem("exam2-map2", JSON.stringify({ sel: this.state.sel, z: this.state.z })); } catch (e) {} }
+  center(id, smooth = true) {
+    const c = this.canvasRef.current; if (!c || !P[id]) return;
+    const z = this.state.z, visH = this.state.narrow && this.state.open ? c.clientHeight - window.innerHeight * 0.62 : c.clientHeight;
+    c.scrollTo({ left: P[id][0] * z - c.clientWidth / 2, top: P[id][1] * z - Math.max(120, visH) / 2, behavior: smooth ? "smooth" : "auto" });
+  }
+  pick(id) {
+    if (!byId[id]) return;
+    this.setState({ sel: id, tab: "overview", open: true }, () => { this.persist(); if (this.panelRef.current) this.panelRef.current.scrollTop = 0; setTimeout(() => this.center(id), 20); });
+  }
+  setZoom(nz) {
+    const c = this.canvasRef.current, z = this.state.z; nz = Math.max(0.3, Math.min(1.6, nz));
+    if (!c) return this.setState({ z: nz });
+    const cx = (c.scrollLeft + c.clientWidth / 2) / z, cy = (c.scrollTop + c.clientHeight / 2) / z;
+    this.setState({ z: nz }, () => { c.scrollTo({ left: cx * nz - c.clientWidth / 2, top: cy * nz - c.clientHeight / 2 }); this.persist(); });
+  }
+  table(tb) {
+    const k = tb.cols.length, cells = [];
+    tb.cols.forEach(v => cells.push({ v, bg: "var(--color-accent-900)", fg: "var(--color-accent-200)", ff: "var(--font-heading)" }));
+    tb.rows.forEach(r => r.forEach((v, j) => cells.push({ v, bg: j ? "transparent" : "var(--color-neutral-900)", fg: j ? "var(--color-neutral-200)" : "var(--color-neutral-300)", ff: "var(--font-body)" })));
+    return { title: tb.title, cells, cols: "minmax(84px,.7fr) " + "minmax(0,1fr) ".repeat(k - 1), minW: k > 2 ? (k * 120) + "px" : "0" };
+  }
+  detail(t) {
+    const zn = t.zoom.length;
+    const zoom = t.zoom.map((z, i) => ({ lvl: z[0], t: z[1], indent: (i * 12) + "px",
+      dot: "color-mix(in oklch, var(--color-accent) " + (25 + i * 25) + "%, var(--color-bg))",
+      lineTop: i ? "var(--color-accent-700)" : "transparent", lineBot: i < zn - 1 ? "var(--color-accent-700)" : "transparent" }));
+    const chains = (t.chains || []).map(c => c.map((s, i) => { const last = i === c.length - 1;
+      return { t: s, arrow: last ? "" : "↓", bc: last ? "var(--color-accent-400)" : "var(--color-neutral-700)", bg: last ? "var(--color-accent-900)" : "var(--color-surface)", fg: last ? "var(--color-neutral-100)" : "var(--color-neutral-200)" }; }));
+    const nodes = [["See / know", t.see], ["Labs / numbers", t.labs], ["Do first", t.do], ["Teach", t.teach]].filter(n => n[1] && n[1].length).map(n => ({ k: n[0], items: n[1] }));
+    const meds = (t.meds || []).map(m => ({ name: m[0], target: m[1], effect: m[2], watch: m[3] }));
+    const links = EDGES.filter(e => e.type !== "hub" && (e.a === t.id || e.b === t.id)).map(e => { const o = byId[e.a === t.id ? e.b : e.a];
+      return { kind: o.kind === "mech" ? "Mechanism" : "CH " + o.ch, label: o.name, why: e.label, pick: () => this.pick(o.id) }; })
+      .sort((x, y) => (x.kind === "Mechanism") - (y.kind === "Mechanism"));
+    const isTopic = t.kind === "topic";
+    const words = glossFor(t);
+    const nSt = (ST[t.id] || []).length;
+    return { hasSteps: nSt > 0, stepsLabel: "Step-by-step walkthrough · " + nSt + " steps", openWalk: () => this.setState({ walk: { id: t.id, i: 0 } }), plain: PL[t.id] || "", words, name: t.name, ch: t.ch, isTopic, kicker: isTopic ? "CH " + t.ch + " · " + BRN(t.ch) : "Mechanism · drugs", core: t.core, flag: t.flag, zoom, chains, nodes, meds, links,
+      tables: (t.tables || []).map(tb => this.table(tb)), drill: "Exam 2 Recall.dc.html#ch=" + t.ch, notes: "Exam 2 Info.dc.html#ch" + t.ch };
+  }
+  renderVals() {
+    const { sel, z, narrow, open } = this.state;
+    const nb = new Set([sel]);
+    EDGES.forEach(e => { if (e.a === sel) nb.add(e.b); if (e.b === sel) nb.add(e.a); });
+    const glow = "0 0 18px color-mix(in oklch, var(--color-accent) 55%, transparent)";
+    const nodes = HUBS.map(hb => ({ id: hb.id, x: P[hb.id][0] + "px", y: P[hb.id][1] + "px", w: "200px", r: "var(--radius-md)", kicker: hb.sub, name: hb.name, fs: "17px",
+      bc: "var(--color-accent-500)", bg: "var(--color-accent-900)", sh: "0 0 22px color-mix(in oklch, var(--color-accent) 25%, transparent)", kfg: "var(--color-accent-200)", op: nb.has(hb.id) || !sel ? 1 : 0.55, pick: () => {} }))
+      .concat(ALL.map(t => { const on = t.id === sel, mech = t.kind === "mech";
+        return { id: t.id, x: P[t.id][0] + "px", y: P[t.id][1] + "px", w: mech ? "210px" : "180px", r: mech ? "22px" : "var(--radius-md)",
+          kicker: mech ? "Mechanism" : "CH " + t.ch, name: mech ? t.short : t.name, fs: "14px",
+          bc: on ? "var(--color-accent-200)" : mech ? "var(--color-accent-500)" : "var(--color-neutral-700)",
+          bg: on ? "var(--color-accent-800)" : mech ? "color-mix(in oklch, var(--color-accent-900) 70%, var(--color-surface))" : "var(--color-surface)",
+          sh: on ? glow : "none", kfg: mech ? "var(--color-accent-300)" : "var(--color-neutral-400)", op: nb.has(t.id) ? 1 : 0.38, pick: () => this.pick(t.id) }; }));
+    const es = EDGES.map(e => ({ e, on: e.a === sel || e.b === sel })).sort((x, y) => x.on - y.on);
+    const edges = es.map(({ e, on }) => ({ d: e.d,
+      stroke: on ? "var(--color-accent-300)" : e.type === "hub" ? "var(--color-neutral-600)" : e.type === "mech" ? "var(--color-accent-500)" : "var(--color-accent-600)",
+      w: on ? "2.5px" : e.type === "hub" ? "1px" : "1.3px", dash: e.type === "topic" ? "6 5" : "none", op: on ? 1 : 0.22 }));
+    const edgeLabels = es.filter(x => x.on && x.e.label).map(({ e }) => ({ left: e.mx + "px", top: e.my + "px", t: e.label.length > 34 ? e.label.slice(0, 32) + "…" : e.label }));
+    const t = byId[sel] || ALL[0], cur = this.detail(t);
+    const avail = [["overview", "Overview", true], ["words", "Words (" + cur.words.length + ")", cur.words.length], ["chains", "Chains", cur.chains.length], ["clinical", "Clinical", cur.nodes.length || cur.flag], ["drugs", "Drugs", cur.meds.length], ["tables", "Tables", cur.tables.length], ["links", "Connections", cur.links.length]].filter(x => x[2]);
+    const tab = avail.some(x => x[0] === this.state.tab) ? this.state.tab : "overview";
+    const tabs = avail.map(([k, label]) => ({ label, go: () => this.setState({ tab: k }, () => { if (this.panelRef.current) this.panelRef.current.scrollTop = 0; }),
+      bc: k === tab ? "var(--color-accent-300)" : "var(--color-neutral-700)", bg: k === tab ? "var(--color-accent-800)" : "transparent", fg: k === tab ? "var(--color-neutral-100)" : "var(--color-neutral-300)" }));
+    const tf = {}; avail.forEach(([k]) => tf[k] = k === tab);
+    let walk = { steps: [] }, walkOpen = false;
+    const wk = this.state.walk;
+    if (wk && ST[wk.id]) {
+      walkOpen = true;
+      const steps = ST[wk.id], i = Math.min(wk.i, steps.length - 1), s = steps[i], tt = byId[wk.id];
+      const seg = s[3] || null, hasEcg = !!seg, act = new Set(ACT[seg] || []);
+      const sg = SEG[seg === "count" ? "R" : seg];
+      const go = k => this.setState({ walk: { id: wk.id, i: k } }, () => { const el = document.getElementById("walk-scroll"); if (el) el.scrollTop = 0; });
+      walk = { title: tt.name, n: "Step " + (i + 1) + " of " + steps.length, h: s[0], body: s[1], pic: s[2] || "", hasPic: !!s[2], hasEcg,
+        dots: steps.map((_, k) => ({ bg: k <= i ? "var(--color-accent-400)" : "var(--color-neutral-700)", go: () => go(k) })),
+        back: () => i > 0 && go(i - 1), backOp: i > 0 ? 1 : 0.35,
+        next: () => i < steps.length - 1 ? go(i + 1) : this.setState({ walk: null }), nextLabel: i < steps.length - 1 ? "Next" : "Done",
+        close: () => this.setState({ walk: null }),
+        small: G_SMALL, big: G_BIG, path: ECG_PATH,
+        hiOp: sg && seg !== "count" ? 1 : 0, hx: sg ? sg[0] : 0, hw: sg ? sg[1] : 0, lx: sg ? sg[0] + sg[1] / 2 : 0, lleft: sg ? Math.min(85, Math.max(15, (sg[0] + sg[1] / 2) / 9)) + "%" : "50%", lt: seg === "count" ? "" : (sg ? sg[2] : ""),
+        marks: ECGR.map((x, k) => { const on = seg === "count" || seg === "R" || seg === "RR";
+          return { x, left: (x / 9) + "%", op: on ? 1 : 0, t: seg === "count" ? String(k + 1) : "R", r: on ? 5 : 0 }; }),
+        countLabel: seg === "count" ? "7 R waves in 6 s × 10 ≈ 70/min" : "",
+        parts: HEART.map(p => { const on = act.has(p.id);
+          return { x: p.x + "px", y: p.y + "px", w: p.w + "px", h: p.h + "px", r: p.r, l: p.l,
+            bg: on ? "color-mix(in oklch, var(--color-accent) 45%, var(--color-surface))" : "var(--color-neutral-900)",
+            bc: on ? "var(--color-accent-200)" : "var(--color-neutral-700)",
+            sh: on ? "0 0 16px color-mix(in oklch, var(--color-accent) 60%, transparent)" : "none",
+            fg: on ? "var(--color-neutral-100)" : "var(--color-neutral-500)" }; }),
+        legend: LEG.map(([id, l]) => { const on = act.has(id); return { l, bc: on ? "var(--color-accent-300)" : "var(--color-neutral-700)", fg: on ? "var(--color-neutral-100)" : "var(--color-neutral-500)", bg: on ? "var(--color-accent-800)" : "transparent" }; }),
+        hcap: HCAP[seg] || "" };
+    }
+    return {
+      walk, walkOpen,
+      canvasRef: this.canvasRef, panelRef: this.panelRef,
+      worldW: (W * z) + "px", worldH: (H * z) + "px", worldTf: "scale(" + z + ")",
+      zoomIn: () => this.setZoom(z * 1.25), zoomOut: () => this.setZoom(z / 1.25),
+      zoomFit: () => { const c = this.canvasRef.current; if (c) this.setZoom(Math.min(c.clientWidth / W, c.clientHeight / H)); },
+      nodes, edges, edgeLabels, open, cur, tabs, t: tf,
+      close: () => this.setState({ open: false }),
+      p: narrow ? { pos: "fixed", left: "0", h: "62dvh", w: "auto", flex: "none", bl: "none", bt: "1px solid var(--color-accent-600)", r: "var(--radius-lg) var(--radius-lg) 0 0", sh: "var(--shadow-lg)" }
+                : { pos: "relative", left: "auto", h: "auto", w: "440px", flex: "0 0 440px", bl: "1px solid var(--color-divider)", bt: "none", r: "0", sh: "none" }
+    };
+  }
+}
+</script>
+</body>
+</html>
