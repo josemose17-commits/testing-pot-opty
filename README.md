@@ -26,12 +26,14 @@ On the map, tap **Pick topics** and choose the topics (or **Lists → Study guid
 1. Add the chapter sections to the Info page (`Exam 2 Info.dc.html`) and run `python3 tools/extract_info_topics.py` (needs `pip install beautifulsoup4`). It rewrites `data/info-topics.js` and `data/topic-index.js`.
 2. New chapters show up on the map by themselves (under "More chapters" until you add them to `SYSTEMS` in `Exam 2 Map.html`).
 3. Add keyword rules for the new topics in `focus.js`, and question data in `data/`.
+4. For the short (Quick) version of the notes, run `python3 tools/dump_note_blocks.py <folder>` to list each wordy paragraph, then add bullets for it in `data/notes-short/<chapter>.js`, keyed by the paragraph's heading. Paragraphs without bullets just show in full.
 
 ## Layout
 
 - `data/` — question banks and drug data the pages load (`ngn-*`, `recall-*`, `drugs-*`), the glossary, the map's topics (`info-topics.js`, generated) and breakdowns (`concept-nodes.js`, with the short memory keys in `concept-keys.js`).
 - `focus.js` — the shared focus (which topics you picked) that the map, Recall and the Mastery Loop read.
-- `tools/` — the script that splits the Info page into map topics.
+- `data/notes-short/` — the short, bullet versions of the notes (Quick mode on the map); every fact kept, the full paragraph one tap away.
+- `tools/` — scripts that split the Info page into map topics and list the paragraphs that have short versions.
 - `support.js` — the Claude Design page runtime every `.dc.html` page loads.
 - `_ds/nocturne-…/styles.css` — the shared theme (colors at the top; glass layer and tab bar at the bottom).
 - `nav.js` — the floating tab bar on every page.

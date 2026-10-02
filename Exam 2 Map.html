@@ -166,6 +166,16 @@
   .bd th, .bd td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
   .bd th { color: var(--color-accent-200); font-weight: 600; }
   .tablewrap { overflow-x: auto; }
+  /* Short notes */
+  .sn { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 15px; color: var(--color-neutral-200); }
+  .sn-h { font-weight: 600; color: var(--color-text); font-size: 15px; margin-bottom: 4px; }
+  .sn ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.42; }
+  .sn li::marker { color: var(--color-accent-2-400); }
+  .sn li b { color: var(--color-accent-100); font-weight: 600; }
+  .sn-why { border-color: var(--color-accent-700); background: linear-gradient(135deg, var(--color-accent-900), transparent); }
+  .sn-why .sn-h { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-accent-300); }
+  .sn-full > summary { font-size: 12.5px; }
+  .sn-full[open] > div { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--color-divider); }
   /* Test me: hide the answers until tapped */
   .quiz .cover:not(.shown) { color: transparent !important; text-shadow: 0 0 9px rgba(255, 255, 255, .55); cursor: pointer; user-select: none; }
   .quiz .cover:not(.shown) .gw { border-bottom-color: transparent; }
@@ -236,6 +246,17 @@
 <script src="data/info-topics.js?v=202610012130"></script>
 <script src="data/concept-nodes.js?v=202610012130"></script>
 <script src="data/concept-keys.js?v=202610021200"></script>
+<script src="data/notes-short/22.js?v=202610021400"></script>
+<script src="data/notes-short/23.js?v=202610021400"></script>
+<script src="data/notes-short/24.js?v=202610021400"></script>
+<script src="data/notes-short/25.js?v=202610021400"></script>
+<script src="data/notes-short/27.js?v=202610021400"></script>
+<script src="data/notes-short/28.js?v=202610021400"></script>
+<script src="data/notes-short/29.js?v=202610021400"></script>
+<script src="data/notes-short/30.js?v=202610021400"></script>
+<script src="data/notes-short/33.js?v=202610021400"></script>
+<script src="data/notes-short/34.js?v=202610021400"></script>
+<script src="data/notes-short/more.js?v=202610021400"></script>
 <script src="data/glossary.js?v=202610012130"></script>
 <script src="focus.js?v=202610012130"></script>
 <script>
@@ -478,8 +499,10 @@
     var t = current.type === 'topic' ? byId[current.id] : null;
     var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
     if (tab === 'notes' && t) {
-      body.innerHTML = '<div class="notes">' + t.html + '</div>';
-      markWords(body.firstChild);
+      var hasShort = !!(window.NOTES_SHORT || {})[t.id];
+      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + '<div class="notes">' + t.html + '</div></div>';
+      if (hasShort && bdMode === 'quick') shortenNotes(body.querySelector('.notes'), t.id);
+      markWords(body.querySelector('.notes'));
     } else if (tab === 'breakdown') {
       body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
       markWords(body);
@@ -518,13 +541,53 @@
       more(arr.length - 3, '+' + (arr.length - 3) + ' more', '<ul>' + arr.slice(3).map(li).join('') + '</ul>') + '</div>';
   }
   function chainHtml(c) { return '<div class="chain">' + c.map(function (x, i) { return '<span' + (i ? ' class="cover"' : '') + '>' + esc(x) + '</span>'; }).join('<i>→</i>') + '</div>'; }
-  function bdToolbar() {
+  function bdToolbar(where) {
     return '<div class="bdbar"><div class="seg2" role="group" aria-label="How much to show">' +
       '<button data-bd="quick" aria-pressed="' + (bdMode === 'quick') + '">Quick</button><button data-bd="full" aria-pressed="' + (bdMode === 'full') + '">Full</button></div>' +
       '<button class="pill' + (quiz ? ' on' : '') + '" data-quiz>' + (quiz ? 'Testing — tap to reveal' : 'Test me') + '</button>' +
       (quiz ? '<button class="pill" data-revealall>Reveal all</button>' : '') + '</div>' +
-      '<p class="bdhint">' + (quiz ? 'Keys and chain steps are hidden. Say them out loud, then tap to check.' : bdMode === 'quick' ? 'Quick shows the key ideas. Tap any row to open the full detail, or switch to Full.' : 'Everything is open. Switch to Quick for just the key ideas.') + '</p>';
+      '<p class="bdhint">' + (where === 'notes' ? (bdMode === 'full' ? 'Full: the original notes, word for word. Switch to Quick for the short version.' : quiz ? 'Key terms are hidden. Say each one, then tap to check.' : 'Quick: each paragraph as short bullets with every fact kept. Tap “Full paragraph” under any one to read the original.') : quiz ? 'Keys and chain steps are hidden. Say them out loud, then tap to check.' : bdMode === 'quick' ? 'Quick shows the key ideas. Tap any row to open the full detail, or switch to Full.' : 'Everything is open. Switch to Quick for just the key ideas.') + '</p>';
   }
+  // ---------- Notes: short bullets in place of each wordy paragraph ----------
+  function letters(x) { return String(x).toLowerCase().replace(/[^a-z]/g, ''); }
+  function blockKey(head, n) { return letters(head) + (n > 1 ? '#' + n : ''); }
+  // Same rule as tools/dump_note_blocks.py: a leaf block that opens with "<b>Label</b> —" (or with <b> and runs 250+ characters), or a "Why" side box.
+  function noteBlocks(root) {
+    var out = [], seen = {};
+    root.querySelectorAll('div').forEach(function (d) {
+      if (d.querySelector('div, p')) return;
+      var kids = [].filter.call(d.childNodes, function (c) { return c.nodeType === 1 || (c.nodeType === 3 && c.nodeValue.trim()); });
+      var first = kids[0]; if (!first || first.nodeType !== 1) return;
+      var next = first.nextSibling, head = null;
+      if (first.tagName === 'B' && ((next && next.nodeType === 3 && /^\s*[—–]/.test(next.nodeValue)) || d.textContent.replace(/\s+/g, ' ').trim().length >= 250)) head = first.textContent;
+      else if (first.tagName === 'SPAN' && /border-left:\s*2px solid var\(--color-accent/.test(d.getAttribute('style') || '')) head = first.textContent;
+      if (head == null) return;
+      var k = letters(head); seen[k] = (seen[k] || 0) + 1;
+      out.push({ el: d, head: head.replace(/\s+/g, ' ').trim(), n: seen[k] });
+    });
+    return out;
+  }
+  function bulletHtml(x) {
+    return arrows(esc(x)).replace(/\*\*(.+?)\*\*/g, '<b class="cover">$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>');
+  }
+  function shortenNotes(root, id) {
+    var data = (window.NOTES_SHORT || {})[id]; if (!data) return;
+    var map = {}; Object.keys(data).forEach(function (k) { var m = k.match(/^(.*?)(#\d+)?$/); map[letters(m[1]) + (m[2] || '')] = { label: m[1], lines: data[k] }; });
+    noteBlocks(root).forEach(function (b) {
+      var key = blockKey(b.head, b.n), hit = map[key];
+      if (!hit) { // headings that carry an inline word breakdown end with the term itself
+        var suffix = b.n > 1 ? '#' + b.n : '';
+        Object.keys(map).some(function (k) { var base = k.replace(/#\d+$/, ''), kn = (k.match(/#\d+$/) || [''])[0]; if (kn === suffix && base.length > 5 && letters(b.head).slice(-base.length) === base) { hit = map[k]; return true; } });
+      }
+      if (!hit) return;
+      var why = /^why$/i.test(hit.label.trim());
+      var wrap = document.createElement('div'); wrap.className = 'sn' + (why ? ' sn-why' : '');
+      wrap.innerHTML = '<div class="sn-h">' + esc(hit.label) + '</div><ul>' + hit.lines.map(function (l) { return '<li>' + bulletHtml(l) + '</li>'; }).join('') + '</ul><details class="more sn-full"><summary>Full paragraph</summary></details>';
+      b.el.parentNode.replaceChild(wrap, b.el);
+      wrap.querySelector('details').appendChild(b.el);
+    });
+  }
+
   function breakdownHtml(n) {
     if (!n) return '';
     var k = KEYS[n.id] || {}, open = bdMode === 'full' ? ' open' : '';
