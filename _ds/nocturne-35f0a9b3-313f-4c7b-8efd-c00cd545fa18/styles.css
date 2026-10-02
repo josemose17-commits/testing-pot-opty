@@ -352,3 +352,12 @@ body { padding-bottom: 84px; }
 .hub-tabs a:hover { color: var(--color-text); background: rgba(255, 255, 255, 0.08); }
 .hub-tabs a[aria-current="page"] { color: #04160e; background: var(--color-accent); }
 @media print { .hub-tabs { display: none; } body { padding-bottom: 0; } }
+
+/* ══ Page changes — a quick cross-fade between pages; the tab bar stays put ══ */
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .22s; animation-timing-function: ease; }
+.hub-tabs { view-transition-name: hub-tabs; }
+.hub-tabs a { transition: background-color .2s ease, color .2s ease; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
