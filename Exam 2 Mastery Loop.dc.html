@@ -77,8 +77,8 @@
           <div style="font-size:13px;color:var(--color-neutral-200);">Once. {{ preNote }} Your answers save as you go: stop any time and resume later. The report shows exactly which topics are weak.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">2 · Tell it why</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">After every miss, say why — a word you didn’t know, the drug, what to look for, what to do, the mechanism. The next question probes that gap.</div>
+          <div class="card-kicker">2 · It finds why</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">After every miss it works out the likely gap from the answer you picked: the drug, what to look for, what to do, the priority, a number, or the mechanism. The next question probes that gap. You can change the reason if it’s off.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">3 · Repair deck</div>
@@ -279,12 +279,18 @@
           </sc-if>
           <sc-if value="{{ fb.askWhy }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
-              <div style="font-size:14px;color:var(--color-neutral-100);">Why did you miss it? <span style="color:var(--color-neutral-400);font-size:12px;">Pick any — the next question targets it.</span></div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <sc-for list="{{ fb.reasons }}" as="r" hint-placeholder-count="8">
-                  <button onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
-                </sc-for>
-              </div>
+              <div style="font-size:14px;color:var(--color-neutral-100);">Likely why you missed it <span style="color:var(--color-neutral-400);font-size:12px;">— worked out from your answer. The next question tests this gap.</span></div>
+              <sc-for list="{{ fb.diag }}" as="d" hint-placeholder-count="2">
+                <div style="font-size:13px;color:var(--color-neutral-200);padding-left:10px;border-left:2px solid var(--color-accent-500);"><b style="color:var(--color-accent-200);font-weight:500;">{{ d.head }}.</b> {{ d.line }}</div>
+              </sc-for>
+              <details class="whyfix">
+                <summary style="cursor:pointer;font-size:12px;color:var(--color-neutral-400);">Not quite it? Change the reason</summary>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+                  <sc-for list="{{ fb.reasons }}" as="r" hint-placeholder-count="8">
+                    <button onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
+                  </sc-for>
+                </div>
+              </details>
             </div>
           </sc-if>
           <sc-if value="{{ fb.askConf }}" hint-placeholder-val="{{ false }}">
@@ -407,7 +413,7 @@
               <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 12px;font-size:13px;">
                 <span style="color:var(--color-neutral-400);">You</span><span style="white-space:pre-line;color:var(--color-neutral-200);">{{ m.your }}</span>
                 <span style="color:var(--color-neutral-400);">Correct</span><span style="white-space:pre-line;color:var(--color-accent-200);">{{ m.correct }}</span>
-                <span style="color:var(--color-neutral-400);">Your reason</span><span style="color:var(--color-neutral-200);">{{ m.why }}</span>
+                <span style="color:var(--color-neutral-400);">Likely gap</span><span style="color:var(--color-neutral-200);">{{ m.why }}</span>
               </div>
             </div>
           </sc-for>
@@ -609,6 +615,67 @@ function wrongNotes(P, R) {
   }
   return out.slice(0, 6).join('\n');
 }
+// Works out the likely reason for a miss from what was picked, what was right, and how the stem is worded.
+// Returns reason keys (from REASONS) and a plain-language line for each.
+const NEG_STEM = /further (teaching|education|instruction)|needs? (more )?teaching|requires? (immediate )?follow-?up|unsafe|contraindicat|\bnot\b|\bexcept\b|incorrect|\bleast\b|\bavoid|question the|clarify|misunderstand/i;
+const PRIO_STEM = /priorit|\bfirst\b|immediate|\bbest\b|most important|which client|sees? first|initial|\burgent/i;
+const LOOK_STEM = /finding|expect|assess|indicat|\bsigns?\b|symptom|manifest|suggest|consistent with|recogni|\bcue/i;
+const ACT_STEM = /action|intervention|\bdo\b|implement|respond|\bplan\b|instruct|teach|include/i;
+const ASSESS_OPT = /^(re)?(assess|monitor|check|obtain|auscultate|measure|evaluate|observe|review|inspect|palpate|ask|count|verify|weigh|compare|determine|note|look)/i;
+const ACT_OPT = /^(administer|give|apply|position|elevate|raise|place|call|notify|contact|initiate|start|stop|hold|discontinue|instruct|teach|encourage|insert|suction|prepare|provide|remove|increase|decrease|lower|turn|reposition|request|tell|explain|ambulate|restrict|withhold|prepare|perform|help|assist)/i;
+const DRUG_OPT = /\b(mg|mcg|units?|dose|medication|drug|PRN|IV push|tablet|inhaler)\b|olol\b|pril\b|sartan\b|dipine\b|heparin|warfarin|enoxaparin|digoxin|furosemide|nitro|albuterol|ipratropium|steroid|insulin|aspirin|clopidogrel|apixaban|rivaroxaban|potassium chloride|iron|ferrous|B12|cyanocobalamin|folic/i;
+const NUM_OPT = /\d+(\.\d+)?\s*(%|mg|mcg|mmHg|mm Hg|mEq|mmol|g\/dL|mL|L\/min|bpm|\/min|seconds|sec\b|hours?|days?|cells|mm³|\/mm|units)|\b\d{2,}\b/i;
+const MECH_TXT = /\bbecause\b|causes?|leads? to|results? in|mechanism|so that|which (lowers|raises|blocks|reduces|increases)|blocks?|inhibit|stimulat|receptor/i;
+function inferWhy(P, R, b) {
+  const out = [], seen = {};
+  const add = (k, line) => { if (!seen[k] && out.length < 3) { seen[k] = 1; out.push({ k, line }); } };
+  const q = P.q || '', hasDrug = !!((b && b.drugs) || []).length;
+  const typeOf = t => ASSESS_OPT.test(t) ? 'assess' : ACT_OPT.test(t) ? 'act' : 'other';
+  const qt = c => '“' + (c.t.length > 70 ? c.t.slice(0, 67).replace(/\s+\S*$/, '') + '…' : c.t) + '”';
+  const vs = (wrong, right) => wrong.length === 1 && right.length === 1 ? ' It wanted ' + qt(right[0]) + ', not ' + qt(wrong[0]) + '.' : '';
+  const drugName = (((b && b.drugs) || [])[0] || {}).n;
+  const cmpChoice = (wrong, right) => {
+    const all = wrong.concat(right), txt = all.map(c => c.t + ' ' + (c.r || '')).join(' ');
+    if (NEG_STEM.test(q)) add('read', 'This stem asks for the one that is wrong, unsafe, or needs follow-up. Your pick reads like a correct statement, so flip the question before you answer.');
+    if (PRIO_STEM.test(q) || P.kind === 'order') {
+      const w = wrong[0] ? typeOf(wrong[0].t) : '', r = right[0] ? typeOf(right[0].t) : '';
+      if (w === 'assess' && r === 'act') add('prio', 'You chose to assess, but the problem was already clear and the client needed action now.');
+      else if (w === 'act' && r === 'assess') add('prio', 'You acted before getting the data the stem needed. Assess first when the problem isn’t confirmed yet.');
+      else add('prio', 'Your pick isn’t wrong in general, but it isn’t first. Rank by airway, breathing, circulation, then safety.' + vs(wrong, right));
+    }
+    if (hasDrug || all.some(c => DRUG_OPT.test(c.t))) add('drug', 'The difference was about ' + (drugName || 'the drug') + ': what it does, its side effects, or what to check before giving it.');
+    if (all.some(c => NUM_OPT.test(c.t))) add('fact', 'The difference was a number: a normal range or a threshold to act on.');
+    if (LOOK_STEM.test(q) && !PRIO_STEM.test(q)) add('look', 'The question was about what to look for.' + (vs(wrong, right) || ' The finding it wanted wasn’t the one you chose.'));
+    else if (ACT_STEM.test(q) && !PRIO_STEM.test(q)) add('do', 'The question was about what to do.' + (vs(wrong, right) || ' The nursing action it wanted wasn’t the one you chose.'));
+    if (MECH_TXT.test(txt)) add('mech', 'The rationale turns on why it happens. Knowing the mechanism points to the answer.');
+  };
+  R = R == null ? {} : R;
+  switch (P.kind) {
+    case 'single': cmpChoice(P.choices.filter(c => c.k === R && !c.c), P.choices.filter(c => c.c)); break;
+    case 'sata': {
+      const extra = P.choices.filter(c => R[c.k] && !c.c), miss = P.choices.filter(c => !R[c.k] && c.c);
+      if (miss.length && !extra.length) add(ACT_STEM.test(q) && !LOOK_STEM.test(q) ? 'do' : 'look', 'You were on the right track but left out ' + miss.length + ' correct option' + (miss.length > 1 ? 's' : '') + '. Judge each option as true or false on its own.');
+      if (extra.length && !miss.length) add('cue', 'You picked everything right plus ' + (extra.length === 1 ? qt(extra[0]) + ', which doesn’t belong' : extra.length + ' that don’t belong') + '. Check each option against this client’s cues.');
+      cmpChoice(extra, miss);
+      break;
+    }
+    case 'order': add('prio', 'The steps were right but the order wasn’t. Ask “what kills first?”, then “what is safest?”'); cmpChoice([], []); break;
+    case 'matrix': add('cue', 'Some rows were sorted into the wrong column. Match each finding to what the condition causes.'); add('mech', 'Each row turns on why the condition produces that finding.'); break;
+    case 'cloze': add('mech', 'The blanks follow a cause-and-effect chain. One wrong link breaks the rest.'); break;
+    case 'bow': {
+      const bad = g => { const r = R[g.g]; return g.choices.some(c => (r == null ? false : g.multi ? !!r[c.k] : c.k === r) !== c.c); };
+      P.groups.forEach(g => {
+        if (!bad(g)) return;
+        if (g.g === 'cond') add('cue', 'You named the wrong condition. The cues in the scenario point to a different one.');
+        if (g.g === 'act') add('do', 'Some of the actions you chose don’t treat this condition.');
+        if (g.g === 'mon') add('look', 'Some of the things you chose to monitor don’t show whether this condition is improving.');
+      });
+      break;
+    }
+  }
+  if (!out.length) add('mech', 'The rationale turns on why it happens. Knowing the mechanism points to the answer.');
+  return out;
+}
 const eff = (T, id) => (T.scores[id] || 0) * (T.conf[id] === 'guess' ? 0.5 : 1);
 // Glossary terms that appear in a question (same matching as the Concept Map).
 function termsFor(P) {
@@ -783,7 +850,11 @@ class Component extends DCLogic {
 
   check() {
     const S = this.state.S, P = this.cur(); if (!P || !answered(P, S.test.resp[P.id])) return;
-    this.upd(S => { S.test.scores[P.id] = score(P, S.test.resp[P.id]); S.test.checked[P.id] = true; });
+    this.upd(S => {
+      const T = S.test, sc = score(P, T.resp[P.id]);
+      T.scores[P.id] = sc; T.checked[P.id] = true;
+      if (sc < 1 && !(T.why[P.id] || []).length) T.why[P.id] = inferWhy(P, T.resp[P.id], this.byId[P.id]).map(x => x.k);
+    });
   }
   next() {
     const P = this.cur(); if (!P || !this.state.S.test.checked[P.id]) return;
@@ -826,7 +897,7 @@ class Component extends DCLogic {
       if (P.rule) back.push({ h: 'Rule to carry into the exam', v: P.rule });
       if (why.includes('read')) back.push({ h: 'Read-the-stem check', v: 'Before choosing, restate the question in five words: who, what, and whether it asks first / best / unsafe / expected.' });
       if (why.includes('second')) back.push({ h: 'Second-guess check', v: 'Change an answer only if you can name the specific cue you missed the first time.' });
-      add({ key: 'q:' + P.id, ch: P.ch, type: guessed ? 'Guessed right — lock it in' : 'Missed question', sub: why.length ? 'You said: ' + why.map(w => RLABEL[w].split(' — ')[0].toLowerCase()).join(', ') : P.t, front: P.q, back });
+      add({ key: 'q:' + P.id, ch: P.ch, type: guessed ? 'Guessed right — lock it in' : 'Missed question', sub: why.length ? 'Likely gap: ' + why.map(w => RLABEL[w].split(' — ')[0].toLowerCase()).join(', ') : P.t, front: P.q, back });
       if (has('drug') || b.skill === SKILLS[0]) (b.drugs || []).slice(0, 2).forEach(d => {
         const se = (d.se || []).slice(0, 3).map(s => s[0] + ' — ' + s[1]).join('\n');
         add({ key: 'd:' + d.id, ch: P.ch, type: 'Drug', sub: d.c || '', front: (d.n || d.g) + ': what is it for, how does it work, and what do you check before giving it?', back: [
@@ -987,12 +1058,15 @@ class Component extends DCLogic {
         const sc = T.scores[P.id] || 0, full = sc >= 1, why = T.why[P.id] || [], conf = T.conf[P.id];
         const notes = full ? '' : wrongNotes(P, R);
         const terms = termsFor(P);
+        const auto = full ? [] : inferWhy(P, R, this.byId[P.id]);
+        const diag = auto.filter(x => why.includes(x.k)).concat(why.filter(k => !auto.some(x => x.k === k)).map(k => ({ k, line: 'You added: ' + RLABEL[k].toLowerCase() + '.' })));
         v.fb = {
           terms, hasTerms: terms.length > 0,
           title: full ? 'Correct.' : sc > 0 ? 'Partially correct — ' + Math.round(sc * 100) + '% credit.' : 'Incorrect.',
           fg: full ? 'var(--color-accent-200)' : 'var(--color-neutral-100)', bd: full ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
           correct: correctText(P), notes, hasNotes: !!notes, phys: P.phys || '—', rule: P.rule || '—',
           askWhy: !full, askConf: full,
+          diag: diag.map(x => ({ head: RLABEL[x.k].split(' — ')[0].split(' (')[0], line: x.line })), hasDiag: diag.length > 0,
           reasons: REASONS.map(([k, label]) => { const on = why.includes(k); return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { const w = S.test.why[P.id] || []; S.test.why[P.id] = w.includes(k) ? w.filter(x => x !== k) : w.concat([k]); }) }; }),
           conf: [['sure', 'Knew it'], ['guess', 'Guessed — add to repair deck']].map(([k, label]) => { const on = conf === k; return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { S.test.conf[P.id] = S.test.conf[P.id] === k ? null : k; }) }; })
         };
