@@ -1,5 +1,5 @@
-// Shared "focus" — the topics you picked on the map. The map, Recall and the
-// Mastery Loop all read it, so one choice drives everything you study.
+// Shared "focus" — the topics you picked on the map. The map and the
+// Mastery Loop both read it, so one choice drives everything you study.
 // Stored in this browser as localStorage['e2-focus'] = { ids: [...], name }.
 // No focus (or an empty list) means everything.
 (function () {
