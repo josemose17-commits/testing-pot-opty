@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#04160e">
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610022000">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610022100">
 <style>
   /* Paint the dark theme and a spinner straight away, so the raw page never flashes while the page code loads. */
   html { background: #04160e; }
@@ -15,14 +15,14 @@
   @keyframes e2pagein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
-<script src="./support.js?v=202610022000"></script>
-<script src="./nav.js?v=202610022000"></script>
+<script src="./support.js?v=202610022100"></script>
+<script src="./nav.js?v=202610022100"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610022000">
-<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610022000"></script>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610022100">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610022100"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -31,21 +31,21 @@
   a:hover { color: var(--color-accent-200); }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 </style>
-<script src="data/recall-22-23.js?v=202610022000"></script>
-<script src="data/recall-24-25.js?v=202610022000"></script>
-<script src="data/recall-27-28.js?v=202610022000"></script>
-<script src="data/recall-29-30.js?v=202610022000"></script>
-<script src="data/recall-33-34.js?v=202610022000"></script>
-<script src="data/ngn-22-25.js?v=202610022000"></script>
-<script src="data/ngn-27-30.js?v=202610022000"></script>
-<script src="data/ngn-33-34.js?v=202610022000"></script>
-<script src="data/drugs-cardio.js?v=202610022000"></script>
-<script src="data/drugs-heme.js?v=202610022000"></script>
-<script src="data/drugs-resp.js?v=202610022000"></script>
-<script src="data/glossary.js?v=202610022000"></script>
-<script src="data/extra-questions.js?v=202610022000"></script>
-<script src="data/topic-index.js?v=202610022000"></script>
-<script src="focus.js?v=202610022000"></script>
+<script src="data/recall-22-23.js?v=202610022100"></script>
+<script src="data/recall-24-25.js?v=202610022100"></script>
+<script src="data/recall-27-28.js?v=202610022100"></script>
+<script src="data/recall-29-30.js?v=202610022100"></script>
+<script src="data/recall-33-34.js?v=202610022100"></script>
+<script src="data/ngn-22-25.js?v=202610022100"></script>
+<script src="data/ngn-27-30.js?v=202610022100"></script>
+<script src="data/ngn-33-34.js?v=202610022100"></script>
+<script src="data/drugs-cardio.js?v=202610022100"></script>
+<script src="data/drugs-heme.js?v=202610022100"></script>
+<script src="data/drugs-resp.js?v=202610022100"></script>
+<script src="data/glossary.js?v=202610022100"></script>
+<script src="data/extra-questions.js?v=202610022100"></script>
+<script src="data/topic-index.js?v=202610022100"></script>
+<script src="focus.js?v=202610022100"></script>
 </helmet>
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.55;">
 <div style="max-width:860px;padding:28px 20px 64px;display:flex;flex-direction:column;gap:22px;">
@@ -74,7 +74,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">1 · Diagnostic pre-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Once. Every question in the bank for your focus — {{ preCount }} of them — so no topic is skipped. Your answers save as you go: stop any time and resume later. The report shows exactly which topics are weak.</div>
+          <div style="font-size:13px;color:var(--color-neutral-200);">Once. {{ preNote }} Your answers save as you go: stop any time and resume later. The report shows exactly which topics are weak.</div>
         </div>
         <div class="card" style="border:1px solid var(--color-neutral-800);">
           <div class="card-kicker">2 · Tell it why</div>
@@ -480,12 +480,22 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const CHS = ['22', '24', '25', '27', '28', '29', '30', '34'];
-const BP = { '22': 5, '24': 8, '25': 5, '27': 3, '28': 5, '29': 6, '30': 8, '34': 20 };
-const MIN_N = { '22': 3, '24': 4, '25': 3, '27': 3, '28': 3, '29': 3, '30': 4, '34': 6 };
-const MAX_N = { '22': 6, '24': 8, '25': 6, '27': 5, '28': 7, '29': 7, '30': 8, '34': 12 };
-const TOPIC = { '22': 'Ch 22 · Health promotion, pack-years, aging', '24': 'Ch 24 · Asthma & COPD', '25': 'Ch 25 · Pneumonia', '27': 'Ch 27 · Cardiac aging', '28': 'Ch 28 · ECG', '29': 'Ch 29 · Heart failure', '30': 'Ch 30 · HTN, PAD, DVT', '34': 'Ch 34 · Anemias & leukemia' };
+// Chapters 23 and 33 are not on the study guide (0 exam questions): they are tested so nothing
+// blindsides you, but they carry no weight in the exam-weighted score.
+const CHS = ['22', '23', '24', '25', '27', '28', '29', '30', '33', '34'];
+const BP = { '22': 5, '23': 0, '24': 8, '25': 5, '27': 3, '28': 5, '29': 6, '30': 8, '33': 0, '34': 20 };
+// Off-guide chapters get only these few high-yield, foundational questions (by question title).
+const OFF_GUIDE_PICKS = {
+  '23': ['Airway after neck surgery', 'Priority', 'Medication safety', 'Emergency recognition'],
+  '33': ['Lab interpretation', 'Priority', 'Medication safety', 'Coagulation labs']
+};
+const BPW = ch => BP[ch] || 1; // weight for picking post-test questions, so unweighted chapters still come up
+const MIN_N = { '22': 3, '23': 2, '24': 4, '25': 3, '27': 3, '28': 3, '29': 3, '30': 4, '33': 2, '34': 6 };
+const MAX_N = { '22': 6, '23': 4, '24': 8, '25': 6, '27': 5, '28': 7, '29': 7, '30': 8, '33': 4, '34': 12 };
+const TOPIC = { '22': 'Ch 22 · Health promotion, pack-years, aging', '23': 'Ch 23 · Upper airway (not on the guide)', '33': 'Ch 33 · Hematologic assessment (not on the guide)', '24': 'Ch 24 · Asthma & COPD', '25': 'Ch 25 · Pneumonia', '27': 'Ch 27 · Cardiac aging', '28': 'Ch 28 · ECG', '29': 'Ch 29 · Heart failure', '30': 'Ch 30 · HTN, PAD, DVT', '34': 'Ch 34 · Anemias & leukemia' };
 const KW = {
+  '23': /sleep apnea|\bOSA\b|CPAP|epistaxis|nosebleed|laryng|tracheostom|stoma|airway obstruct|stridor|facial|nasal/i,
+  '33': /CBC|reticulocyte|platelet|\bINR\b|aPTT|bone marrow|spleen|hemostasis|clotting|coagulation|petechiae/i,
   '34': /anemi|sickle|iron[- ]deficien|pernicious|folic|folate|B12|leukemi|MCV|ferritin|reticulocyte|hemoglobin|hematocrit|\bHgb\b|\bHct\b|CBC/i,
   '22': /pack[- ]?year|health promotion|health maintenance|smok|age[- ]related|older adult|aging|elderly/i,
   '24': /asthma|COPD|emphysema|chronic bronchitis|albuterol|SABA|inhaler|peak flow|bronchodilat|corticosteroid|pursed/i,
@@ -629,13 +639,16 @@ class Component extends DCLogic {
 
   build() {
     const bank = [];
+    // Ch 33 items that test ch 34 study-guide topics are filed under 34 (below); the rest stay in 33.
+    const to34 = (x, src) => CH33_FOR_34.test(x.t || '') && (src === 'n' || /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x)));
+    const skip = (ch, x, src) => (ch === '33' && to34(x, src)) || (OFF_GUIDE_PICKS[ch] && OFF_GUIDE_PICKS[ch].indexOf(x.t) < 0);
     CHS.forEach(ch => {
-      (window.NGN_EXTRA[ch] || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|n|' + i, ch, src: x.f })));
-      ((window.RECALL_EXTRA[ch] || {}).nclex || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|c|' + i, ch, src: 'mcq' })));
+      (window.NGN_EXTRA[ch] || []).forEach((x, i) => skip(ch, x, 'n') || bank.push(Object.assign({}, x, { id: ch + '|n|' + i, ch, src: x.f })));
+      ((window.RECALL_EXTRA[ch] || {}).nclex || []).forEach((x, i) => skip(ch, x, 'c') || bank.push(Object.assign({}, x, { id: ch + '|c|' + i, ch, src: 'mcq' })));
       (window.EXTRA_Q[ch] || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|x|' + i, ch, src: x.f || 'mcq' })));
     });
-    (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (CH33_FOR_34.test(x.t || '')) bank.push(Object.assign({}, x, { id: '33|n|' + i, ch: '34', src: x.f })); });
-    ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (CH33_FOR_34.test(x.t || '') && /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x))) bank.push(Object.assign({}, x, { id: '33|c|' + i, ch: '34', src: 'mcq' })); });
+    (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (to34(x, 'n')) bank.push(Object.assign({}, x, { id: '33|n|' + i, ch: '34', src: x.f })); });
+    ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (to34(x, 'c')) bank.push(Object.assign({}, x, { id: '33|c|' + i, ch: '34', src: 'mcq' })); });
     const drugs = (window.DRUG_DATA.drugs || []).map(d => {
       const names = [d.n, d.g].concat(String(d.b || '').split(/[,/]/)).map(s => String(s || '').trim()).filter(s => s.length >= 5);
       return names.length ? { d, re: new RegExp('\\b(' + [...new Set(names)].map(esc).join('|') + ')\\b', 'i') } : null;
@@ -737,10 +750,10 @@ class Component extends DCLogic {
         T.probeRun++;
       } else {
         T.probeRun = 0;
-        const untested = open.filter(c => st[c].n === 0).sort((a, b) => BP[b] - BP[a]);
+        const untested = open.filter(c => st[c].n === 0).sort((a, b) => BPW(b) - BPW(a));
         ch = untested[0] || open.slice().sort((a, b) => {
-          const ua = (st[a].n / Math.sqrt(BP[a] * (T.boost[a] ? 2 : 1))) - (st[a].acc < 0.85 ? 0.3 : 0);
-          const ub = (st[b].n / Math.sqrt(BP[b] * (T.boost[b] ? 2 : 1))) - (st[b].acc < 0.85 ? 0.3 : 0);
+          const ua = (st[a].n / Math.sqrt(BPW(a) * (T.boost[a] ? 2 : 1))) - (st[a].acc < 0.85 ? 0.3 : 0);
+          const ub = (st[b].n / Math.sqrt(BPW(b) * (T.boost[b] ? 2 : 1))) - (st[b].acc < 0.85 ? 0.3 : 0);
           return ua - ub;
         })[0];
       }
@@ -789,7 +802,8 @@ class Component extends DCLogic {
       let wsum = 0, wt = 0, raw = 0;
       CHS.forEach(ch => { if (st[ch].n) { wsum += BP[ch] * st[ch].acc; wt += BP[ch]; } });
       T.items.forEach(p => { raw += eff(T, p.id); S.seen[p.id] = (S.seen[p.id] || 0) + 1; });
-      const pct = Math.round(100 * wsum / Math.max(1, wt));
+      // Only chapters on the exam count; if only off-guide chapters were tested, fall back to the raw score.
+      const pct = wt ? Math.round(100 * wsum / wt) : Math.round(100 * raw / T.items.length);
       S.result = { kind: T.kind, name: T.name, pct, raw: Math.round(100 * raw / T.items.length), topics: st, test: T };
       S.history.push({ kind: T.kind, name: T.name, pct, n: T.items.length, at: Date.now() });
       S.test = null; S.deck = this.buildDeck(S.result); S.deckTotal = S.deck.length; S.deckDone = 0; S.phase = 'results';
@@ -889,6 +903,11 @@ class Component extends DCLogic {
       rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null),
       bankSize: this.bank ? this.bank.length : 0,
       preCount: this.bank ? this.bank.length : 0,
+      preNote: (() => {
+        const n = this.bank ? this.bank.length : 0, off = (this.chs || []).filter(c => !BP[c]);
+        return 'Every question in the bank for your focus — ' + n + ' of them — so no topic is skipped.' +
+          (off.length ? ' Chapter' + (off.length > 1 ? 's ' + off.join(' and ') + ' aren’t' : ' ' + off[0] + ' isn’t') + ' on the study guide, so ' + (off.length > 1 ? 'they get' : 'it gets') + ' just a few high-yield questions that don’t count toward the exam-weighted score.' : '');
+      })(),
       bankChs: (this.chs || CHS).join(', ')
     };
     const fl = this.focusLabel || 'Everything';
