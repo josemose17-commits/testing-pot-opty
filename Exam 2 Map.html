@@ -52,7 +52,7 @@
   .system h2 span { font-size: 12px; color: var(--color-accent-2-300); font-weight: 400; }
   .system .why { margin: -6px 0 0; font-size: 13px; color: var(--color-neutral-400); }
   .chapter { position: relative; padding-left: 14px; border-left: 1px solid var(--color-accent-2-700); display: flex; flex-direction: column; gap: 6px; }
-  .chapter.untested { opacity: .78; }
+  .chapter.untested .chhead b { color: var(--color-neutral-300); }
   .chhead { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .chhead b { font-weight: 600; font-size: 14px; }
   .chhead .q { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--color-accent-900); color: var(--color-accent-200); border: 1px solid var(--color-accent-800); }
@@ -293,8 +293,8 @@
 <div class="pop glass" id="pop" role="tooltip"></div>
 
 <script src="data/info-topics.js?v=202610021900"></script>
-<script src="data/concept-nodes.js?v=202610021900"></script>
-<script src="data/concept-keys.js?v=202610021900"></script>
+<script src="data/concept-nodes.js?v=202610022200"></script>
+<script src="data/concept-keys.js?v=202610022200"></script>
 <script src="data/notes-short/22.js?v=202610021900"></script>
 <script src="data/notes-short/23.js?v=202610021900"></script>
 <script src="data/notes-short/24.js?v=202610021900"></script>
@@ -307,7 +307,7 @@
 <script src="data/notes-short/34.js?v=202610021900"></script>
 <script src="data/notes-short/more.js?v=202610021900"></script>
 <script src="data/glossary.js?v=202610021900"></script>
-<script src="focus.js?v=202610021900"></script>
+<script src="focus.js?v=202610022200"></script>
 <script>
 (function () {
   var TOPICS = window.INFO_TOPICS || [], NODES = window.CONCEPT_NODES || [], GLOSS = window.GLOSSARY || [], F = window.E2Focus;
@@ -331,9 +331,11 @@
     htn: [['30', /hypertension — mechanisms/i], ['27', /blood pressure regulation/i]],
     pad: [['30', /peripheral arterial/i], ['30', /revascularization/i], ['30', /arteriosclerosis/i]],
     dvt: [['30', /^VTE/i], ['30', /venous thromboembolism/i]],
-    labs: [['33', /head-to-toe/i], ['34', /overview/i]],
+    labs: [['33', /head-to-toe/i], ['33', /overview/i], ['34', /overview/i]],
     anemia: [['34', /anemias — cause to cue/i], ['34', /anemias — cause by cause/i]],
-    sickle: [['34', /sickle/i]], leuk: [['34', /^leukemia/i], ['34', /white cell cancers/i], ['34', /stem cell/i]]
+    sickle: [['34', /sickle/i]],
+    osa: [['23', /sleep apnea/i]], uaw: [['23', /overview/i], ['23', /obstruction|epistaxis/i], ['23', /laryngectomy|head and neck/i]],
+    clot: [['33', /hemostasis/i], ['30', /^VTE/i]], leuk: [['34', /^leukemia/i], ['34', /white cell cancers/i], ['34', /stem cell/i]]
   };
 
   var byId = {}; TOPICS.forEach(function (t) { byId[t.id] = t; });
@@ -349,7 +351,7 @@
   });
   // Mechanisms point at the topic nodes they explain.
   NODES.filter(function (n) { return n.kind === 'mech'; }).forEach(function (m) {
-    var ids = []; (m.links || []).filter(function (l) { return NODE_TOPICS[l[0]]; }).forEach(function (l) { (topicsForNode[l[0]] || []).forEach(function (id) { if (ids.indexOf(id) < 0) ids.push(id); }); });
+    var ids = (topicsForNode[m.id] || []).slice(); (m.links || []).filter(function (l) { return NODE_TOPICS[l[0]]; }).forEach(function (l) { (topicsForNode[l[0]] || []).forEach(function (id) { if (ids.indexOf(id) < 0) ids.push(id); }); });
     topicsForNode[m.id] = ids;
   });
 
@@ -381,7 +383,7 @@
   function chapterHtml(ch) {
     var q = EXAM_Q[ch];
     return '<div class="chapter' + (q ? '' : ' untested') + '" data-ch="' + ch + '"><div class="chhead"><b>' + ch + ' · ' + esc(chTitle(ch)) + '</b>' +
-      (q ? '<span class="q">' + q + ' questions</span>' : '<span class="q none">Background</span>') +
+      (q ? '<span class="q">' + q + ' questions</span>' : '<span class="q none">Not on guide · basics</span>') +
       '<button class="all" data-ch="' + ch + '">All / none</button></div><div class="chips">' + order(ch).map(chipHtml).join('') + '</div></div>';
   }
   function buildMap() {
@@ -677,11 +679,12 @@
   }
 
   function connectionsHtml(t, nodes) {
-    var out = [], seen = {};
+    var out = [], seen = {}, linkedMechs = [];
     function add(id, why, kind) { if (seen[id] || (t && id === t.id) || !byId[id]) return; seen[id] = 1; out.push({ id: id, why: why, kind: kind }); }
     // 1. Links the Concept Map draws between breakdowns.
     nodes.forEach(function (n) {
-      (n.links || []).forEach(function (l) { (topicsForNode[l[0]] || []).slice(0, 2).forEach(function (id) { add(id, l[1], 'Concept link'); }); });
+      // Links to a mechanism show as that mechanism's button below, not as the topics it touches.
+      (n.links || []).forEach(function (l) { if (nodeById[l[0]] && nodeById[l[0]].kind === 'mech') { linkedMechs.push(l[0]); return; } (topicsForNode[l[0]] || []).slice(0, 2).forEach(function (id) { add(id, l[1], 'Concept link'); }); });
     });
     // 2. Topics in other chapters whose key words show up here.
     if (t) {
@@ -698,11 +701,11 @@
       order(t.ch).forEach(function (o) { add(o.id, 'Same chapter', 'Chapter ' + t.ch); });
     }
     var mechs = NODES.filter(function (m) {
-      return m.kind === 'mech' && (current.type === 'node' ? false : (topicsForNode[m.id] || []).indexOf(t.id) >= 0);
+      return m.kind === 'mech' && (linkedMechs.indexOf(m.id) >= 0 || (current.type === 'node' ? false : (topicsForNode[m.id] || []).indexOf(t.id) >= 0));
     });
     var h = '';
     if (current.type === 'node') h += '<p class="empty-note" style="margin:0 0 10px">Where this shows up:</p>';
-    if (mechs.length) h += '<div class="sec" style="margin-top:0">Mechanisms behind this topic</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">' + mechs.map(function (m) { return '<button class="pill" data-node="' + m.id + '">' + esc(m.name) + '</button>'; }).join('') + '</div>';
+    if (mechs.length) h += '<div class="sec" style="margin-top:0">' + (current.type === 'node' && nodeById[current.id].kind === 'mech' ? 'Related mechanisms' : 'Mechanisms behind this topic') + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">' + mechs.map(function (m) { return '<button class="pill" data-node="' + m.id + '">' + esc(m.name) + '</button>'; }).join('') + '</div>';
     if (current.type === 'node') (topicsForNode[current.id] || []).forEach(function (id) { add(id, 'Uses this mechanism', 'Topic'); });
     h += '<div class="conn">' + out.map(function (c) {
       var o = byId[c.id];

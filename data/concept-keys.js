@@ -25,5 +25,7 @@ window.CONCEPT_KEYS = {
   raas: { gist: 'Low kidney flow → renin → Ang II + aldosterone: squeeze vessels, hold salt and water.', zk: ['Kidney, liver, lung, adrenal', 'JG apparatus · adrenal cortex', 'JG cells release renin', 'Ang I → (ACE) → Ang II → AT₁'] },
   potassium: { gist: 'Where a diuretic acts decides how much fluid it pulls and which way K⁺ goes.', zk: ['Nephron + heart', 'Proximal → loop → distal → collecting', 'Na⁺ reabsorbed, water follows', 'Each segment has its own pump'] },
   clot: { gist: 'Arteries clot with platelets → antiplatelets. Veins and AF clot with fibrin → anticoagulants.', zk: ['Arteries vs veins + AF atria', 'Injury exposes collagen + tissue factor', 'Platelets stick and clump', 'TXA₂/ADP · Xa → thrombin → fibrin · vitamin K'] },
+  osa: { gist: 'Throat collapses in sleep → CO₂ rises → partial waking, over and over.', zk: ['Pharynx collapses · heart takes the strain', 'Soft palate, tongue, tonsils, neck fat narrow it', 'Muscles lose tone · chemoreceptors fire', 'CO₂ ↑ → arousal + norepinephrine · opioids ↓ drive + tone'] },
+  uaw: { gist: 'One tube, no backup: swelling, blood or an object closes it in minutes.', zk: ['Nose, pharynx, larynx = one lumen', 'Mucosa swells · Kiesselbach plexus bleeds', 'Histamine → leaky capillaries', 'Oxymetazoline → α₁ → vessels constrict'] },
   o2: { gist: 'Three links: air in, across the membrane, carried by Hgb.', zk: ['Load, pump, unload', 'Alveolar–capillary membrane', '~270 million Hgb per RBC', '4 O₂ per Hgb · right shift unloads'] }
 };

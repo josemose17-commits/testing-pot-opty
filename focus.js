@@ -81,6 +81,8 @@
     ['28', /recording the rhythm/i], ['28', /nine-step/i], ['28', /^the rhythms/i],
     ['29', /types, staging/i], ['29', /assessing heart failure/i], ['29', /devices, surgery, pulmonary edema/i], ['29', /afterload and preload/i], ['29', /contractility/i],
     ['30', /hypertension — mechanisms/i], ['30', /peripheral arterial/i], ['30', /^VTE/i], ['30', /venous thromboembolism/i],
+    // Not on the guide, but a few basics from each so they aren't skipped:
+    ['23', /sleep apnea — the full picture/i], ['23', /obstruction, epistaxis/i], ['33', /hemostasis/i], ['33', /head-to-toe/i],
     ['34', /overview/i], ['34', /anemias — cause to cue/i], ['34', /anemias — cause by cause/i], ['34', /sickle/i], ['34', /^leukemia/i], ['34', /white cell cancers/i]
   ];
 
