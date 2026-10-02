@@ -26,5 +26,14 @@
   var nav;
   function attach() { if (!document.body) return; if (!nav) nav = build(); if (!document.body.contains(nav)) document.body.appendChild(nav); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach); else attach();
+  // Fetch the other pages in the background once this one is idle, so switching tabs is quick.
+  function prefetch() {
+    TABS.forEach(function (t) {
+      if (t[0] === here) return;
+      var l = document.createElement('link'); l.rel = 'prefetch'; l.href = root + encodeURI(t[0]);
+      document.head.appendChild(l);
+    });
+  }
+  if (document.readyState === 'complete') setTimeout(prefetch, 1500); else window.addEventListener('load', function () { setTimeout(prefetch, 1500); });
   new MutationObserver(attach).observe(document.documentElement, { childList: true, subtree: true });
 })();

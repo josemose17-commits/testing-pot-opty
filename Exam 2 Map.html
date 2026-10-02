@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#04160e">
 <title>Exam 2 Map</title>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
 <style>
   body { padding-bottom: 96px; }
   main { max-width: 1240px; margin: 0 auto; padding: clamp(18px, 3.5vw, 40px) 16px 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -85,11 +85,17 @@
   .mechs .pill { white-space: normal; text-align: left; }
 
   /* Panel: side drawer on desktop, bottom sheet on phones */
-  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .panel { position: fixed; z-index: 41; top: 10px; right: 10px; bottom: 10px; width: min(640px, calc(100vw - 20px)); display: flex; flex-direction: column; border: 1px solid var(--color-divider); background: rgba(5, 26, 16, .86); transform: translateX(105%); transition: transform .25s ease; }
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+  .panel { position: fixed; z-index: 41; top: 10px; right: 10px; bottom: 10px; width: min(640px, calc(100vw - 20px)); display: flex; flex-direction: column; border: 1px solid var(--color-divider); background: rgba(5, 26, 16, .86); transform: translateX(105%); transition: transform .34s cubic-bezier(.22, .8, .24, 1), visibility 0s .34s; visibility: hidden; will-change: transform; contain: layout paint; }
   body.panel-open .scrim { opacity: 1; pointer-events: auto; }
-  body.panel-open .panel { transform: none; }
-  body.panel-open .hub-tabs { opacity: 0; pointer-events: none; }
+  body.panel-open .panel { transform: none; visibility: visible; transition: transform .34s cubic-bezier(.22, .8, .24, 1), visibility 0s; }
+  body.panel-open { overflow: hidden; }
+  .pbody > * { animation: e2fade .22s ease both; }
+  @keyframes e2fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  main { animation: e2fade .3s ease both; }
+  @media (prefers-reduced-motion: reduce) { .panel, .scrim, body.panel-open .panel { transition: none; } .pbody > *, main { animation: none; } }
+  .hub-tabs { transition: opacity .2s ease, transform .2s ease; }
+  body.panel-open .hub-tabs { opacity: 0; transform: translate(-50%, 12px); pointer-events: none; }
   @media (max-width: 720px) {
     .panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 90vh; border-radius: 22px 22px 0 0; transform: translateY(105%); }
   }
@@ -287,22 +293,22 @@
 </aside>
 <div class="pop glass" id="pop" role="tooltip"></div>
 
-<script src="data/info-topics.js?v=202610012130"></script>
-<script src="data/concept-nodes.js?v=202610012130"></script>
-<script src="data/concept-keys.js?v=202610021200"></script>
-<script src="data/notes-short/22.js?v=202610021400"></script>
-<script src="data/notes-short/23.js?v=202610021400"></script>
-<script src="data/notes-short/24.js?v=202610021400"></script>
-<script src="data/notes-short/25.js?v=202610021400"></script>
-<script src="data/notes-short/27.js?v=202610021400"></script>
-<script src="data/notes-short/28.js?v=202610021400"></script>
-<script src="data/notes-short/29.js?v=202610021400"></script>
-<script src="data/notes-short/30.js?v=202610021400"></script>
-<script src="data/notes-short/33.js?v=202610021400"></script>
-<script src="data/notes-short/34.js?v=202610021400"></script>
-<script src="data/notes-short/more.js?v=202610021400"></script>
-<script src="data/glossary.js?v=202610012130"></script>
-<script src="focus.js?v=202610012130"></script>
+<script src="data/info-topics.js?v=202610021700"></script>
+<script src="data/concept-nodes.js?v=202610021700"></script>
+<script src="data/concept-keys.js?v=202610021700"></script>
+<script src="data/notes-short/22.js?v=202610021700"></script>
+<script src="data/notes-short/23.js?v=202610021700"></script>
+<script src="data/notes-short/24.js?v=202610021700"></script>
+<script src="data/notes-short/25.js?v=202610021700"></script>
+<script src="data/notes-short/27.js?v=202610021700"></script>
+<script src="data/notes-short/28.js?v=202610021700"></script>
+<script src="data/notes-short/29.js?v=202610021700"></script>
+<script src="data/notes-short/30.js?v=202610021700"></script>
+<script src="data/notes-short/33.js?v=202610021700"></script>
+<script src="data/notes-short/34.js?v=202610021700"></script>
+<script src="data/notes-short/more.js?v=202610021700"></script>
+<script src="data/glossary.js?v=202610021700"></script>
+<script src="focus.js?v=202610021700"></script>
 <script>
 (function () {
   var TOPICS = window.INFO_TOPICS || [], NODES = window.CONCEPT_NODES || [], GLOSS = window.GLOSSARY || [], F = window.E2Focus;
@@ -496,9 +502,15 @@
     b.hidden = false; var on = F.has(current.id);
     b.className = 'pill' + (on ? ' on' : ''); b.textContent = on ? '★ In your focus' : '☆ Add to focus';
   }
-  function show() {
+  var OPEN_MS = 340;
+  function isOpen() { return document.body.classList.contains('panel-open'); }
+  function show(fromHistory) {
+    var hash = '#' + (current.type === 'node' ? 'n-' : '') + current.id;
+    if (!fromHistory) {
+      // The first open adds a history entry, so the phone's back gesture closes the panel instead of leaving the page.
+      try { if (isOpen()) history.replaceState({ panel: 1 }, '', hash); else history.pushState({ panel: 1 }, '', hash); } catch (e) {}
+    }
     document.body.classList.add('panel-open');
-    try { history.replaceState(null, '', '#' + (current.type === 'node' ? 'n-' : '') + current.id); } catch (e) {}
   }
   function openTopic(id, keepTab) {
     var t = byId[id]; if (!t) return;
@@ -508,7 +520,8 @@
     tabs.querySelector('[data-tab="notes"]').hidden = false;
     tabs.querySelector('[data-tab="breakdown"]').hidden = !nodesFor[id];
     if (!keepTab || (tab === 'breakdown' && !nodesFor[id])) tab = 'notes';
-    setFocusBtn(); renderTab(); show();
+    var wasOpen = isOpen();
+    setFocusBtn(); renderTab(wasOpen ? 0 : OPEN_MS); show(arguments[2]);
   }
   function openNode(nid) {
     var n = nodeById[nid]; if (!n) return;
@@ -517,14 +530,23 @@
     document.getElementById('p-title').textContent = n.name;
     tabs.querySelector('[data-tab="notes"]').hidden = true;
     tabs.querySelector('[data-tab="breakdown"]').hidden = false;
-    tab = 'breakdown'; setFocusBtn(); renderTab(); show();
+    var wasOpen = isOpen();
+    tab = 'breakdown'; setFocusBtn(); renderTab(wasOpen ? 0 : OPEN_MS); show(arguments[1]);
   }
-  function close() {
-    document.body.classList.remove('panel-open'); hidePop();
-    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  function close(fromHistory) {
+    if (!isOpen()) return;
+    document.body.classList.remove('panel-open'); hidePop(); markJob++;
+    if (fromHistory === true) return;
+    try { if (history.state && history.state.panel) history.back(); else history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
-  document.getElementById('p-close').addEventListener('click', close);
-  document.getElementById('scrim').addEventListener('click', close);
+  window.addEventListener('popstate', function () {
+    var h = decodeURIComponent(location.hash.slice(1));
+    if (h.indexOf('n-') === 0 && nodeById[h.slice(2)]) openNode(h.slice(2), true);
+    else if (byId[h]) openTopic(h, true, true);
+    else close(true);
+  });
+  document.getElementById('p-close').addEventListener('click', function () { close(); });
+  document.getElementById('scrim').addEventListener('click', function () { close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (pop.style.display === 'block') hidePop(); else close(); } });
   document.getElementById('p-focus').addEventListener('click', function () { if (current && current.type === 'topic') { F.toggle(current.id); refresh(); } });
   tabs.addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) { tab = b.dataset.tab; renderTab(); } });
@@ -532,24 +554,24 @@
     var list = seq(); if (!current) return;
     var id = current.type === 'topic' ? current.id : (topicsForNode[current.id] || [])[0];
     var i = list.indexOf(id), j = i < 0 ? 0 : (i + d + list.length) % list.length;
-    openTopic(list[j], true); body.scrollTop = 0;
+    openTopic(list[j], true);
   }
   document.getElementById('p-prev').addEventListener('click', function () { step(-1); });
   document.getElementById('p-next').addEventListener('click', function () { step(1); });
 
-  function renderTab() {
+  function renderTab(delay) {
     tabs.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === tab); });
-    hidePop(); body.scrollTop = 0;
+    hidePop(); body.scrollTop = 0; delay = delay || 0;
     var t = current.type === 'topic' ? byId[current.id] : null;
     var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
     if (tab === 'notes' && t) {
       var hasShort = !!(window.NOTES_SHORT || {})[t.id];
       body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + '<div class="notes">' + t.html + '</div></div>';
       if (hasShort && bdMode === 'quick') shortenNotes(body.querySelector('.notes'), t.id);
-      markWords(body.querySelector('.notes'));
+      markWordsLater(body.querySelector('.notes'), delay);
     } else if (tab === 'breakdown') {
       body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
-      markWords(body);
+      markWordsLater(body, delay);
     } else if (tab === 'words') {
       var text = t ? textOf[t.id] : JSON.stringify(nodes[0]);
       var ws = wordsIn(text);
@@ -704,11 +726,26 @@
 
   // ---------- Tap-to-define words in the notes ----------
   var pop = document.getElementById('pop');
-  function markWords(root) {
-    var done = {}, walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach(function (node) {
-      if (!node.nodeValue.trim() || node.parentNode.closest('.gw, button, th')) return;
+  // Underlining is the slow part of opening a topic, so it runs after the panel has slid in,
+  // a few milliseconds at a time, and stops if another topic or tab is opened first.
+  var markJob = 0;
+  function markWordsLater(root, delay) {
+    var job = ++markJob;
+    setTimeout(function () {
+      if (job !== markJob || !root.isConnected) return;
+      var done = {}, walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [], i = 0;
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      (function slice() {
+        if (job !== markJob || !root.isConnected) return;
+        var until = performance.now() + 8;
+        while (i < nodes.length && performance.now() < until) markNode(nodes[i++], done, nodes);
+        if (i < nodes.length) setTimeout(slice, 0);
+      })();
+    }, delay);
+  }
+  function markNode(node, done, nodes) {
+    (function () {
+      if (!node.parentNode || !node.nodeValue.trim() || node.parentNode.closest('.gw, button, th')) return;
       var s = node.nodeValue, best = null;
       GRE.forEach(function (g, gi) {
         if (done[gi]) return;
@@ -723,7 +760,7 @@
       var span = document.createElement('span'); span.className = 'gw'; span.dataset.g = best.gi; span.tabIndex = 0;
       span.textContent = after.nodeValue; after.parentNode.replaceChild(span, after);
       nodes.push(rest); // keep scanning the remainder for other words
-    });
+    })();
   }
   function showPop(el) {
     var g = GRE[+el.dataset.g]; pop.innerHTML = '<b>' + esc(g.term) + '</b>' + esc(g.def); pop.style.display = 'block';
@@ -743,10 +780,11 @@
   // ---------- Start ----------
   buildMap(); refresh();
   var h = decodeURIComponent(location.hash.slice(1));
-  if (h.indexOf('n-') === 0) openNode(h.slice(2)); else if (byId[h]) openTopic(h);
+  try { history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : '')); } catch (e) {}
+  if (h.indexOf('n-') === 0) openNode(h.slice(2), true); else if (byId[h]) openTopic(h, false, true);
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610012130"></script>
+<script src="nav.js?v=202610021700"></script>
 </body>
 </html>

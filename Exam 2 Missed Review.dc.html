@@ -3,15 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=202610012130"></script>
-<script src="./nav.js?v=202610012130"></script>
+<meta name="theme-color" content="#04160e">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
+<style>
+  /* Paint the dark theme and a spinner straight away, so the raw page never flashes while the page code loads. */
+  html { background: #04160e; }
+  x-dc { display: none !important; }
+  body:not(:has(#dc-root > *))::after { content: ""; position: fixed; left: 50%; top: 42%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(245, 196, 0, .22); border-top-color: #f5c400; animation: e2spin .8s linear infinite; }
+  @keyframes e2spin { to { transform: rotate(360deg); } }
+  #dc-root > * { animation: e2pagein .28s ease both; }
+  @keyframes e2pagein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
+</style>
+<script src="./support.js?v=202610021700"></script>
+<script src="./nav.js?v=202610021700"></script>
 </head>
 <body>
 <template id="__bundler_thumbnail" data-bg-color="#0d1117"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#0d1117"/><path d="M34 36l52 48M86 36l-52 48" fill="none" stroke="#e8a33d" stroke-width="9" stroke-linecap="round"/></svg></template>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
-<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610012130"></script>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610021700"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -146,7 +158,7 @@
         <sc-if value="{{ cur.needsRebuild }}" hint-placeholder-val="{{ false }}">
           <div style="padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-divider);background:var(--color-accent-900)">
             <div style="font-family:var(--font-heading);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:5px">Needs concept rebuild</div>
-            <div style="font-size:15px;color:var(--color-neutral-200)">{{ cur.rebuildNote }} Rebuild the concept on the info page, then come back to this card.</div>
+            <div style="font-size:15px;color:var(--color-neutral-200)">{{ cur.rebuildNote }} Rebuild the concept on the map, then come back to this card.</div>
           </div>
         </sc-if>
 

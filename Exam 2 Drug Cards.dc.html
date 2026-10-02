@@ -3,13 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=202610012130"></script>
-<script src="./nav.js?v=202610012130"></script>
+<meta name="theme-color" content="#04160e">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
+<style>
+  /* Paint the dark theme and a spinner straight away, so the raw page never flashes while the page code loads. */
+  html { background: #04160e; }
+  x-dc { display: none !important; }
+  body:not(:has(#dc-root > *))::after { content: ""; position: fixed; left: 50%; top: 42%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(245, 196, 0, .22); border-top-color: #f5c400; animation: e2spin .8s linear infinite; }
+  @keyframes e2spin { to { transform: rotate(360deg); } }
+  #dc-root > * { animation: e2pagein .28s ease both; }
+  @keyframes e2pagein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
+</style>
+<script src="./support.js?v=202610021700"></script>
+<script src="./nav.js?v=202610021700"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -19,9 +31,9 @@
   .ctl:hover { border-color: var(--color-accent-500) !important; }
   .ctl:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 </style>
-<script src="data/drugs-resp.js?v=202610012130"></script>
-<script src="data/drugs-cardio.js?v=202610012130"></script>
-<script src="data/drugs-heme.js?v=202610012130"></script>
+<script src="data/drugs-resp.js?v=202610021700"></script>
+<script src="data/drugs-cardio.js?v=202610021700"></script>
+<script src="data/drugs-heme.js?v=202610021700"></script>
 </helmet>
 
 <div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16px;line-height:1.55;min-height:100vh">
@@ -32,7 +44,7 @@
     <p style="margin:var(--space-4) 0 0;max-width:80ch;color:var(--color-neutral-300);font-size:15.5px">Grouped by body system, then by class. Each class opens with a pattern card — learn the pattern once and every drug inside it becomes a short list of differences. Every side effect carries its physiological <b>Why</b>. The alphabetical index is at the bottom.</p>
     <div style="margin-top:var(--space-4);border:1px solid var(--color-accent-700);background:var(--color-accent-900);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);max-width:96ch;font-size:14.5px;color:var(--color-neutral-200)"><span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300);margin-right:8px">Safety check</span>Timing values (onset, peak, half-life) are given only where they are clinically useful and reasonably consistent; they vary by formulation, route and reference. Where a card is flagged, for class, use your instructor’s tested standard; in clinical care, verify the current medication reference, provider order, and facility policy.</div>
     <div style="display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)">
-      <a class="ctl" href="Exam 2 Info.dc.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300)">Info page</a>
+      <a class="ctl" href="Exam 2 Map.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300)">Map</a>
       <a class="ctl" href="Exam 2 Recall.dc.html" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-neutral-700);color:var(--color-neutral-300)">Recall page</a>
       <a class="ctl" href="#index" style="text-decoration:none;font-family:var(--font-heading);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--color-accent-600);color:var(--color-accent-200)">A–Z index</a>
     </div>

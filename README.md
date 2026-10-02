@@ -9,7 +9,8 @@ Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claud
 | `Exam 2 Recall.dc.html` | Recall, NCLEX and NGN practice |
 | `Exam 2 Missed Review.dc.html` | Spaced repair cards built from recall misses |
 | `Exam 2 Mastery Loop.dc.html` | Pre-test → report → repair → post-test until 90% |
-| `Exam 2 Info.dc.html`, `Exam 2 Concept Map.dc.html` | The older one-page versions the map was built from |
+| `Exam 2 Concept Map.dc.html` | The older one-page concept map |
+| `Exam 2 Info.dc.html` | Source the map's topics are extracted from (`tools/extract_info_topics.py`); visiting it opens the map |
 
 ## Focus: studying only what the professor lists
 

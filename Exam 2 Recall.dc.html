@@ -3,14 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js?v=202610012130"></script>
-<script src="./nav.js?v=202610012130"></script>
+<meta name="theme-color" content="#04160e">
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
+<style>
+  /* Paint the dark theme and a spinner straight away, so the raw page never flashes while the page code loads. */
+  html { background: #04160e; }
+  x-dc { display: none !important; }
+  body:not(:has(#dc-root > *))::after { content: ""; position: fixed; left: 50%; top: 42%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(245, 196, 0, .22); border-top-color: #f5c400; animation: e2spin .8s linear infinite; }
+  @keyframes e2spin { to { transform: rotate(360deg); } }
+  #dc-root > * { animation: e2pagein .28s ease both; }
+  @keyframes e2pagein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
+</style>
+<script src="./support.js?v=202610021700"></script>
+<script src="./nav.js?v=202610021700"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610012130">
-<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610012130"></script>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021700">
+<script src="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/_ds_bundle.js?v=202610021700"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -22,16 +34,16 @@
   .card { cursor: pointer; }
   .card:hover { border-color: var(--color-neutral-600) !important; }
 </style>
-<script src="data/recall-22-23.js?v=202610012130"></script>
-<script src="data/recall-24-25.js?v=202610012130"></script>
-<script src="data/recall-27-28.js?v=202610012130"></script>
-<script src="data/recall-29-30.js?v=202610012130"></script>
-<script src="data/recall-33-34.js?v=202610012130"></script>
-<script src="data/ngn-22-25.js?v=202610012130"></script>
-<script src="data/ngn-27-30.js?v=202610012130"></script>
-<script src="data/ngn-33-34.js?v=202610012130"></script>
-<script src="data/topic-index.js?v=202610012130"></script>
-<script src="focus.js?v=202610012130"></script>
+<script src="data/recall-22-23.js?v=202610021700"></script>
+<script src="data/recall-24-25.js?v=202610021700"></script>
+<script src="data/recall-27-28.js?v=202610021700"></script>
+<script src="data/recall-29-30.js?v=202610021700"></script>
+<script src="data/recall-33-34.js?v=202610021700"></script>
+<script src="data/ngn-22-25.js?v=202610021700"></script>
+<script src="data/ngn-27-30.js?v=202610021700"></script>
+<script src="data/ngn-33-34.js?v=202610021700"></script>
+<script src="data/topic-index.js?v=202610021700"></script>
+<script src="focus.js?v=202610021700"></script>
 </helmet>
 
 <div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16.5px;line-height:1.55;min-height:100vh">
@@ -48,7 +60,7 @@
           <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:6px">One question throughout this chapter</div>
           <div style="font-size:17px;color:var(--color-neutral-100)">{{ chQuestion }}</div>
         </div>
-        <p style="margin:0;max-width:76ch;color:var(--color-neutral-300);font-size:15.5px">Read the Info page first, then work here with answers hidden. Answer aloud, write it, or explain it as if you are giving report — then reveal. You must be able to retrieve the mechanism, the finding’s meaning, the priority, the action, the words you would say, what you document, and when you escalate.</p>
+        <p style="margin:0;max-width:76ch;color:var(--color-neutral-300);font-size:15.5px">Read the topic on the map first, then work here with answers hidden. Answer aloud, write it, or explain it as if you are giving report — then reveal. You must be able to retrieve the mechanism, the finding’s meaning, the priority, the action, the words you would say, what you document, and when you escalate.</p>
       </div>
       <div style="flex:0 1 280px;border:1px solid var(--color-divider);border-radius:var(--radius-sm);background:var(--color-surface);padding:var(--space-4);min-width:0">
         <div style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-400);margin-bottom:10px">How to use recall mode</div>
@@ -1410,7 +1422,7 @@ const SECTIONS = [
   buildSection('s-contrast', 'Contrast recall', 'Do not confuse these', 'Twelve pairs where a mix-up produces a wrong answer or an unsafe action.', 'contrast', CONTRAST),
   buildSection('s-scenario', 'Scenario recall', 'What would you do?', 'Thirty to ninety seconds each, out loud. Answer all six questions before revealing. Not every case is a crisis.', 'scenario', SCENARIOS),
   buildSection('s-safety', 'Safety recall', 'What not to do, and why', 'Each prompt asks what is unsafe, what to do instead, and when to escalate. Levels are stated in words, not colour alone.', 'paired', SAFETY),
-  buildSection('s-challenge', 'Whole chapter challenge', 'Fourteen prompts, no notes', 'A verbal run of the entire chapter. If you can answer all fourteen aloud without the Info page, you are ready.', 'challenge', CHALLENGE),
+  buildSection('s-challenge', 'Whole chapter challenge', 'Fourteen prompts, no notes', 'A verbal run of the entire chapter. If you can answer all fourteen aloud without the map, you are ready.', 'challenge', CHALLENGE),
   buildSection('s-coverage', 'Coverage check', 'Recall coverage map', 'What this page covers, in which format, and what it honestly does not.', 'coverage', [])
 ];
 
@@ -1847,7 +1859,7 @@ const COV23 = [
   ['Laryngeal trauma', 'Cloze + Paired', 'Complete', 'Aphonia, subcutaneous emphysema, hemoptysis, 15–30 minute assessment interval.'],
   ['Head and neck cancer — disease and risk', 'Paired + Cloze', 'Complete', 'Squamous cell carcinoma, leukoplakia and erythroplakia, tobacco and alcohol, HPV, spread pattern.'],
   ['Cancer warning signs and teaching', 'Paired', 'Complete', 'All warning signs including one-sided ear pain and the 2-week thresholds.'],
-  ['Radiation, chemotherapy and targeted therapy', '—', 'Partial', 'Covered on the Info page; xerostomia care, cetuximab skin reaction and cisplatin/5-FU are not yet prompted here.'],
+  ['Radiation, chemotherapy and targeted therapy', '—', 'Partial', 'Covered on the map; xerostomia care, cetuximab skin reaction and cisplatin/5-FU are not yet prompted here.'],
   ['Surgical options and voice outcomes', 'Paired + Contrast', 'Complete', 'Cord stripping through total laryngectomy, neck dissection and expected shoulder drop.'],
   ['Post-laryngectomy care and intervals', 'Paired + Cloze', 'Complete', 'Hourly vitals, suture line cleaning, flap checks, healthy stoma appearance, laryngectomy tube.'],
   ['Carotid artery rupture', 'Paired + Scenario + Safety + Cloze', 'Complete', 'Hourly leak assessment, do-not-touch rule, rupture response.'],
@@ -1860,7 +1872,7 @@ const COV23 = [
 ];
 
 const MISS23 = [
-  { topic: 'Radiation and chemotherapy side-effect management', why: 'Xerostomia care, skin protection, cetuximab skin reactions and the cisplatin/5-FU regimen are taught on the Info page but not yet retrievable here.', format: 'Paired prompts — what to teach, what to monitor, what to report.' },
+  { topic: 'Radiation and chemotherapy side-effect management', why: 'Xerostomia care, skin protection, cetuximab skin reactions and the cisplatin/5-FU regimen are taught on the map but not yet retrievable here.', format: 'Paired prompts — what to teach, what to monitor, what to report.' },
   { topic: 'Nose and sinus cancer', why: 'Rare, but its presentation deliberately mimics sinusitis — pain persisting after sinusitis treatment is the discriminator, and it is untested here.', format: 'One contrast card against sinusitis, plus a cloze for the occupational exposures.' },
   { topic: 'Official learning objectives', why: 'The objectives panel is reconstructed from chapter content rather than verified, so emphasis cannot be weighted.', format: 'Not a recall format — supply the objectives and every section can be checked against them.' }
 ];
@@ -2521,7 +2533,7 @@ const SECTIONS24 = [
   buildSection('s-contrast', 'Contrast recall', 'Do not confuse these', 'Six pairs where a mix-up produces a wrong answer or an unsafe action.', 'contrast', CT24),
   buildSection('s-scenario', 'Scenario recall', 'What would you do?', 'Thirty to ninety seconds each, out loud. Answer every question before revealing. Not every case is a crisis.', 'scenario', SC24),
   buildSection('s-safety', 'Safety recall', 'What not to do, and why', 'Seven prompts. Levels are stated in words, not colour alone.', 'paired', SF24),
-  buildSection('s-challenge', 'Whole chapter challenge', 'Twenty-two prompts, no notes', 'A verbal run of the entire chapter. If you can answer these aloud without the Info page, you are ready.', 'challenge', CH24_CHALLENGE),
+  buildSection('s-challenge', 'Whole chapter challenge', 'Twenty-two prompts, no notes', 'A verbal run of the entire chapter. If you can answer these aloud without the map, you are ready.', 'challenge', CH24_CHALLENGE),
   buildSection('s-coverage', 'Coverage check', 'Recall coverage map', 'What this chapter covers, in which format, and what it honestly does not.', 'coverage', [])
 ];
 
@@ -3123,7 +3135,7 @@ const SECTIONS25 = [
   buildSection('s-contrast', 'Contrast recall', 'Do not confuse these', 'Six pairs where a mix-up produces a wrong answer or an unsafe action.', 'contrast', CT25),
   buildSection('s-scenario', 'Scenario recall', 'What would you do?', 'Thirty to ninety seconds each, out loud. Answer every question before revealing. Not every case is a crisis.', 'scenario', SC25),
   buildSection('s-safety', 'Safety recall', 'What not to do, and why', 'Seven prompts. Levels are stated in words, not colour alone.', 'paired', SF25),
-  buildSection('s-challenge', 'Whole chapter challenge', 'Twenty-seven prompts, no notes', 'A verbal run of the entire chapter. If you can answer these aloud without the Info page, you are ready.', 'challenge', CH25_CHALLENGE),
+  buildSection('s-challenge', 'Whole chapter challenge', 'Twenty-seven prompts, no notes', 'A verbal run of the entire chapter. If you can answer these aloud without the map, you are ready.', 'challenge', CH25_CHALLENGE),
   buildSection('s-coverage', 'Coverage check', 'Recall coverage map', 'What this chapter covers, in which format, and what it honestly does not.', 'coverage', [])
 ];
 
@@ -3437,7 +3449,7 @@ const COV27 = [
   ['Conduction system', 'Paired + Cloze', 'Complete', 'Full pathway with intrinsic rates, escape rhythms, vagal and sympathetic control.'],
   ['Coronary anatomy and perfusion timing', 'Paired + Cloze + Contrast', 'Complete', 'Artery origins, LAD/LCX/RCA territories, node supply, diastolic perfusion, MAP requirements.'],
   ['Blood pressure regulation', 'Paired + Cloze', 'Complete', 'Three mechanisms, baroreceptors, chemoreceptors and the ten-fold CO₂ effect, stretch receptors, RAAS and ADH.'],
-  ['Venous system and gravity', '—', 'Partial', 'Covered on the Info page — valves, the muscle pump, valveless vena cavae and dependent edema are not yet prompted here.'],
+  ['Venous system and gravity', '—', 'Partial', 'Covered on the map — valves, the muscle pump, valveless vena cavae and dependent edema are not yet prompted here.'],
   ['Cardiac history', 'Paired', 'Complete', 'PQRSTU, the full symptom list, family and social history, and the wording that avoids the word “pain”.'],
   ['Physical assessment', 'Paired + Cloze', 'Complete', 'Inspection, palpation with pulse grading and apical impulse, five auscultation areas.'],
   ['Heart sounds', 'Paired + Cloze + Contrast', 'Complete', 'S1–S4 by timing and meaning, murmurs, pericardial friction rub.'],
@@ -3452,7 +3464,7 @@ const COV27 = [
 ];
 
 const MISS27 = [
-  { topic: 'Venous system mechanics', why: 'Valves, the skeletal muscle pump, valveless vena cavae and the gravity explanation for dependent edema are taught on the Info page but not retrievable here. They underpin chapter 30.', format: 'One paired mechanism prompt plus a cloze on the pressure gradient.' },
+  { topic: 'Venous system mechanics', why: 'Valves, the skeletal muscle pump, valveless vena cavae and the gravity explanation for dependent edema are taught on the map but not retrievable here. They underpin chapter 30.', format: 'One paired mechanism prompt plus a cloze on the pressure gradient.' },
   { topic: 'rMPI and electrophysiologic study', why: 'Both are named in the diagnostics prompt but neither has its own prompt for indication and nursing care.', format: 'Paired prompts — what it shows, why it is ordered, what the nurse does before and after.' },
   { topic: 'Official learning objectives', why: 'The objectives panel is reconstructed rather than verified, so emphasis cannot be weighted.', format: 'Not a recall format — supply the objectives and every section can be checked against them.' }
 ];
@@ -4038,7 +4050,7 @@ const COV29 = [
   ['Valve replacement', 'Paired + Cloze', 'Complete', 'Mechanical versus tissue, anticoagulation, endocarditis prophylaxis.'],
   ['Cardiomyopathies', 'Paired + Cloze', 'Complete', 'Dilated, hypertrophic with the athlete link, restrictive.'],
   ['Coronary artery disease and acute coronary syndrome', '—', 'Partial', 'Angina versus infarction is prompted in chapter 27; MONA, reperfusion, PCI and thrombolytics are not yet prompted here.'],
-  ['Inflammatory heart disease', '—', 'Missing', 'Endocarditis, pericarditis and myocarditis are named on the Info page but have no prompts here.'],
+  ['Inflammatory heart disease', '—', 'Missing', 'Endocarditis, pericarditis and myocarditis are named on the map but have no prompts here.'],
   ['Official learning objectives', 'Objectives panel', 'Partial', 'Eight reconstructed objectives. Not verified — no course objectives supplied.']
 ];
 
@@ -4368,7 +4380,7 @@ const COV30 = [
   ['Hypertensive crisis', 'Paired + Cloze + Safety', 'Complete', 'Threshold, cues, gradual lowering and the stroke rationale.'],
   ['Aortic aneurysm', 'Paired + Cloze + Safety', 'Complete', 'Definition, findings, the no-deep-palpation rule, rupture presentation, post-repair monitoring.'],
   ['Acute arterial occlusion', 'Paired + Cloze + Scenario', 'Complete', 'All six Ps, which two signal tissue death, and the positioning and temperature rules.'],
-  ['Varicose veins and vein stripping', '—', 'Missing', 'Named on the Info page but no prompts here.'],
+  ['Varicose veins and vein stripping', '—', 'Missing', 'Named on the map but no prompts here.'],
   ['Official learning objectives', 'Objectives panel', 'Partial', 'Eight reconstructed objectives. Not verified — no course objectives supplied.']
 ];
 
