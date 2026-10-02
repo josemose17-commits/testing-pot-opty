@@ -166,6 +166,22 @@
   .bd th, .bd td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
   .bd th { color: var(--color-accent-200); font-weight: 600; }
   .tablewrap { overflow-x: auto; }
+  /* Reference strip */
+  .refstrip { padding: 0; }
+  .refstrip > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; padding: 12px 16px; font-size: 14px; color: var(--color-neutral-300); }
+  .refstrip > summary::-webkit-details-marker { display: none; }
+  .refstrip > summary b { color: var(--color-accent-200); font-weight: 600; }
+  .refstrip .chev { transition: transform .15s; color: var(--color-accent-300); }
+  .refstrip[open] .chev { transform: rotate(180deg); }
+  .refgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 10px; padding: 0 12px 12px; }
+  .refgrid section { padding: 12px; border-radius: 14px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); }
+  .refgrid h3 { margin: 0 0 8px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-accent-300); font-weight: 600; }
+  .refgrid dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 13.5px; }
+  .refgrid dt { color: var(--color-accent-2-300); font-weight: 600; }
+  .refgrid dd { margin: 0; color: var(--color-neutral-200); }
+  .refgrid .why { margin: 10px 0 0; padding-top: 8px; border-top: 1px dashed var(--color-divider); font-size: 13px; color: var(--color-neutral-300); }
+  .refgrid .why b { color: var(--color-accent-100); }
+  @media (max-width: 420px) { .refgrid dl { grid-template-columns: 1fr; gap: 0; } .refgrid dd { margin-bottom: 6px; } }
   /* Short notes */
   .sn { padding: 10px 12px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 15px; color: var(--color-neutral-200); }
   .sn-h { font-weight: 600; color: var(--color-text); font-size: 15px; margin-bottom: 4px; }
@@ -219,6 +235,34 @@
     </div>
     <div class="pickhint">Picking: tap topics to add or remove them. Gold = in your focus. Tap <b>Pick topics</b> again when you're done.</div>
   </div>
+
+  <details class="glass refstrip" id="refstrip">
+    <summary><span><b>Reference strip</b> · the numbers these chapters are graded against</span><span class="chev">▾</span></summary>
+    <div class="refgrid">
+      <section><h3>Gas exchange — ABG and oximetry</h3><dl>
+        <dt>pH</dt><dd>7.35–7.45</dd><dt>PaCO₂</dt><dd>35–45 mm Hg — the lung's acid</dd><dt>HCO₃⁻</dt><dd>21–28 mEq/L — the kidney's base</dd>
+        <dt>PaO₂</dt><dd>80–100 mm Hg</dd><dt>SaO₂ / SpO₂</dt><dd>95–100%</dd><dt>COPD baseline</dt><dd>may be 88–92% — treat the trend, not the textbook</dd></dl>
+        <p class="why"><b>ROME</b>: Respiratory Opposite (pH and CO₂ move opposite ways), Metabolic Equal (pH and HCO₃⁻ move together). Then ask whether the other system has started to compensate.</p></section>
+      <section><h3>Cardiac markers and lipids</h3><dl>
+        <dt>Troponin I/T</dt><dd>essentially undetectable; rises 3–6 h, peaks ~24 h, stays up 10–14 days</dd><dt>CK-MB</dt><dd>rises 4–6 h, peaks 18 h</dd>
+        <dt>BNP</dt><dd>&lt;100 pg/mL — above suggests heart failure</dd><dt>Total cholesterol</dt><dd>&lt;200 mg/dL</dd><dt>LDL · HDL</dt><dd>LDL &lt;130 (&lt;100 with CAD) · HDL &gt;45</dd>
+        <dt>Triglycerides</dt><dd>&lt;150 mg/dL</dd><dt>hsCRP, homocysteine</dt><dd>inflammation and risk markers</dd></dl>
+        <p class="why">Troponin is specific to dying heart muscle, so it confirms MI — and a new infarct is shown by the <b>trend</b>, not one value.</p></section>
+      <section><h3>Hemodynamics and pressures</h3><dl>
+        <dt>Cardiac output</dt><dd>4–7 L/min</dd><dt>Cardiac index</dt><dd>2.7–3.2 L/min/m²</dd><dt>Stroke volume</dt><dd>60–130 mL</dd><dt>Ejection fraction</dt><dd>55–70%</dd>
+        <dt>MAP</dt><dd>60–70 mm Hg minimum to perfuse organs</dd><dt>Pulse pressure</dt><dd>systolic − diastolic (normal ~30–40)</dd><dt>Orthostatic drop</dt><dd>≥20 systolic or ≥10 diastolic</dd></dl>
+        <p class="why"><b>CO = HR × SV</b>; SV is set by preload, afterload, contractility. Name the lever → you know the effect and the side effect.</p></section>
+      <section><h3>ECG measurements</h3><dl>
+        <dt>Boxes</dt><dd>small 0.04 s · large 0.20 s</dd><dt>P wave</dt><dd>atrial depolarization</dd><dt>PR</dt><dd>0.12–0.20 s</dd><dt>QRS</dt><dd>0.06–0.10 s (ventricular depolarization)</dd>
+        <dt>QT</dt><dd>0.32–0.44 s (varies with rate)</dd><dt>ST</dt><dd>isoelectric — elevation or depression = ischemia/injury</dd><dt>Irregular rate</dt><dd>6-second strip × 10</dd></dl>
+        <p class="why">Same five questions every strip: rate, regularity, P for every QRS, PR, QRS width. <b>Wide QRS</b> = didn't use the fast pathway (ventricular).</p></section>
+      <section><h3>Hematology and clotting</h3><dl>
+        <dt>RBC</dt><dd>4.2–5.4 (F) / 4.7–6.1 (M) million/mm³</dd><dt>Hgb</dt><dd>12–16 (F) / 14–18 (M) g/dL</dd><dt>Hct</dt><dd>37–47% (F) / 42–52% (M)</dd>
+        <dt>WBC · Platelets</dt><dd>5,000–10,000 · 150,000–400,000/mm³</dd><dt>PT · INR</dt><dd>11–12.5 s · 0.8–1.1 (therapeutic 2–3)</dd><dt>aPTT</dt><dd>30–40 s (therapeutic 1.5–2.5× control)</dd>
+        <dt>Also</dt><dd>D-dimer rises with clot breakdown · ferritin, B₁₂, folate for anemia workup</dd></dl>
+        <p class="why"><b>INR → warfarin</b> (antidote vitamin K) · <b>aPTT → heparin</b> (antidote protamine). High value = bleeding precautions + the antidote.</p></section>
+    </div>
+  </details>
 
   <div id="map"><div class="loading">Loading the map…</div></div>
 </main>
@@ -690,6 +734,11 @@
   function hidePop() { pop.style.display = 'none'; }
   body.addEventListener('scroll', hidePop);
   body.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.classList.contains('gw')) showPop(e.target); });
+
+  // Reference strip remembers whether you left it open.
+  var rs = document.getElementById('refstrip');
+  try { if (localStorage.getItem('e2-refstrip') === '1') rs.open = true; } catch (e) {}
+  rs.addEventListener('toggle', function () { try { localStorage.setItem('e2-refstrip', rs.open ? '1' : '0'); } catch (e) {} });
 
   // ---------- Start ----------
   buildMap(); refresh();
