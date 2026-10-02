@@ -1,0 +1,78 @@
+// Short versions of the chapter 33 notes. Keys are the block headings (letters only are compared).
+Object.assign(window.NOTES_SHORT = window.NOTES_SHORT || {}, {
+'33-overview': {
+  'Erythropoiesis': ['Low tissue O₂ → **kidney releases erythropoietin (EPO)** → marrow makes RBCs', 'Needs **iron, B₁₂, folate**', 'RBC lives **~120 days**'],
+  'Hemostasis': ['3 steps: **vessel spasm → platelet plug → coagulation cascade** (fibrin)', '**Fibrinolysis** then trims the clot so it doesn\'t overgrow'],
+  'Aging': ['**Fattier marrow**, less reserve → slower recovery from blood loss', 'Hgb drifts lower; immune + clotting responses blunted'],
+  'Why': ['120-day life → **A1C = 3-month average**; iron takes **weeks** (new cells must grow)', 'Kidney makes EPO → **CKD anemia** that iron alone won\'t fix'],
+  'History': ['Fatigue, exercise tolerance; **bruising/bleeding** (gums, nose, stool, urine, menses)', 'Frequent infections; family hx of anemia/clotting', 'Diet (iron, B₁₂, folate, alcohol); **drugs** (anticoagulants, aspirin, NSAIDs, chemo); work/radiation exposure'],
+  'Skin and mucous membranes': ['**Pallor** (dark skin → conjunctivae, palms, oral mucosa)', '**Jaundice** = hemolysis', '**Petechiae**, purpura, ecchymoses; poor healing'],
+  'Head to toe': ['Iron deficiency: **smooth sore tongue + spoon nails**', 'B₁₂: **beefy red tongue + neuro changes**', 'Bone/joint pain; big nodes, liver, spleen', 'Anemia: **tachycardia + systolic flow murmur**'],
+  'Key labs': ['**CBC + diff**, **reticulocytes** (marrow responding?), iron + ferritin, B₁₂, folate', 'PT/INR, aPTT, D-dimer, fibrinogen, **Coombs**, Hgb electrophoresis, smear'],
+  'Bone marrow aspiration and biopsy': ['Consent, **posterior iliac crest**, local anesthetic (brief sharp pain)', 'After: pressure dressing, **watch bleeding + infection**, mild analgesia, no strenuous activity 24 h'],
+  'Why#2': ['**Retic count = most diagnostic**: can the marrow respond?', 'Low Hgb + **high retics** → marrow working, cells **lost/destroyed**', 'Low Hgb + **low retics** → **production failed**']
+},
+'33-hemostasis-the-cascade-and-the-brakes-on': {
+  'Where cells come from': ['Stem cell → **myeloid** line (platelets, RBCs, neutrophils, eosinophils, basophils, macrophages) + **lymphoid** line (T cells, NK cells, B cells/plasma cells)', 'RBC path: proerythroblast → erythroblasts → **reticulocyte** → erythrocyte'],
+  'The spleen': ['**White pulp** = WBCs/immunity · **red pulp** = macrophages remove old RBCs, antigens, microbes; stores RBCs + platelets', '**Splenectomy → ↑ infection + sepsis risk**'],
+  'The liver': ['Makes **prothrombin + clotting factors**', 'Needed for **vitamin K** → factors **II, VII, IX, X**', 'Stores blood + iron (**ferritin**)'],
+  'Hemostasis defined': ['Controlled, local clotting while perfusion continues elsewhere', '3 steps: **platelet plug → cascade → fibrin clot**'],
+  'Platelet plugs are not clots': ['Activated platelets get **sticky + clump**', 'Plugs last hours, **only start** hemostasis'],
+  'What activates platelets': ['**ADP, calcium, thromboxane A₂, collagen**', 'Platelets make some themselves → self-activate', 'Too few → bleeding'],
+  'The extrinsic pathway': ['**Protective**; triggered outside the blood: **trauma exposes collagen** → plug in seconds', 'Faster start (skips steps); also inflammation, toxins, foreign proteins'],
+  'The intrinsic pathway': ['Triggered inside: **venous stasis** or excess clot-promoters', '**Produces abnormal clotting**', 'Both merge → common path → **fibrin clot**'],
+  'Why a cascade is hard to stop': ['Like a **landslide**: each factor activates the next', 'Every step needs **factors, calcium, platelets**', 'Factor numbers = discovery order, **not action order**'],
+  'The last two critical steps': ['**Prothrombin → thrombin**', '**Thrombin: fibrinogen → fibrin** (only fibrin makes a true clot)'],
+  'Building the clot': ['Fibrinogen (liver) → fibrin threads → mesh', '**Factor XIII** tightens it; platelets stick; serum squeezed out → done'],
+  'The factors worth knowing individually': ['**I** fibrinogen · **II** prothrombin (vit K) · **III** tissue thromboplastin · **IV** calcium · no VI', '**VII** (vit K) · **VIII** antihemophilic (+ vWF) → lack = **hemophilia A**', '**IX** Christmas (vit K) → lack = **hemophilia B** · **X** Stuart-Prower (vit K)', 'XI (mild bleeding) · **XII** Hageman (intrinsic) · **XIII** fibrin-stabilizing'],
+  'Why anticlotting forces exist': ['A cascade would clot **all the blood** → so **anticlotting starts with clotting**, keeping it local'],
+  'Fibrinolysis': ['Dissolves clot edges', '**Plasminogen → plasmin** → digests fibrin → **fibrin degradation products** (D-dimer)'],
+  'The three anticlotting substances': ['**Protein C + S** → break down factors V + VIII', '**Antithrombin III** → inactivates thrombin, IX, X', 'Deficiency → **VTE, PE, MI, stroke**'],
+  'Anticoagulants versus fibrinolytics': ['**Anticoagulants** block cascade steps → prevent new/extending clots; **don\'t dissolve clots** or thin blood', 'Types: platelet inhibitors, direct + indirect thrombin inhibitors, **vitamin K antagonists**', '**Fibrinolytics** (alteplase, reteplase, tenecteplase) → plasminogen → plasmin → **break existing clots**'],
+  'Why': ['**Anticoagulants don\'t dissolve clots** — they stop growth while fibrinolysis works', '→ DVT still there on heparin, **don\'t massage**, goal = prevent the next event']
+},
+'33-the-hematologic-history-drugs-genes-and-': {
+  'Start with age and sex': ['**Marrow + immunity ↓ with age**', 'Women: lower RBC counts, lower in menses → report **cycle changes + dyspnea, dizziness, fatigue**'],
+  'Past history': ['Immune, liver, blood disorders; cancer — esp. **radiation to marrow bones**'],
+  'Environment and work': ['Job, hobbies, **industrial exposure** affecting marrow'],
+  'The COVID-19 questions': ['Vaccine/infection history', '**J&J or AstraZeneca 4–42 days** before symptoms → ask: severe headache, vision change, abdominal/back pain, N/V, dyspnea, **leg swelling**, **petechiae/bruising/bleeding**'],
+  'VITT': ['**Vaccine-induced thrombotic thrombocytopenia**: clots + low platelets at once', 'Rare, treatable (**IVIG + nonheparin anticoagulant**); delay can kill → report now', 'Workup: CBC + platelets, smear, D-dimer, fibrinogen, **PF-4 ELISA**, imaging'],
+  'Drugs causing marrow suppression': ['Allopurinol, azathioprine, **almost all chemo**, ciprofloxacin, colchicine, etanercept, hydroxychloroquine, interferon, **methotrexate**, **SMX/TMP**, zidovudine', 'Trilaciclib reduces chemo marrow suppression'],
+  'Drugs causing hemolytic anemia': ['Cephalosporins, dapsone, levodopa, levofloxacin, methyldopa, nitrofurantoin, **NSAIDs**, **penicillins**, phenazopyridine, quinidine'],
+  'Drugs causing thrombocytopenia': ['Common ones: **acetaminophen, aspirin, ibuprofen, naproxen**, **furosemide**, **heparin**, statins, vancomycin, **SMX/TMP**, phenytoin, valproic acid, rifampin', 'Also amiodarone, beta-lactams, carbamazepine, ceftriaxone, cetirizine, dexamethasone, diltiazem, haloperidol, linezolid, oseltamivir, piperacillin, quinine/quinidine, ranitidine', '**Gold compounds — even after stopping**'],
+  'Nutrition': ['High fat/salt/sugar diets → **anemia**', 'Ask last week\'s food + supplements; dietitian for iron, protein, vitamins'],
+  'Alcohol': ['Chronic misuse → deficiencies, liver damage, **↑ bleeding AND clotting risk**'],
+  'Social determinants': ['Low income / **food desert** → low iron + protein diet'],
+  'Family history': ['Many bleeding/clotting disorders inherited', 'Ask: hemophilia, nosebleeds, **postpartum hemorrhage**, bleeding after **tooth extraction**, easy bruising', '+ **excess clotting** (inherited intrinsic problem)'],
+  'Inherited conditions to ask about by name': ['**Sickle cell disease/trait** (anyone can carry it), anemia, thalassemia, **hemophilia, von Willebrand**, factor II, V, VII, XI, XIII deficiencies'],
+  'Current problems': ['Node swelling; bruising/bleeding — **spontaneous or after trauma?**', 'Bleeding after dental work + how long', 'Pads/tampons last cycle, change?, **clot size** (quarter, walnut)'],
+  'Systemic symptoms': ['DOE, palpitations, infections, fevers, weight loss, headaches, paresthesias'],
+  'Why fatigue is the most common symptom of anemia': ['Cells need O₂ to make **ATP** → less O₂ = fatigue', 'Ask about **endurance vs a year ago**', 'Also vertigo, tinnitus, **smooth red sore tongue**'],
+  'Why': ['**Drug history = highest yield** (much disease is drug-caused)', 'Everyday drugs on the lists; **gold works after stopping** → ask about the **past month**']
+},
+'33-head-to-toe-assessment-aging-adaptations': {
+  'Assess gently': ['Don\'t cause bruising/petechiae/bleeding', 'After venipuncture **hold pressure until bleeding stops** (minutes)'],
+  'Skin and mucous membranes': ['Pallor or jaundice; nail beds for pallor/cyanosis', 'Pallor looks white, bluish, or **ash gray** by skin tone', 'Check **gums, conjunctivae, palmar creases** (palm stretched)'],
+  'Health equity in skin assessment': ['**Don\'t rely on skin alone**', 'White → lighter · **black/very dark brown → ash gray** · brown → yellowish brown', 'Check mucosa, nails, gums, conjunctivae, palmar creases'],
+  'Bleeding survey': ['**Gums** bleed with light pressure/soft brush?', '**Petechiae** + ecchymoses (may cluster)', 'Hospital: bleeding around **NG/ET tubes, lines, IVs, catheters**', 'Turgor; **itching** (dry skin from poor perfusion)'],
+  'Head and neck': ['**Mouth-corner fissures**, ulcers', 'Tongue: **smooth, beefy red, swollen** (pernicious/iron deficiency)', 'Chemo/radiation → **oral mucositis risk tool**', 'All nodes: location, size, tender, **fixed or mobile**'],
+  'Respiratory': ['Lungs work harder', 'RR/depth at rest + after **20 steps in 10 s**; **10-word sentence** without stopping?', 'Fatigue, dyspnea, extra pillows'],
+  'Cardiovascular': ['Heart works harder → **weak thready pulses**', 'JVD, edema, phlebitis, murmurs, rhythm, BP'],
+  'Kidney and urinary': ['**Hematuria** (red, pink, cola)', 'Dipstick protein', '**CKD → less EPO → anemia**; AKI → bleeding/hemolysis anemia'],
+  'Musculoskeletal': ['**Sternal/rib tenderness** in some leukemias (marrow pressure) → light–moderate fingertip pressure on sternum', 'Joint ROM, swelling, pain'],
+  'GI bleeding as a hidden cause': ['Chronic ulcer/polyp bleeding → anemia, **too little to notice**', 'Ask bowel changes + blood; **stool occult blood test**'],
+  'Central nervous system': ['**B₁₂ deficiency → permanent neuro damage** if severe/chronic', 'Leukemia/lymphoma can spread to CNS', 'Head trauma + bleeding disorder → **frequent neuro checks**'],
+  'The aging blood itself': ['↓ blood volume + plasma proteins', '**↓ RBC, Hgb, Hct**; **↓ platelets after 60**', 'Weaker lymphocytes, lower/slower antibodies, **WBC may not rise with infection**'],
+  'The peripheral blood smear': ['Drop on a slide → **sizes, shapes, proportions** of RBCs, WBCs, platelets fast'],
+  'The reference values': ['**RBC**: F 4.2–5.4, M 4.7–6.1 ×10⁶/µL', '↑ chronic hypoxia (COPD), dehydration, polycythemia · ↓ anemia, cirrhosis, hemorrhage', '**Hgb: F 12–16, M 14–18 g/dL**; **critical < 7 or > 21**'],
+  'Psychosocial': ['Learn their coping; build rapport; mental health referral if needed'],
+  'Why': ['**Don\'t palpate an enlarged spleen** — engorged, thin-walled → **can rupture**', 'Confirm with imaging + the provider']
+},
+'33-adpie': {
+  'Why': ['**Drug history = highest yield**; ask about the **past month** (gold acts after stopping)'],
+  'Why#2': ['Anemia is felt most but ranks 3rd: **silent low WBC outranks the fatigue**'],
+  'Why#3': ['**Retics before Hgb**: retics rise in days, Hgb barely moves in week 1 → shows therapy is working'],
+  'Why#4': ['**No rectal anything**: tears bleed (can\'t clot) + seed bacteria (can\'t fight) — one rule, both risks'],
+  'Why#5': ['Slow evaluation clock; **retic count** tells right vs wrong treatment apart in week 1']
+}
+});
