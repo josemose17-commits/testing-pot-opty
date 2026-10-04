@@ -30,6 +30,23 @@
   a { color: var(--color-accent-300); text-underline-offset: 2px; }
   a:hover { color: var(--color-accent-200); }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .fbsec { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid var(--color-neutral-800); }
+  .fbh { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-neutral-400); }
+  .fbt { font-size: 14px; color: var(--color-neutral-100); }
+  .fbcue { font-size: 14px; color: var(--color-neutral-200); padding-left: 14px; position: relative; }
+  .fbcue::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--color-accent); }
+  .fbg { font-size: 12px; color: var(--color-accent-200); margin-top: 4px; }
+  .fbopt { display: flex; flex-direction: column; gap: 3px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--color-neutral-800); background: rgba(255,255,255,.015); }
+  .fbo-top { display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
+  .fbo-top b { font-weight: 500; flex: 1; min-width: 0; }
+  .fbmark { flex: none; width: 14px; font-weight: 600; }
+  .fbtag { flex: none; font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap; }
+  .fbr { font-size: 13px; color: var(--color-neutral-300); padding-left: 22px; }
+  .fbchain { display: flex; flex-direction: column; gap: 10px; }
+  .fbsteps { display: flex; flex-direction: column; gap: 2px; padding-left: 12px; border-left: 2px solid var(--color-accent-700); }
+  .fbstep { font-size: 14px; color: var(--color-neutral-100); }
+  .fbstep.next::before { content: "↓ "; color: var(--color-accent); }
+  .fbrule .fbt { color: var(--color-accent-100); }
 </style>
 <script src="data/recall-22-23.js?v=202610022100"></script>
 <script src="data/recall-24-25.js?v=202610022100"></script>
@@ -44,6 +61,17 @@
 <script src="data/drugs-resp.js?v=202610022100"></script>
 <script src="data/glossary.js?v=202610022100"></script>
 <script src="data/extra-questions.js?v=202610022100"></script>
+<script src="data/explain/22.js?v=202610040900"></script>
+<script src="data/explain/23.js?v=202610040900"></script>
+<script src="data/explain/24.js?v=202610040900"></script>
+<script src="data/explain/25.js?v=202610040900"></script>
+<script src="data/explain/27.js?v=202610040900"></script>
+<script src="data/explain/28.js?v=202610040900"></script>
+<script src="data/explain/29.js?v=202610040900"></script>
+<script src="data/explain/30.js?v=202610040900"></script>
+<script src="data/explain/33.js?v=202610040900"></script>
+<script src="data/explain/34.js?v=202610040900"></script>
+<script src="data/explain/cards.js?v=202610040900"></script>
 <script src="data/topic-index.js?v=202610022200"></script>
 <script src="focus.js?v=202610022200"></script>
 </helmet>
@@ -262,13 +290,35 @@
       <sc-if value="{{ checked }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:14px;padding:18px 20px;border-radius:12px;border:1px solid {{ fb.bd }};background:var(--color-bg);">
           <div style="font-size:17px;color:{{ fb.fg }};">{{ fb.title }}</div>
-          <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:6px 12px;font-size:14px;">
-            <span style="color:var(--color-neutral-400);">Correct</span><span style="white-space:pre-line;color:var(--color-accent-200);">{{ fb.correct }}</span>
-            <sc-if value="{{ fb.hasNotes }}" hint-placeholder-val="{{ false }}"><span style="color:var(--color-neutral-400);">Breakdown</span></sc-if>
-            <sc-if value="{{ fb.hasNotes }}" hint-placeholder-val="{{ false }}"><span style="white-space:pre-line;color:var(--color-neutral-200);">{{ fb.notes }}</span></sc-if>
-            <span style="color:var(--color-neutral-400);">Why</span><span style="color:var(--color-neutral-200);">{{ fb.phys }}</span>
-            <span style="color:var(--color-neutral-400);">Rule</span><span style="color:var(--color-neutral-200);">{{ fb.rule }}</span>
+          <sc-if value="{{ fb.hasAsk }}" hint-placeholder-val="{{ true }}">
+            <div class="fbsec" style="border-top:0;padding-top:0;"><div class="fbh">What it’s really asking</div><div class="fbt">{{ fb.ask }}</div></div>
+          </sc-if>
+          <sc-if value="{{ fb.hasCues }}" hint-placeholder-val="{{ true }}">
+            <div class="fbsec"><div class="fbh">Cues to notice</div>
+              <sc-for list="{{ fb.cues }}" as="c" hint-placeholder-count="2"><div class="fbcue">{{ c.t }}</div></sc-for>
+            </div>
+          </sc-if>
+          <div class="fbsec"><div class="fbh">{{ fb.optHead }}</div>
+            <sc-for list="{{ fb.groups }}" as="g" hint-placeholder-count="1">
+              <sc-if value="{{ g.hasLabel }}" hint-placeholder-val="{{ false }}"><div class="fbg">{{ g.label }}</div></sc-if>
+              <sc-for list="{{ g.items }}" as="o" hint-placeholder-count="4">
+                <div class="fbopt" style="border-color:{{ o.bd }};">
+                  <div class="fbo-top"><span class="fbmark" style="color:{{ o.mfg }};">{{ o.mark }}</span><b>{{ o.t }}</b><sc-if value="{{ o.hasTag }}" hint-placeholder-val="{{ false }}"><span class="fbtag" style="color:{{ o.tfg }};">{{ o.tag }}</span></sc-if></div>
+                  <sc-if value="{{ o.hasR }}" hint-placeholder-val="{{ true }}"><div class="fbr">{{ o.r }}</div></sc-if>
+                </div>
+              </sc-for>
+            </sc-for>
           </div>
+          <div class="fbsec"><div class="fbh">Why — the mechanism, step by step</div>
+            <div class="fbchain">
+              <sc-for list="{{ fb.chain }}" as="ch" hint-placeholder-count="2">
+                <div class="fbsteps" style="border-left-color:{{ ch.bl }};">
+                  <sc-for list="{{ ch.steps }}" as="st" hint-placeholder-count="3"><div class="{{ st.cls }}">{{ st.t }}</div></sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div class="fbsec fbrule"><div class="fbh">Rule to carry into the exam</div><div class="fbt">{{ fb.rule }}</div></div>
           <sc-if value="{{ fb.hasTerms }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
               <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Words in this question</div>
@@ -615,71 +665,124 @@ function wrongNotes(P, R) {
   }
   return out.slice(0, 6).join('\n');
 }
-// Works out the likely reason for a miss from what was picked, what was right, and how the stem is worded.
-// Returns reason keys (from REASONS) and a plain-language line for each.
-const NEG_STEM = /further (teaching|education|instruction)|needs? (more )?teaching|requires? (immediate )?follow-?up|unsafe|contraindicat|\bnot\b|\bexcept\b|incorrect|\bleast\b|\bavoid|question the|clarify|misunderstand/i;
-const PRIO_STEM = /priorit|\bfirst\b|immediate|\bbest\b|most important|which client|sees? first|initial|\burgent/i;
-const LOOK_STEM = /finding|expect|assess|indicat|\bsigns?\b|symptom|manifest|suggest|consistent with|recogni|\bcue/i;
-const ACT_STEM = /action|intervention|\bdo\b|implement|respond|\bplan\b|instruct|teach|include/i;
-const ASSESS_OPT = /^(re)?(assess|monitor|check|obtain|auscultate|measure|evaluate|observe|review|inspect|palpate|ask|count|verify|weigh|compare|determine|note|look)/i;
-const ACT_OPT = /^(administer|give|apply|position|elevate|raise|place|call|notify|contact|initiate|start|stop|hold|discontinue|instruct|teach|encourage|insert|suction|prepare|provide|remove|increase|decrease|lower|turn|reposition|request|tell|explain|ambulate|restrict|withhold|prepare|perform|help|assist)/i;
-const DRUG_OPT = /\b(mg|mcg|units?|dose|medication|drug|PRN|IV push|tablet|inhaler)\b|olol\b|pril\b|sartan\b|dipine\b|heparin|warfarin|enoxaparin|digoxin|furosemide|nitro|albuterol|ipratropium|steroid|insulin|aspirin|clopidogrel|apixaban|rivaroxaban|potassium chloride|iron|ferrous|B12|cyanocobalamin|folic/i;
-const NUM_OPT = /\d+(\.\d+)?\s*(%|mg|mcg|mmHg|mm Hg|mEq|mmol|g\/dL|mL|L\/min|bpm|\/min|seconds|sec\b|hours?|days?|cells|mm³|\/mm|units)|\b\d{2,}\b/i;
-const MECH_TXT = /\bbecause\b|causes?|leads? to|results? in|mechanism|so that|which (lowers|raises|blocks|reduces|increases)|blocks?|inhibit|stimulat|receptor/i;
+// Works out the likely reason for a miss from the stem's wording, what was picked, and the question's own
+// rationales and cues. Returns up to two reason keys (from REASONS), each with a line that explains it.
+const NEG_STEM = /(statement|teaching)[^?]*(follow-?up|reinforce|further teaching|needs? (more )?teaching)|further (teaching|education)|\bunsafe\b|\bexcept\b|\bleast\b|contraindicat/i;
+const PRIO_STEM = /priorit|\bfirst\b(?!-line)|which client|most important|\bbest\b|\binitial\b/i;
+const FACT_STEM = /\blabs?\b|\blevel\b|value|calculat|\bANC\b|\bINR\b|aPTT|\bABG\b|\bpH\b|normal|interpret|pack-year|\bMCV\b|troponin|reticulocyte/i;
+const CUE_STEM = /finding|indicat|suggest|consistent with|require|report|follow-?up|expected|concern|signs?\b|deteriorat|worsening|trend|distinguish|typical/i;
+const ACT_STEM = /action|intervention|appropriate|teach|instruction|response|\bdo\b|\bcare\b|prescription|antidote|administer/i;
+const MECH_STEM = /\bwhy\b|mechanism|explain|because|complete the statement/i;
+const DRUG_OPT = /\b(mg|mcg|dose|medication|drug|PRN|IV push|inhaler)\b|olol\b|pril\b|sartan\b|dipine\b|heparin|warfarin|enoxaparin|digoxin|furosemide|nitro|albuterol|steroid|aspirin|apixaban|rivaroxaban|adenosine|atropine|amiodarone|epinephrine|naloxone|protamine|vitamin K|epoetin|filgrastim|isoniazid|rifampin|oseltamivir|theophylline|iron/i;
+const firstSentences = (t, n) => { const m = String(t || '').match(/.+?[.!?](?=\s|$)/g); return m ? m.slice(0, n || 2).join(' ').replace(/\s+/g, ' ').trim() : String(t || ''); };
+const why = c => firstSentences(clean(c.r), 2);
+const qt = t => { t = String(t).replace(/^[“"]|[”"]$/g, ''); return '“' + (t.length > 70 ? t.slice(0, 67).replace(/\s+\S*$/, '') + '…' : t) + '”'; };
+const SKILL_KEY = { 'Drugs & mechanisms': 'drug', 'Pathophysiology': 'mech', 'Priority & safety': 'prio', 'Recognizing cues': 'cue' };
 function inferWhy(P, R, b) {
-  const out = [], seen = {};
-  const add = (k, line) => { if (!seen[k] && out.length < 3) { seen[k] = 1; out.push({ k, line }); } };
-  const q = P.q || '', hasDrug = !!((b && b.drugs) || []).length;
-  const typeOf = t => ASSESS_OPT.test(t) ? 'assess' : ACT_OPT.test(t) ? 'act' : 'other';
-  const qt = c => '“' + (c.t.length > 70 ? c.t.slice(0, 67).replace(/\s+\S*$/, '') + '…' : c.t) + '”';
-  const vs = (wrong, right) => wrong.length === 1 && right.length === 1 ? ' It wanted ' + qt(right[0]) + ', not ' + qt(wrong[0]) + '.' : '';
-  const drugName = (((b && b.drugs) || [])[0] || {}).n;
-  const cmpChoice = (wrong, right) => {
-    const all = wrong.concat(right), txt = all.map(c => c.t + ' ' + (c.r || '')).join(' ');
-    if (NEG_STEM.test(q)) add('read', 'This stem asks for the one that is wrong, unsafe, or needs follow-up. Your pick reads like a correct statement, so flip the question before you answer.');
-    if (PRIO_STEM.test(q) || P.kind === 'order') {
-      const w = wrong[0] ? typeOf(wrong[0].t) : '', r = right[0] ? typeOf(right[0].t) : '';
-      if (w === 'assess' && r === 'act') add('prio', 'You chose to assess, but the problem was already clear and the client needed action now.');
-      else if (w === 'act' && r === 'assess') add('prio', 'You acted before getting the data the stem needed. Assess first when the problem isn’t confirmed yet.');
-      else add('prio', 'Your pick isn’t wrong in general, but it isn’t first. Rank by airway, breathing, circulation, then safety.' + vs(wrong, right));
-    }
-    if (hasDrug || all.some(c => DRUG_OPT.test(c.t))) add('drug', 'The difference was about ' + (drugName || 'the drug') + ': what it does, its side effects, or what to check before giving it.');
-    if (all.some(c => NUM_OPT.test(c.t))) add('fact', 'The difference was a number: a normal range or a threshold to act on.');
-    if (LOOK_STEM.test(q) && !PRIO_STEM.test(q)) add('look', 'The question was about what to look for.' + (vs(wrong, right) || ' The finding it wanted wasn’t the one you chose.'));
-    else if (ACT_STEM.test(q) && !PRIO_STEM.test(q)) add('do', 'The question was about what to do.' + (vs(wrong, right) || ' The nursing action it wanted wasn’t the one you chose.'));
-    if (MECH_TXT.test(txt)) add('mech', 'The rationale turns on why it happens. Knowing the mechanism points to the answer.');
-  };
+  const out = [], seen = {}, quoted = {};
+  const add = (k, line) => { if (!seen[k] && out.length < 2 && line) { seen[k] = 1; out.push({ k, line }); } };
+  const q = P.q || '', cues = (P.cues || []).slice(0, 3), drug = (((b && b.drugs) || [])[0] || {}).n;
+  // Each option's rationale is quoted once; a second reason that would repeat it gets its general line instead.
+  const once = (c, text) => { if (!c || quoted[c.t]) return ''; quoted[c.t] = 1; return text; };
+  const cueLine = cues.length ? 'The cues to catch: ' + cues.join('; ') + '.' : '';
   R = R == null ? {} : R;
+  const choiceWhy = (wrong, missed, right) => {
+    const w = wrong[0], m = missed[0], r = right[0];
+    const all = wrong.concat(right);
+    const dm = drug || ((all.map(c => c.t).join(' ') + ' ' + q).match(DRUG_OPT) || [])[0];
+    if (NEG_STEM.test(q)) add('read', 'This stem asks for the one that is wrong, unsafe or needs follow-up.' + (w ? once(w, ' ' + qt(w.t) + ' is actually fine: ' + why(w)) : ''));
+    if (PRIO_STEM.test(q) && P.kind === 'single' && w && r) add('prio', once(w, 'You chose ' + qt(w.t) + ', but ' + qt(r.t) + ' comes first. ' + why(r)));
+    if (FACT_STEM.test(q) && r) add('fact', once(r, qt(r.t) + ' is right: ' + why(r)));
+    if (dm) add('drug', 'This turned on ' + dm + '. ' + ((w ? once(w, 'You chose ' + qt(w.t) + ': ' + why(w)) : m ? once(m, 'You left out ' + qt(m.t) + ': ' + why(m)) : '') || 'Know what it does, its key side effects and what to check before giving it.'));
+    if (m && !w) add(CUE_STEM.test(q) ? 'look' : 'do', once(m, 'You were on the right track but left out ' + qt(m.t) + ': ' + why(m)));
+    if (CUE_STEM.test(q)) add('cue', ((w && once(w, qt(w.t) + ' was not one of them: ' + why(w) + ' ')) || '') + cueLine);
+    if (ACT_STEM.test(q) && w) add('do', once(w, 'You chose ' + qt(w.t) + ': ' + why(w)));
+    if (MECH_STEM.test(q) && P.phys) add('mech', 'The mechanism decides it: ' + firstSentences(P.phys, 1));
+    if (w) add(SKILL_KEY[(b && b.skill) || ''] || 'fact', once(w, 'You chose ' + qt(w.t) + ': ' + why(w)));
+    if (m) add(CUE_STEM.test(q) ? 'look' : 'do', once(m, 'You left out ' + qt(m.t) + ': ' + why(m)));
+  };
+  const sel = (c, isSel) => isSel(c);
   switch (P.kind) {
-    case 'single': cmpChoice(P.choices.filter(c => c.k === R && !c.c), P.choices.filter(c => c.c)); break;
-    case 'sata': {
-      const extra = P.choices.filter(c => R[c.k] && !c.c), miss = P.choices.filter(c => !R[c.k] && c.c);
-      if (miss.length && !extra.length) add(ACT_STEM.test(q) && !LOOK_STEM.test(q) ? 'do' : 'look', 'You were on the right track but left out ' + miss.length + ' correct option' + (miss.length > 1 ? 's' : '') + '. Judge each option as true or false on its own.');
-      if (extra.length && !miss.length) add('cue', 'You picked everything right plus ' + (extra.length === 1 ? qt(extra[0]) + ', which doesn’t belong' : extra.length + ' that don’t belong') + '. Check each option against this client’s cues.');
-      cmpChoice(extra, miss);
+    case 'single': { const isSel = c => c.k === R; choiceWhy(P.choices.filter(c => sel(c, isSel) && !c.c), [], P.choices.filter(c => c.c)); break; }
+    case 'sata': { const isSel = c => !!R[c.k]; choiceWhy(P.choices.filter(c => isSel(c) && !c.c), P.choices.filter(c => !isSel(c) && c.c), P.choices.filter(c => c.c)); break; }
+    case 'order': {
+      const seq = Array.isArray(R) ? R : [];
+      const bad = P.choices.slice().sort((a, b) => a.rank - b.rank).find(c => seq.indexOf(c.k) !== c.rank);
+      if (bad) add('prio', qt(bad.t) + ' belongs at step ' + (bad.rank + 1) + ' (you put it at ' + (seq.indexOf(bad.k) + 1) + '). ' + why(bad));
+      if (P.rule) add('mech', 'The sequence to remember: ' + P.rule);
       break;
     }
-    case 'order': add('prio', 'The steps were right but the order wasn’t. Ask “what kills first?”, then “what is safest?”'); cmpChoice([], []); break;
-    case 'matrix': add('cue', 'Some rows were sorted into the wrong column. Match each finding to what the condition causes.'); add('mech', 'Each row turns on why the condition produces that finding.'); break;
-    case 'cloze': add('mech', 'The blanks follow a cause-and-effect chain. One wrong link breaks the rest.'); break;
+    case 'matrix': {
+      const bad = P.rows.filter(r => R[r.k] !== r.a);
+      if (bad[0]) add(CUE_STEM.test(q) ? 'cue' : 'mech', qt(bad[0].t) + ' is ' + P.cols[bad[0].a] + ': ' + why(bad[0]) + (bad.length > 1 ? ' (' + (bad.length - 1) + ' more row' + (bad.length > 2 ? 's' : '') + ' below.)' : ''));
+      if (P.phys) add('mech', 'The idea behind every row: ' + firstSentences(P.phys, 1));
+      break;
+    }
+    case 'cloze': {
+      let n = 0, bad = null, bn = 0;
+      P.segs.forEach(sg => { if (!sg.opts) return; n++; const o = sg.opts.find(o => o.k === R[sg.blank]); if (!bad && !(o && o.c)) { bad = sg; bn = n; } });
+      if (bad) add('mech', 'Blank ' + bn + ' should be ' + qt(bad.opts.find(o => o.c).t) + ': ' + why(bad));
+      if (drug) add('drug', 'This turned on ' + drug + ' — how it works decides each blank.');
+      break;
+    }
     case 'bow': {
-      const bad = g => { const r = R[g.g]; return g.choices.some(c => (r == null ? false : g.multi ? !!r[c.k] : c.k === r) !== c.c); };
       P.groups.forEach(g => {
-        if (!bad(g)) return;
-        if (g.g === 'cond') add('cue', 'You named the wrong condition. The cues in the scenario point to a different one.');
-        if (g.g === 'act') add('do', 'Some of the actions you chose don’t treat this condition.');
-        if (g.g === 'mon') add('look', 'Some of the things you chose to monitor don’t show whether this condition is improving.');
+        const r = R[g.g], isSel = c => r == null ? false : g.multi ? !!r[c.k] : c.k === r;
+        const w = g.choices.find(c => isSel(c) && !c.c), m = g.choices.find(c => !isSel(c) && c.c);
+        const c = w || m; if (!c) return;
+        const lead = w ? 'You chose ' + qt(c.t) : 'You left out ' + qt(c.t);
+        if (g.g === 'cond') add('cue', 'You named the wrong condition. ' + cueLine);
+        if (g.g === 'act') add('do', lead + ' as an action: ' + why(c));
+        if (g.g === 'mon') add('look', lead + ' to monitor: ' + why(c));
       });
       break;
     }
   }
-  if (!out.length) add('mech', 'The rationale turns on why it happens. Knowing the mechanism points to the answer.');
+  if (!out.length) add('mech', P.phys ? 'The mechanism decides it: ' + firstSentences(P.phys, 1) : 'Review the explanation above.');
   return out;
+}
+// The feedback breakdown: every option (or step, row, blank) with whether it is right, what you chose, and why.
+const clean = r => String(r || '').replace(/^(Correct|Incorrect)\.\s*/, '');
+function fbItem(t, isC, tag, r, tagGood) {
+  const why = clean(r);
+  return { t, r: why, hasR: !!why, mark: isC ? '✓' : '✗', mfg: isC ? 'var(--color-accent-300)' : 'var(--color-neutral-500)', bd: isC ? 'var(--color-accent-700)' : 'var(--color-neutral-800)', tag: tag || '', hasTag: !!tag, tfg: tagGood ? 'var(--color-accent-200)' : 'var(--color-neutral-200)' };
+}
+function breakdown(P, R) {
+  R = R == null ? {} : R;
+  const pickTag = (sel, isC, multi) => sel ? (isC ? 'Your pick ✓' : 'Your pick') : (isC && multi ? 'You missed this' : '');
+  const choiceItems = (choices, isSel, multi) => choices.map(c => { const sel = isSel(c); return fbItem(c.t, c.c, pickTag(sel, c.c, multi), c.r, sel && c.c); });
+  switch (P.kind) {
+    case 'single': return { optHead: 'Every option, explained', groups: [{ hasLabel: false, items: choiceItems(P.choices, c => c.k === R, false) }] };
+    case 'sata': return { optHead: 'Every option, explained', groups: [{ hasLabel: false, items: choiceItems(P.choices, c => !!R[c.k], true) }] };
+    case 'order': {
+      const seq = Array.isArray(R) ? R : [];
+      const items = P.choices.slice().sort((a, b) => a.rank - b.rank).map(c => { const at = seq.indexOf(c.k), ok = at === c.rank; return fbItem((c.rank + 1) + '. ' + c.t, ok, ok ? '' : at < 0 ? 'Not placed' : 'You put it #' + (at + 1), c.r); });
+      return { optHead: 'The right order — and why each step sits there', groups: [{ hasLabel: false, items }] };
+    }
+    case 'matrix': return { optHead: 'Each row, explained', groups: [{ hasLabel: false, items: P.rows.map(r => { const ok = R[r.k] === r.a; return fbItem(r.t + ' → ' + P.cols[r.a], ok, ok ? '' : 'You said: ' + (R[r.k] != null ? P.cols[R[r.k]] : '—'), r.r); }) }] };
+    case 'cloze': {
+      let n = 0;
+      const items = P.segs.filter(sg => sg.opts).map(sg => { n++; const right = sg.opts.find(o => o.c), mine = sg.opts.find(o => o.k === R[sg.blank]); const ok = !!(mine && mine.c); return fbItem('Blank ' + n + ': ' + right.t, ok, ok ? '' : 'You chose: ' + (mine ? mine.t : '—'), sg.r); });
+      return { optHead: 'Each blank, explained', groups: [{ hasLabel: false, items }] };
+    }
+    case 'bow': return { optHead: 'Every choice, explained', groups: P.groups.map(g => { const r = R[g.g]; return { hasLabel: true, label: g.label, items: choiceItems(g.choices, c => r == null ? false : g.multi ? !!r[c.k] : c.k === r, g.multi) }; }) };
+  }
+  return { optHead: '', groups: [] };
+}
+// The mechanism as steps: each sentence is a block, each “→” starts a new step.
+function chainOf(phys) {
+  if (!phys || phys === '—') return [];
+  return String(phys).replace(/([.!?])\s+(?=[A-Z“(0-9])/g, '$1\n').split('\n').filter(Boolean).map(sent => {
+    const steps = sent.split(/\s*→\s*/).filter(Boolean);
+    return { bl: steps.length > 1 ? 'var(--color-accent-700)' : 'transparent', steps: steps.map((t, i) => ({ t, cls: 'fbstep' + (i ? ' next' : '') })) };
+  });
 }
 const eff = (T, id) => (T.scores[id] || 0) * (T.conf[id] === 'guess' ? 0.5 : 1);
 // Glossary terms that appear in a question (same matching as the Concept Map).
 function termsFor(P) {
-  const txt = JSON.stringify([P.q, P.ex, P.fig, P.choices, P.rows, P.segs, P.groups, P.phys, P.rule]);
+  // Only the question itself (stem, exhibit, figure, answer options) — not the explanations, which use plain words on purpose.
+  const opts = [(P.choices || []).map(c => c.t), (P.rows || []).map(r => r.t), (P.segs || []).map(sg => sg.opts ? sg.opts.map(o => o.t) : sg.text), (P.groups || []).map(g => g.choices.map(c => c.t))];
+  const txt = JSON.stringify([P.q, P.ex, P.fig, opts]);
   // Short abbreviations (AP, MI, PE…) must match as whole words, not inside MAP or PEA.
   const hit = m => /^[A-Z][A-Z0-9₀-₉⁺]{0,3}$/.test(m) ? new RegExp('(^|[^A-Za-z])' + m + '([^A-Za-z]|$)').test(txt) : txt.includes(m);
   return (window.GLOSSARY || []).filter(g => g[1].some(hit)).slice(0, 10).map(g => ({ term: g[0], def: g[2] }));
@@ -689,7 +792,9 @@ class Component extends DCLogic {
   state = { ready: false, S: null, flipped: false };
 
   componentDidMount() {
+    const t0 = Date.now();
     const tryLoad = () => {
+      if (!CHS.every(c => (window.EXPLAIN_CH || {})[c]) && Date.now() - t0 < 5000) return false;
       if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY || !window.EXTRA_Q) return false;
       if (!CHS.every(c => window.NGN_EXTRA[c] || window.RECALL_EXTRA[c])) return false;
       this.build();
@@ -706,16 +811,30 @@ class Component extends DCLogic {
 
   build() {
     const bank = [];
+    // Layer the full explanations (data/explain/*.js) over each question's short rationales.
+    const EX = window.EXPLAIN || {};
+    const patch = (base, p) => { base = base || []; if (!p) return base; if (Array.isArray(p)) return p.length === base.length ? p : base; const out = base.slice(); Object.keys(p).forEach(k => { out[+k] = p[k]; }); return out; };
+    const explain = (x, id) => {
+      const E = EX[id]; if (!E) return x;
+      const y = Object.assign({}, x);
+      if (E.r && x.o) y.r = patch(x.r, E.r);
+      if (E.rows && x.rows) { const rr = patch(x.rows.map(r => r.r), E.rows); y.rows = x.rows.map((r, i) => Object.assign({}, r, { r: rr[i] })); }
+      if (E.blanks && x.parts) y.parts = x.parts.map((p, i) => p && typeof p === 'object' && E.blanks[i] ? Object.assign({}, p, { r: E.blanks[i] }) : p);
+      ['cond', 'act', 'mon'].forEach(g => { if (E[g] && x[g]) y[g] = Object.assign({}, x[g], { r: patch(x[g].r, E[g]) }); });
+      ['ask', 'cues', 'phys', 'rule'].forEach(k => { if (E[k]) y[k] = E[k]; });
+      return y;
+    };
+    const push = (x, id, ch, src) => bank.push(Object.assign(explain(x, id), { id, ch, src }));
     // Ch 33 items that test ch 34 study-guide topics are filed under 34 (below); the rest stay in 33.
     const to34 = (x, src) => CH33_FOR_34.test(x.t || '') && (src === 'n' || /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x)));
     const skip = (ch, x, src) => (ch === '33' && to34(x, src)) || (OFF_GUIDE_PICKS[ch] && OFF_GUIDE_PICKS[ch].indexOf(x.t) < 0);
     CHS.forEach(ch => {
-      (window.NGN_EXTRA[ch] || []).forEach((x, i) => skip(ch, x, 'n') || bank.push(Object.assign({}, x, { id: ch + '|n|' + i, ch, src: x.f })));
-      ((window.RECALL_EXTRA[ch] || {}).nclex || []).forEach((x, i) => skip(ch, x, 'c') || bank.push(Object.assign({}, x, { id: ch + '|c|' + i, ch, src: 'mcq' })));
-      (window.EXTRA_Q[ch] || []).forEach((x, i) => bank.push(Object.assign({}, x, { id: ch + '|x|' + i, ch, src: x.f || 'mcq' })));
+      (window.NGN_EXTRA[ch] || []).forEach((x, i) => skip(ch, x, 'n') || push(x, ch + '|n|' + i, ch, x.f));
+      ((window.RECALL_EXTRA[ch] || {}).nclex || []).forEach((x, i) => skip(ch, x, 'c') || push(x, ch + '|c|' + i, ch, 'mcq'));
+      (window.EXTRA_Q[ch] || []).forEach((x, i) => push(x, ch + '|x|' + i, ch, x.f || 'mcq'));
     });
-    (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (to34(x, 'n')) bank.push(Object.assign({}, x, { id: '33|n|' + i, ch: '34', src: x.f })); });
-    ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (to34(x, 'c')) bank.push(Object.assign({}, x, { id: '33|c|' + i, ch: '34', src: 'mcq' })); });
+    (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (to34(x, 'n')) push(x, '33|n|' + i, '34', x.f); });
+    ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (to34(x, 'c')) push(x, '33|c|' + i, '34', 'mcq'); });
     const drugs = (window.DRUG_DATA.drugs || []).map(d => {
       const names = [d.n, d.g].concat(String(d.b || '').split(/[,/]/)).map(s => String(s || '').trim()).filter(s => s.length >= 5);
       return names.length ? { d, re: new RegExp('\\b(' + [...new Set(names)].map(esc).join('|') + ')\\b', 'i') } : null;
@@ -757,6 +876,18 @@ class Component extends DCLogic {
       return { g, short, multi, need: a.length, label: multi ? label + ' — choose ' + a.length : label, choices: shuffle(x.o.map((t, i) => ({ k: i, t, r: (x.r || [])[i] || '', c: a.includes(i) }))) };
     });
     return P;
+  }
+
+  // A question as shown, with its rationales, mechanism and rule re-read from the bank,
+  // so tests saved before an explanation update still show the current one.
+  fresh(P) {
+    const b = this.byId[P.id]; if (!b) return P;
+    const X = Object.assign({}, P, { phys: b.phys || P.phys, rule: b.rule || P.rule, ask: b.ask || '', cues: b.cues || (b.key ? [b.key] : []) });
+    if (P.choices) X.choices = P.choices.map(c => Object.assign({}, c, { r: (b.r || [])[c.k] || c.r }));
+    if (P.rows) X.rows = P.rows.map(r => Object.assign({}, r, { r: ((b.rows || [])[r.k] || {}).r || r.r }));
+    if (P.segs) X.segs = P.segs.map(sg => sg.opts ? Object.assign({}, sg, { r: ((b.parts || [])[sg.blank] || {}).r || sg.r }) : sg);
+    if (P.groups) X.groups = P.groups.map(g => Object.assign({}, g, { choices: g.choices.map(c => Object.assign({}, c, { r: ((b[g.g] || {}).r || [])[c.k] || c.r })) }));
+    return X;
   }
 
   save(S) { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} this.setState({ S }); }
@@ -853,7 +984,7 @@ class Component extends DCLogic {
     this.upd(S => {
       const T = S.test, sc = score(P, T.resp[P.id]);
       T.scores[P.id] = sc; T.checked[P.id] = true;
-      if (sc < 1 && !(T.why[P.id] || []).length) T.why[P.id] = inferWhy(P, T.resp[P.id], this.byId[P.id]).map(x => x.k);
+      if (sc < 1 && !(T.why[P.id] || []).length) T.why[P.id] = inferWhy(this.fresh(P), T.resp[P.id], this.byId[P.id]).map(x => x.k);
     });
   }
   next() {
@@ -886,12 +1017,14 @@ class Component extends DCLogic {
     const T = result.test, cards = [], keys = new Set();
     const add = c => { if (!keys.has(c.key)) { keys.add(c.key); cards.push(c); } };
     const targets = T.items.filter(P => eff(T, P.id) < 1).sort((a, b) => eff(T, a.id) - eff(T, b.id));
-    targets.forEach(P => {
-      const b = this.byId[P.id] || {}, R = T.resp[P.id], why = T.why[P.id] || [];
+    targets.forEach(P0 => {
+      const P = this.fresh(P0), b = this.byId[P.id] || {}, R = T.resp[P.id], why = T.why[P.id] || [];
       const guessed = (T.scores[P.id] || 0) >= 1 && T.conf[P.id] === 'guess';
       const all = !why.length;
       const has = k => all || why.includes(k);
       const back = [{ h: 'Correct answer', v: correctText(P) }];
+      if (P.ask) back.push({ h: 'What it was really asking', v: P.ask });
+      if (P.cues && P.cues.length) back.push({ h: 'Cues to notice', v: P.cues.map(c => '• ' + c).join('\n') });
       const wn = wrongNotes(P, R); if (wn && !guessed) back.push({ h: 'Where it went wrong', v: wn });
       if (P.phys) back.push({ h: 'Why — the mechanism', v: P.phys });
       if (P.rule) back.push({ h: 'Rule to carry into the exam', v: P.rule });
@@ -909,7 +1042,8 @@ class Component extends DCLogic {
       const X = window.RECALL_EXTRA[P.ch] || {};
       const W = b.words || words(P.q);
       const best = (arr, get, filt) => { let top = null, ts = 1; (arr || []).forEach((x, i) => { if (filt && !filt(x)) return; const s = overlap(W, words(get(x))); if (s > ts) { ts = s; top = [x, i]; } }); return top; };
-      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (rq) add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: rq[0][4] }, { h: 'Nursing move', v: rq[0][5] }, { h: 'Trap', v: rq[0][6] }].filter(x => x.v) }); };
+      const CX = (window.EXPLAIN_CARDS || {})[P.ch] || {};
+      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
       if (why.includes('words')) termsFor(P).slice(0, 4).forEach(t => add({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
       if (has('look')) rqCard(x => /see next|finding changes|compare/i.test(x[0]), 'What to look for');
       if (has('do')) rqCard(x => /first action|mini case|medication/i.test(x[0]), 'What to do');
@@ -917,7 +1051,8 @@ class Component extends DCLogic {
       if (has('fact') || has('guess')) rqCard(x => /direct recall/i.test(x[0]), 'Fact');
       if (has('prio') || has('second') || has('fact') || has('guess')) {
         const mc = best(X.mc, x => x[0] + ' ' + x[1]);
-        if (mc) add({ key: 'm:' + P.ch + ':' + mc[1], ch: P.ch, type: 'Myth check', sub: 'True or false?', front: mc[0][0], back: [{ h: 'False — the fact', v: mc[0][1] }, { h: 'What goes wrong if you believe it', v: mc[0][2] }] });
+        const me = mc ? (CX.mc || {})[mc[1]] || {} : {};
+        if (mc) add({ key: 'm:' + P.ch + ':' + mc[1], ch: P.ch, type: 'Myth check', sub: 'True or false?', front: mc[0][0], back: [{ h: 'False — the fact', v: mc[0][1] }, { h: 'Why', v: me.why }, { h: 'What goes wrong if you believe it', v: me.harm || mc[0][2] }].filter(x => x.v) });
       }
     });
     const order = [], q = cards.filter(c => c.key[0] === 'q'), o = cards.filter(c => c.key[0] !== 'q');
@@ -1056,15 +1191,16 @@ class Component extends DCLogic {
       v.q = q;
       if (ck) {
         const sc = T.scores[P.id] || 0, full = sc >= 1, why = T.why[P.id] || [], conf = T.conf[P.id];
-        const notes = full ? '' : wrongNotes(P, R);
+        const X = this.fresh(P), bd = breakdown(X, R);
         const terms = termsFor(P);
-        const auto = full ? [] : inferWhy(P, R, this.byId[P.id]);
+        const auto = full ? [] : inferWhy(X, R, this.byId[P.id]);
         const diag = auto.filter(x => why.includes(x.k)).concat(why.filter(k => !auto.some(x => x.k === k)).map(k => ({ k, line: 'You added: ' + RLABEL[k].toLowerCase() + '.' })));
         v.fb = {
           terms, hasTerms: terms.length > 0,
           title: full ? 'Correct.' : sc > 0 ? 'Partially correct — ' + Math.round(sc * 100) + '% credit.' : 'Incorrect.',
           fg: full ? 'var(--color-accent-200)' : 'var(--color-neutral-100)', bd: full ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
-          correct: correctText(P), notes, hasNotes: !!notes, phys: P.phys || '—', rule: P.rule || '—',
+          ask: X.ask, hasAsk: !!X.ask, cues: (X.cues || []).map(t => ({ t })), hasCues: !!(X.cues || []).length,
+          optHead: bd.optHead, groups: bd.groups, chain: chainOf(X.phys), rule: X.rule || '—',
           askWhy: !full, askConf: full,
           diag: diag.map(x => ({ head: RLABEL[x.k].split(' — ')[0].split(' (')[0], line: x.line })), hasDiag: diag.length > 0,
           reasons: REASONS.map(([k, label]) => { const on = why.includes(k); return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { const w = S.test.why[P.id] || []; S.test.why[P.id] = w.includes(k) ? w.filter(x => x !== k) : w.concat([k]); }) }; }),
