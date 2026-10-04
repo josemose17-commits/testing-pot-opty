@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610021900"></script>
-<script src="./nav.js?v=202610041200"></script>
+<script src="./nav.js?v=202610042200"></script>
 </head>
 <body>
 <x-dc>
@@ -30,6 +30,8 @@
   a:hover { color: var(--color-accent-200); }
   .ctl:hover { border-color: var(--color-accent-500) !important; }
   .ctl:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .drow { grid-template-columns: minmax(130px, 190px) minmax(0, 1fr); }
+  @media (max-width: 560px) { .drow { grid-template-columns: minmax(0, 1fr); gap: 3px !important; } }
 </style>
 <script src="data/drugs-resp.js?v=202610021900"></script>
 <script src="data/drugs-cardio.js?v=202610021900"></script>
@@ -38,6 +40,8 @@
 <script src="data/explain/drugs-2.js?v=202610040900"></script>
 <script src="data/explain/drug-whys.js?v=202610040900"></script>
 <script src="data/explain/drug-more.js?v=202610040900"></script>
+<script src="data/explain/drug-looks.js?v=202610042200"></script>
+<script src="data/drug-pics.js?v=202610042200"></script>
 </helmet>
 
 <div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16px;line-height:1.55;min-height:100vh">
@@ -65,6 +69,20 @@
   </div>
 
   <div style="padding:0 clamp(14px,4vw,48px) 100px;max-width:1180px">
+
+    <details style="margin-top:clamp(20px,3vw,32px);border:1px solid var(--color-divider);border-radius:var(--radius-sm);background:var(--color-surface);padding:var(--space-3) var(--space-4);max-width:96ch">
+      <summary style="cursor:pointer;font-family:var(--font-heading);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-300)">In the hospital: how a drug gets from the pharmacy to your patient</summary>
+      <div style="display:grid;gap:6px;margin-top:10px;font-size:15px;color:var(--color-neutral-200)">
+        <div><b style="color:var(--color-neutral-100)">Order → pharmacist → eMAR.</b> The provider orders it, a pharmacist checks it, and it appears on the electronic medication administration record with the time, dose and any hold parameters.</div>
+        <div><b style="color:var(--color-neutral-100)">Automated dispensing cabinet</b> (Pyxis, Omnicell). You log in with a fingerprint or badge, pick the patient, and only that drug’s drawer or pocket opens. Opioids and other controlled drugs need a count, and any unused part is wasted with a witness.</div>
+        <div><b style="color:var(--color-neutral-100)">Unit dose.</b> Each pill is sealed in its own labeled packet with a barcode. Leave it sealed until you are at the bedside.</div>
+        <div><b style="color:var(--color-neutral-100)">Barcode scanning.</b> Scan the patient’s wristband, then every medication. It catches the wrong patient, drug or dose, but it does not replace your own checks.</div>
+        <div><b style="color:var(--color-neutral-100)">IV bags and pumps.</b> Small “piggyback” bags (antibiotics, KCl) and continuous drips run on smart pumps with a drug library. High-alert drugs (heparin, insulin, opioids, potassium, magnesium, chemotherapy) need an independent double-check.</div>
+        <div><b style="color:var(--color-neutral-100)">Crash cart.</b> Prefilled emergency syringes (epinephrine, atropine, amiodarone, adenosine and others), sealed and checked daily.</div>
+        <div><b style="color:var(--color-neutral-100)">Refrigerator.</b> Insulin, epoetin, filgrastim, dornase, protamine, vaccines and some IV drugs live in the med-room fridge.</div>
+        <div><b style="color:var(--color-neutral-100)">Generic names on everything.</b> Hospitals stock generics, so the packet usually says “metoprolol tartrate”, not “Lopressor”. Learn both names. Pill color changes with the manufacturer, so never identify a pill by color alone; warfarin’s strength colors are the exception.</div>
+      </div>
+    </details>
 
     <sc-for list="{{ systems }}" as="sys" hint-placeholder-count="2">
       <section id="{{ sys.id }}" style="scroll-margin-top:70px;padding-top:clamp(28px,4vw,52px)">
@@ -113,13 +131,35 @@
                         <div style="display:grid;gap:8px">
                           <div style="font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300);padding-top:6px">{{ sec.title }}</div>
                           <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="3">
-                            <div style="display:grid;grid-template-columns:minmax(130px,190px) minmax(0,1fr);gap:var(--space-3);align-items:start;padding-bottom:9px;border-bottom:1px solid var(--color-divider)">
+                            <div class="drow" style="display:grid;gap:var(--space-3);align-items:start;padding-bottom:9px;border-bottom:1px solid var(--color-divider)">
                               <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:{{ r.kc }};padding-top:3px">{{ r.k }}</span>
                               <div style="min-width:0;font-size:15px;color:var(--color-neutral-200)">
                                 <sc-if value="{{ r.isText }}" hint-placeholder-val="{{ true }}"><span>{{ r.v }}</span></sc-if>
                                 <sc-if value="{{ r.isSteps }}" hint-placeholder-val="{{ false }}">
                                   <div style="display:grid;gap:2px;padding-left:12px;border-left:2px solid var(--color-accent-700)">
                                     <sc-for list="{{ r.steps }}" as="st" hint-placeholder-count="3"><div style="color:var(--color-neutral-100)"><span style="color:var(--color-accent-400)">{{ st.arrow }}</span>{{ st.t }}</div></sc-for>
+                                  </div>
+                                </sc-if>
+                                <sc-if value="{{ r.isList }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display:grid;gap:5px">
+                                    <sc-for list="{{ r.items }}" as="it" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:14px minmax(0,1fr);color:var(--color-neutral-100)"><span style="color:var(--color-accent-400)">•</span><span>{{ it.t }}</span></div></sc-for>
+                                  </div>
+                                </sc-if>
+                                <sc-if value="{{ r.isChips }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                                    <sc-for list="{{ r.chips }}" as="ch" hint-placeholder-count="3">
+                                      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 5px;border-radius:999px;border:1px solid var(--color-divider);font-size:13.5px;color:var(--color-neutral-100)"><i style="width:22px;height:13px;border-radius:7px;background:{{ ch.c }};border:1px solid rgba(0,0,0,.35)"></i>{{ ch.t }}</span>
+                                    </sc-for>
+                                  </div>
+                                </sc-if>
+                                <sc-if value="{{ r.isPics }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px">
+                                    <sc-for list="{{ r.pics }}" as="pic" hint-placeholder-count="1">
+                                      <a href="{{ pic.file }}" target="_blank" rel="noopener" style="flex:0 0 auto;width:min(78%,260px);text-decoration:none;border:1px solid var(--color-divider);border-radius:10px;overflow:hidden;background:var(--color-bg)">
+                                        <img src="{{ pic.file }}" alt="{{ pic.caption }}" loading="lazy" style="display:block;width:100%;height:170px;object-fit:contain;background:#f6f3ea">
+                                        <span style="display:block;padding:7px 9px;font-size:13px;line-height:1.35;color:var(--color-neutral-100)">{{ pic.caption }}<small style="display:block;margin-top:2px;font-size:10.5px;color:var(--color-neutral-500)">{{ pic.credit }}</small></span>
+                                      </a>
+                                    </sc-for>
                                   </div>
                                 </sc-if>
                                 <sc-if value="{{ r.isPairs }}" hint-placeholder-val="{{ false }}">
@@ -168,6 +208,7 @@ const SYS = [
 // An opened card reads top to bottom in the order you would think about the drug.
 const SECTIONS = [
   ['What it is', [['c', 'Drug class'], ['g', 'Generic name'], ['b', 'Brand name (high-yield)'], ['p', 'Prototype medication'], ['ind', 'Used for'], ['fix', 'What body problem it fixes']]],
+  ['What it looks like — and in the hospital', [['pics', 'Pictures', 'pics'], ['brands', 'Brand names'], ['chips', 'Tablet colors by strength', 'chips'], ['look', 'What you’ll see', 'list'], ['hosp', 'In the hospital', 'list']]],
   ['How it works — step by step', [['steps', 'Mechanism', 'steps'], ['plain', 'In plain words'], ['moa', 'Technical mechanism']]],
   ['Before you give it — and why', [['checks', 'Check first', 'checks'], ['hold', 'Vital signs, labs, hold parameters'], ['stop', 'Hold and notify the provider', 'hold'], ['contra', 'Contraindications and precautions'], ['inter', 'Interactions (drug, food, lab)'], ['bbw', 'Black box / major warning']]],
   ['What to watch for — and why', [['se', 'Common / expected side effects', 'pairs'], ['sae', 'Serious adverse effects', 'pairs'], ['mon', 'Monitor after giving'], ['work', 'Signs it is working'], ['emerg', 'Emergency action', 'emerg'], ['rescue', 'Antidote / reversal / rescue']]],
@@ -202,29 +243,34 @@ class Component extends DCLogic {
     const uniq = arr => { const s = new Set(); return arr.filter(x => !s.has(x.id) && s.add(x.id)); };
     const D = { classes: uniq(RAW.classes), drugs: uniq(RAW.drugs) };
     const q = this.state.query.trim().toLowerCase();
-    const hit = d => !q || [d.n, d.g, d.b, d.c].join(' ').toLowerCase().indexOf(q) >= 0;
+    const hit = d => !q || [d.n, d.g, d.b, d.c, ((window.DRUG_LOOKS || {})[d.id] || {}).brands].join(' ').toLowerCase().indexOf(q) >= 0;
     const colorFor = t => t === 'emerg' ? '#c97f78' : t === 'hold' ? '#c6a24a' : (t === 'strong' || t === 'flag' || t === 'steps' || t === 'checks') ? 'var(--color-accent-300)' : 'var(--color-neutral-500)';
     let shown = 0;
 
     const buildDrug = d0 => {
       // Layer the broken-down explanations (data/explain/drugs-*.js) over the original card.
-      const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {});
+      const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {}, (window.DRUG_LOOKS || {})[d0.id] || {});
+      if (d.brands) d.b = '';
+      d.pics = (window.DRUG_PICS || []).filter(p => (p.drugs || []).indexOf(d.id) >= 0)
+        .map(p => ({ file: p.file, caption: p.caption, credit: p.credit + ' · ' + p.license }));
       const WHY = window.DRUG_WHY || {};
       const open = this.state.all || !!this.state.open[d.id];
       const row = f => {
         let v = d[f[0]];
         if (f[0] === 'flag') { if (!v) return null; v = SAFETY + (v === true ? '' : ' ' + v); }
         if (v === undefined || v === null || v === '' || v === '—' || (Array.isArray(v) && !v.length)) return null;
-        const kind = f[2], pairs = kind === 'pairs' || kind === 'checks', steps = kind === 'steps';
+        const kind = f[2], pairs = kind === 'pairs' || kind === 'checks', steps = kind === 'steps', list = kind === 'list', pics = kind === 'pics', chips = kind === 'chips';
         return {
-          k: f[1], kc: colorFor(kind), isText: !pairs && !steps, isPairs: pairs, isSteps: steps, v: pairs || steps ? '' : v,
+          k: f[1], kc: colorFor(kind), isText: !pairs && !steps && !list && !pics && !chips, isPairs: pairs, isSteps: steps, isList: list, isPics: pics, isChips: chips,
+          v: pairs || steps || list || pics || chips ? '' : v, chips: chips ? v.map(x => ({ t: x[0] + ' · ' + x[1], c: x[2] })) : [],
+          items: list ? v.map(t => ({ t })) : [], pics: pics ? v : [],
           pairs: pairs ? v.map((x, i) => ({ e: x[0], w: (kind === 'pairs' && WHY[d.id + '|' + f[0] + '|' + i]) || x[1], lbl: 'Why:' })) : [],
           steps: steps ? v.map((t, i) => ({ t, arrow: i ? '↓ ' : '' })) : []
         };
       };
       const sections = SECTIONS.map(([title, fields]) => ({ title, rows: fields.map(row).filter(Boolean) })).filter(sec => sec.rows.length);
       return {
-        anchor: 'drug-' + d.id, name: d.n, sub: d.c + (d.b ? ' · ' + d.b : '') + ' · Ch ' + d.ch,
+        anchor: 'drug-' + d.id, name: d.n, sub: d.c + (d0.b ? ' · ' + d0.b : '') + ' · Ch ' + d.ch,
         edge: d.hy ? 'var(--color-accent-500)' : 'transparent',
         open, chev: open ? 'Close ▴' : 'Open ▾', sections,
         toggle: () => self.setState(s => ({ open: Object.assign({}, s.open, { [d.id]: !s.open[d.id] }) }))
