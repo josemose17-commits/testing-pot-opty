@@ -336,7 +336,7 @@
 <script src="data/notes-short/34.js?v=202610021900"></script>
 <script src="data/notes-short/more.js?v=202610021900"></script>
 <script src="data/notes-short/adpie.js?v=202610040900"></script>
-<script src="data/images.js?v=202610041900"></script>
+<script src="data/images.js?v=202610050400"></script>
 <script src="data/videos.js?v=202610042100"></script>
 <script src="data/glossary.js?v=202610021900"></script>
 <script src="focus.js?v=202610022200"></script>
@@ -630,7 +630,7 @@
     if (!list.length) return '';
     return '<div class="pics-h">Pictures · tap to enlarge</div><div class="pics' + (list.length === 1 ? ' one' : '') + '">' + list.map(function (i) {
       var p = PICS[i];
-      return '<figure class="pic" data-pic="' + i + '"><img src="' + esc(p.file) + '" alt="' + esc(p.caption) + '" loading="lazy" decoding="async"><figcaption>' + esc(p.caption) + '<small>' + credit(p) + '</small></figcaption></figure>';
+      return '<figure class="pic" data-pic="' + i + '"><img src="' + esc(p.file) + '" alt="' + esc(p.caption) + '" loading="lazy" decoding="async" onerror="this.closest(\'figure\').style.display=\'none\'"><figcaption>' + esc(p.caption) + '<small>' + credit(p) + '</small></figcaption></figure>';
     }).join('') + '</div>';
   }
   // Videos: YouTube embeds that load only when tapped (privacy-enhanced youtube-nocookie player).
@@ -927,6 +927,6 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610050300"></script>
+<script src="nav.js?v=202610050400"></script>
 </body>
 </html>
