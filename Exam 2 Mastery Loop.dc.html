@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610022100"></script>
+<script src="./nav.js?v=202610041200"></script>
 </head>
 <body>
 <x-dc>
@@ -828,7 +828,8 @@ class Component extends DCLogic {
       ['ask', 'cues', 'phys', 'rule'].forEach(k => { if (E[k]) y[k] = E[k]; });
       return y;
     };
-    const push = (x, id, ch, src) => bank.push(Object.assign(explain(x, id), { id, ch, src }));
+    // Topic, focus and skill matching read the question's own short rule and mechanism, not the longer explanations.
+    const push = (x, id, ch, src) => bank.push(Object.assign(explain(x, id), { id, ch, src, rule0: x.rule || '', phys0: x.phys || '' }));
     // Ch 33 items that test ch 34 study-guide topics are filed under 34 (below); the rest stay in 33.
     const to34 = (x, src) => CH33_FOR_34.test(x.t || '') && (src === 'n' || /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x)));
     const skip = (ch, x, src) => (ch === '33' && to34(x, src)) || (OFF_GUIDE_PICKS[ch] && OFF_GUIDE_PICKS[ch].indexOf(x.t) < 0);
@@ -845,9 +846,9 @@ class Component extends DCLogic {
     }).filter(Boolean);
     const classRe = /beta[- ]?blocker|calcium channel|ACE inhibitor|\bARB\b|diuretic|anticoag|heparin|warfarin|nitro|digoxin|bronchodilat|inhaler|corticosteroid|antibiotic|statin|iron supplement|-olol|-pril|-sartan/i;
     bank.forEach(b => {
-      const txt = [b.t, b.q, JSON.stringify(b.o || b.rows || b.parts || [b.cond, b.act, b.mon]), b.rule, b.phys].join(' ');
+      const txt = [b.t, b.q, JSON.stringify(b.o || b.rows || b.parts || [b.cond, b.act, b.mon]), b.rule0, b.phys0].join(' ');
       b.txt = txt;
-      b.kw = KW[b.ch].test(txt); b.words = words(b.t + ' ' + b.q + ' ' + (b.rule || '') + ' ' + (b.phys || ''));
+      b.kw = KW[b.ch].test(txt); b.words = words(b.t + ' ' + b.q + ' ' + b.rule0 + ' ' + b.phys0);
       b.subs = (SUB[b.ch] || []).filter(s => s[1].test(txt)).map(s => s[0]);
       const k = b.src;
       b.kind = ['sata', 'matrix', 'order', 'bow', 'cloze'].includes(k) ? k : (Array.isArray(b.a) && b.a.length > 1 ? 'sata' : 'single');
