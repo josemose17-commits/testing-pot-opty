@@ -34,6 +34,10 @@
 <script src="data/drugs-resp.js?v=202610021900"></script>
 <script src="data/drugs-cardio.js?v=202610021900"></script>
 <script src="data/drugs-heme.js?v=202610021900"></script>
+<script src="data/explain/drugs-1.js?v=202610040900"></script>
+<script src="data/explain/drugs-2.js?v=202610040900"></script>
+<script src="data/explain/drug-whys.js?v=202610040900"></script>
+<script src="data/explain/drug-more.js?v=202610040900"></script>
 </helmet>
 
 <div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16px;line-height:1.55;min-height:100vh">
@@ -105,19 +109,29 @@
                   </button>
                   <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
                     <div style="border-top:1px solid var(--color-divider);padding:var(--space-4);display:grid;gap:10px">
-                      <sc-for list="{{ d.rows }}" as="r" hint-placeholder-count="8">
-                        <div style="display:grid;grid-template-columns:minmax(150px,210px) minmax(0,1fr);gap:var(--space-3);align-items:start;padding-bottom:9px;border-bottom:1px solid var(--color-divider)">
-                          <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:{{ r.kc }};padding-top:3px">{{ r.k }}</span>
-                          <div style="min-width:0;font-size:15px;color:var(--color-neutral-200)">
-                            <sc-if value="{{ r.isText }}" hint-placeholder-val="{{ true }}"><span>{{ r.v }}</span></sc-if>
-                            <sc-if value="{{ r.isPairs }}" hint-placeholder-val="{{ false }}">
-                              <div style="display:grid;gap:6px">
-                                <sc-for list="{{ r.pairs }}" as="p" hint-placeholder-count="2">
-                                  <div><b style="color:var(--color-neutral-100)">Effect: {{ p.e }}.</b> <span style="color:var(--color-accent-300)">Why:</span> {{ p.w }}</div>
-                                </sc-for>
+                      <sc-for list="{{ d.sections }}" as="sec" hint-placeholder-count="4">
+                        <div style="display:grid;gap:8px">
+                          <div style="font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-300);padding-top:6px">{{ sec.title }}</div>
+                          <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="3">
+                            <div style="display:grid;grid-template-columns:minmax(130px,190px) minmax(0,1fr);gap:var(--space-3);align-items:start;padding-bottom:9px;border-bottom:1px solid var(--color-divider)">
+                              <span style="font-family:var(--font-heading);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:{{ r.kc }};padding-top:3px">{{ r.k }}</span>
+                              <div style="min-width:0;font-size:15px;color:var(--color-neutral-200)">
+                                <sc-if value="{{ r.isText }}" hint-placeholder-val="{{ true }}"><span>{{ r.v }}</span></sc-if>
+                                <sc-if value="{{ r.isSteps }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display:grid;gap:2px;padding-left:12px;border-left:2px solid var(--color-accent-700)">
+                                    <sc-for list="{{ r.steps }}" as="st" hint-placeholder-count="3"><div style="color:var(--color-neutral-100)"><span style="color:var(--color-accent-400)">{{ st.arrow }}</span>{{ st.t }}</div></sc-for>
+                                  </div>
+                                </sc-if>
+                                <sc-if value="{{ r.isPairs }}" hint-placeholder-val="{{ false }}">
+                                  <div style="display:grid;gap:6px">
+                                    <sc-for list="{{ r.pairs }}" as="p" hint-placeholder-count="2">
+                                      <div><b style="color:var(--color-neutral-100)">{{ p.e }}.</b> <span style="color:var(--color-accent-300)">{{ p.lbl }}</span> {{ p.w }}</div>
+                                    </sc-for>
+                                  </div>
+                                </sc-if>
                               </div>
-                            </sc-if>
-                          </div>
+                            </div>
+                          </sc-for>
                         </div>
                       </sc-for>
                     </div>
@@ -151,17 +165,14 @@ const SYS = [
   { id: 'cardio', name: 'Cardiovascular', chapters: 'Chapters 27 · 28 · 29 · 30' },
   { id: 'heme', name: 'Hematologic', chapters: 'Chapters 33 · 34' }
 ];
-const FIELDS = [
-  ['g', 'Generic name'], ['b', 'Brand name (high-yield)'], ['c', 'Drug class'], ['p', 'Prototype medication'],
-  ['ind', 'Main indication(s)'], ['moa', 'Mechanism of action'], ['plain', 'Mechanism in plain language'], ['fix', 'What body problem it fixes'],
-  ['pk', 'Onset, peak, duration, half-life'], ['route', 'Route(s) and administration'],
-  ['se', 'Common / expected side effects — why', 'pairs'], ['sae', 'Serious adverse effects — why', 'pairs'],
-  ['bbw', 'Black box / major warning'], ['contra', 'Contraindications and precautions'], ['inter', 'Interactions (drug, food, lab)'],
-  ['pre', 'Nursing assessment before giving'], ['hold', 'Vital signs, labs, hold parameters'],
-  ['stop', 'Hold and notify the provider', 'hold'], ['emerg', 'Emergency action', 'emerg'],
-  ['mon', 'Monitor after giving'], ['work', 'Signs it is working'], ['teach', 'Patient teaching'], ['rescue', 'Antidote / reversal / rescue'],
-  ['nclex', 'NCLEX priority', 'strong'], ['trap', 'Common NCLEX trap'], ['anchor', 'Memory anchor'], ['conn', 'Clinical connection'], ['cmp', 'Quick compare'],
-  ['flag', 'Safety check', 'flag']
+// An opened card reads top to bottom in the order you would think about the drug.
+const SECTIONS = [
+  ['What it is', [['c', 'Drug class'], ['g', 'Generic name'], ['b', 'Brand name (high-yield)'], ['p', 'Prototype medication'], ['ind', 'Used for'], ['fix', 'What body problem it fixes']]],
+  ['How it works — step by step', [['steps', 'Mechanism', 'steps'], ['plain', 'In plain words'], ['moa', 'Technical mechanism']]],
+  ['Before you give it — and why', [['checks', 'Check first', 'checks'], ['hold', 'Vital signs, labs, hold parameters'], ['stop', 'Hold and notify the provider', 'hold'], ['contra', 'Contraindications and precautions'], ['inter', 'Interactions (drug, food, lab)'], ['bbw', 'Black box / major warning']]],
+  ['What to watch for — and why', [['se', 'Common / expected side effects', 'pairs'], ['sae', 'Serious adverse effects', 'pairs'], ['mon', 'Monitor after giving'], ['work', 'Signs it is working'], ['emerg', 'Emergency action', 'emerg'], ['rescue', 'Antidote / reversal / rescue']]],
+  ['Giving it and teaching', [['route', 'Route(s) and administration'], ['pk', 'Onset, peak, duration, half-life'], ['teach', 'Patient teaching']]],
+  ['On the exam', [['nclex', 'NCLEX priority', 'strong'], ['trap', 'Common NCLEX trap'], ['anchor', 'Memory anchor'], ['cmp', 'Quick compare'], ['conn', 'Clinical connection'], ['flag', 'Safety check', 'flag']]]
 ];
 const SAFETY = 'Safety check: for class, use your instructor’s tested standard; in clinical care, verify the current medication reference, provider order, and facility policy.';
 
@@ -192,23 +203,30 @@ class Component extends DCLogic {
     const D = { classes: uniq(RAW.classes), drugs: uniq(RAW.drugs) };
     const q = this.state.query.trim().toLowerCase();
     const hit = d => !q || [d.n, d.g, d.b, d.c].join(' ').toLowerCase().indexOf(q) >= 0;
-    const colorFor = t => t === 'emerg' ? '#c97f78' : t === 'hold' ? '#c6a24a' : (t === 'strong' || t === 'flag') ? 'var(--color-accent-300)' : 'var(--color-neutral-500)';
+    const colorFor = t => t === 'emerg' ? '#c97f78' : t === 'hold' ? '#c6a24a' : (t === 'strong' || t === 'flag' || t === 'steps' || t === 'checks') ? 'var(--color-accent-300)' : 'var(--color-neutral-500)';
     let shown = 0;
 
-    const buildDrug = d => {
+    const buildDrug = d0 => {
+      // Layer the broken-down explanations (data/explain/drugs-*.js) over the original card.
+      const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {});
+      const WHY = window.DRUG_WHY || {};
       const open = this.state.all || !!this.state.open[d.id];
-      const rows = [];
-      FIELDS.forEach(f => {
+      const row = f => {
         let v = d[f[0]];
-        if (f[0] === 'flag') { if (!v) return; v = SAFETY + (v === true ? '' : ' ' + v); }
-        if (v === undefined || v === null || v === '' || v === '—' || (Array.isArray(v) && !v.length)) return;
-        const pairs = f[2] === 'pairs';
-        rows.push({ k: f[1], kc: colorFor(f[2]), isText: !pairs, isPairs: pairs, v: pairs ? '' : v, pairs: pairs ? v.map(x => ({ e: x[0], w: x[1] })) : [] });
-      });
+        if (f[0] === 'flag') { if (!v) return null; v = SAFETY + (v === true ? '' : ' ' + v); }
+        if (v === undefined || v === null || v === '' || v === '—' || (Array.isArray(v) && !v.length)) return null;
+        const kind = f[2], pairs = kind === 'pairs' || kind === 'checks', steps = kind === 'steps';
+        return {
+          k: f[1], kc: colorFor(kind), isText: !pairs && !steps, isPairs: pairs, isSteps: steps, v: pairs || steps ? '' : v,
+          pairs: pairs ? v.map((x, i) => ({ e: x[0], w: (kind === 'pairs' && WHY[d.id + '|' + f[0] + '|' + i]) || x[1], lbl: 'Why:' })) : [],
+          steps: steps ? v.map((t, i) => ({ t, arrow: i ? '↓ ' : '' })) : []
+        };
+      };
+      const sections = SECTIONS.map(([title, fields]) => ({ title, rows: fields.map(row).filter(Boolean) })).filter(sec => sec.rows.length);
       return {
         anchor: 'drug-' + d.id, name: d.n, sub: d.c + (d.b ? ' · ' + d.b : '') + ' · Ch ' + d.ch,
         edge: d.hy ? 'var(--color-accent-500)' : 'transparent',
-        open, chev: open ? 'Close ▴' : 'Open ▾', rows,
+        open, chev: open ? 'Close ▴' : 'Open ▾', sections,
         toggle: () => self.setState(s => ({ open: Object.assign({}, s.open, { [d.id]: !s.open[d.id] }) }))
       };
     };
@@ -221,7 +239,7 @@ class Component extends DCLogic {
         return {
           id: 'class-' + c.id, name: c.name, mech: c.mech, risks: c.risks, assess: c.assess, dist: c.dist,
           members: members.map(d => d.n).join(' · '),
-          se: (c.se || []).map(x => ({ e: x[0], w: x[1] })),
+          se: (c.se || []).map((x, i) => ({ e: x[0], w: (window.DRUG_WHY || {})['class:' + c.id + '|' + i] || x[1] })),
           drugs: vis.map(buildDrug), show: vis.length > 0 || (!q && members.length === 0)
         };
       }).filter(c => c.show);
