@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610050200"></script>
+<script src="./nav.js?v=202610050300"></script>
 </head>
 <body>
 <x-dc>
@@ -623,7 +623,7 @@ const REASONS = [
   ['guess', 'Never learned this — pure guess', -1]
 ];
 const RLABEL = {}; REASONS.forEach(r => { RLABEL[r[0]] = r[1]; });
-const KIND_LABEL = { single: 'Choose one', sata: 'Select all that apply', order: 'Put the steps in order', matrix: 'Matrix — one answer per row', cloze: 'Drop-down cloze — complete the statement', bow: 'Bow-tie — condition, actions, monitoring' };
+const KIND_LABEL = { single: 'Choose one', sata: 'Select all that apply', order: 'Put the steps in order', matrix: 'Matrix — one answer per row', cloze: 'Drop-down — fill each blank', bow: 'Bow-tie — condition, actions, monitoring' };
 const STORE = 'e2-mastery-loop-v2';
 const STOP = new Set('which client nurse following select apply should would patient these there about after before their other first while being client\u2019s during given order provider most likely statement complete indicate whether finding findings action actions'.split(' '));
 
@@ -691,9 +691,9 @@ function cardFront(b) {
   if (b.kind === 'cloze') {
     let n = 0;
     const sentence = (b.parts || []).map(p => typeof p === 'string' ? p : '(' + (++n) + ') ________').join('');
-    stem = (stem.replace(/[.:]\s*$/, '') || 'Complete the statement') + ':\n' + sentence;
+    stem = sentence;
     n = 0;
-    (b.parts || []).forEach(p => { if (p && typeof p === 'object') { n++; groups.push({ h: 'Choices for blank (' + n + ')', items: mix(p.o, b.id + '|' + n) }); } });
+    (b.parts || []).forEach(p => { if (p && typeof p === 'object') { n++; groups.push({ h: 'Blank (' + n + ') — pick one', items: mix(p.o, b.id + '|' + n) }); } });
   } else if (b.kind === 'single' || b.kind === 'sata') {
     groups.push({ h: b.kind === 'sata' ? 'Options — select all that apply' : 'Options — choose one', items: mix(b.o || [], b.id).map((t, i) => b.src === 'hot' ? t : LET[i] + '. ' + t) });
   } else if (b.kind === 'order') {
@@ -1236,7 +1236,7 @@ class Component extends DCLogic {
         return { bg: isC ? 'var(--color-accent-900)' : 'transparent', bd: isC ? 'var(--color-accent-300)' : (sel ? 'var(--color-neutral-300)' : N), mr: multi ? '4px' : '50%', mf: sel ? (isC ? A : 'var(--color-neutral-400)') : 'transparent' };
       };
       const note = (sel, isC, i) => !ck ? { n: i == null ? '' : i + 1, nfg: 'var(--color-neutral-500)' } : { n: isC ? (sel ? 'Correct' : 'Missed') : (sel ? 'Your pick' : ''), nfg: isC ? 'var(--color-accent-200)' : 'var(--color-neutral-300)' };
-      const q = { q: P.q, kindLabel: KIND_LABEL[P.kind], isChoice: P.kind === 'single' || P.kind === 'sata', isOrder: P.kind === 'order', isMatrix: P.kind === 'matrix', isCloze: P.kind === 'cloze', isBow: P.kind === 'bow', isProbe: !!T.probe[P.id], probeLabel: T.probe[P.id] || '' };
+      const q = { q: P.kind === 'cloze' && /^complete the statement\.?$/i.test(P.q.trim()) ? 'Pick the right choice for each blank in the sentence below.' : P.q, kindLabel: KIND_LABEL[P.kind], isChoice: P.kind === 'single' || P.kind === 'sata', isOrder: P.kind === 'order', isMatrix: P.kind === 'matrix', isCloze: P.kind === 'cloze', isBow: P.kind === 'bow', isProbe: !!T.probe[P.id], probeLabel: T.probe[P.id] || '' };
       q.hasEx = !!(P.ex && P.ex.length);
       q.ex = (P.ex || []).map(e => { const t = e.table || []; return { h: e.h || '', hasTable: t.length > 0, gtc: 'repeat(' + ((t[0] || []).length || 1) + ', minmax(80px,1fr))', rows: t.map((r, i) => ({ cells: r, fg: i === 0 ? 'var(--color-neutral-400)' : 'var(--color-neutral-100)' })), lines: e.lines || [] }; });
       q.hasFig = !!P.fig; q.fig = P.fig ? P.fig.join('\n') : '';
@@ -1305,7 +1305,7 @@ class Component extends DCLogic {
         hasDeck: S.deck.length > 0,
         remedLabel: S.deckDone ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Start repair deck (' + S.deck.length + ' cards)',
         postLabel: pass ? 'Confirm with another post-test' : 'Take the post-test',
-        missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: b.kind ? cardFront(b).stem.split('\n').slice(0, 2).join(' ') : P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
+        missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: b.kind ? cardFront(b).stem : P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
       };
     }
 
