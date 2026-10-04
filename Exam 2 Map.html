@@ -194,6 +194,8 @@
   .sn ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.42; }
   .sn li::marker { color: var(--color-accent-2-400); }
   .sn li b { color: var(--color-accent-100); font-weight: 600; }
+  .sn-exam { border-color: var(--color-accent-600); background: var(--color-accent-900); }
+  .sn-badge { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--color-bg); background: var(--color-accent); padding: 1px 6px; border-radius: 3px; margin-bottom: 4px; }
   .sn-why { border-color: var(--color-accent-700); background: linear-gradient(135deg, var(--color-accent-900), transparent); }
   .sn-why .sn-h { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-accent-300); }
   .sn-full > summary { font-size: 12.5px; }
@@ -306,6 +308,7 @@
 <script src="data/notes-short/33.js?v=202610021900"></script>
 <script src="data/notes-short/34.js?v=202610021900"></script>
 <script src="data/notes-short/more.js?v=202610021900"></script>
+<script src="data/notes-short/adpie.js?v=202610040900"></script>
 <script src="data/glossary.js?v=202610021900"></script>
 <script src="focus.js?v=202610022200"></script>
 <script>
@@ -618,19 +621,32 @@
   // ---------- Notes: short bullets in place of each wordy paragraph ----------
   function letters(x) { return String(x).toLowerCase().replace(/[^a-z]/g, ''); }
   function blockKey(head, n) { return letters(head) + (n > 1 ? '#' + n : ''); }
-  // Same rule as tools/dump_note_blocks.py: a leaf block that opens with "<b>Label</b> —" (or with <b> and runs 250+ characters), or a "Why" side box.
+  // Same rule as tools/dump_note_blocks.py: a labeled cell (an optional "On exam" badge, a short label <div>, then running text);
+  // a leaf block that opens with "<b>Label</b> —" (or with <b> and runs 250+ characters); a "Why" side box; or any other
+  // leaf paragraph of 200+ characters (head "¶", matched to a short version by its opening letters).
+  var INLINE = { B: 1, I: 1, EM: 1, STRONG: 1, SPAN: 1, BR: 1, A: 1, SUB: 1, SUP: 1, U: 1, SMALL: 1 };
   function noteBlocks(root) {
     var out = [], seen = {};
-    root.querySelectorAll('div').forEach(function (d) {
-      if (d.querySelector('div, p')) return;
+    root.querySelectorAll('div, p').forEach(function (d) {
+      if (d.closest('.sn')) return;
       var kids = [].filter.call(d.childNodes, function (c) { return c.nodeType === 1 || (c.nodeType === 3 && c.nodeValue.trim()); });
-      var first = kids[0]; if (!first || first.nodeType !== 1) return;
-      var next = first.nextSibling, head = null;
-      if (first.tagName === 'B' && ((next && next.nodeType === 3 && /^\s*[—–]/.test(next.nodeValue)) || d.textContent.replace(/\s+/g, ' ').trim().length >= 250)) head = first.textContent;
-      else if (first.tagName === 'SPAN' && /border-left:\s*2px solid var\(--color-accent/.test(d.getAttribute('style') || '')) head = first.textContent;
-      if (head == null) return;
-      var k = letters(head); seen[k] = (seen[k] || 0) + 1;
-      out.push({ el: d, head: head.replace(/\s+/g, ' ').trim(), n: seen[k] });
+      if (!kids.length) return;
+      var len = function (el) { return el.textContent.replace(/\s+/g, ' ').trim().length; };
+      var badge = kids[0].nodeType === 1 && kids[0].tagName === 'SPAN' && /on exam/i.test(kids[0].textContent);
+      var k = badge && kids.length > 2 && kids[1].nodeType === 1 && kids[1].tagName === 'DIV' ? kids.slice(1) : kids;
+      var lab = k[0], head = null, para = false;
+      if (d.tagName === 'DIV' && lab.nodeType === 1 && lab.tagName === 'DIV' && !lab.querySelector('div, p') && len(lab) < 60 && k.length > 1 &&
+          k.slice(1).every(function (c) { return c.nodeType === 3 || INLINE[c.tagName]; }) && len(d) - len(lab) >= 80) head = lab.textContent;
+      else if (d.querySelector('div, p')) return;
+      else {
+        var first = kids[0], next = first.nextSibling;
+        if (first.nodeType === 1 && first.tagName === 'B' && ((next && next.nodeType === 3 && /^\s*[—–]/.test(next.nodeValue)) || len(d) >= 250)) head = first.textContent;
+        else if (d.tagName === 'DIV' && first.nodeType === 1 && first.tagName === 'SPAN' && /border-left:\s*2px solid var\(--color-accent/.test(d.getAttribute('style') || '')) head = first.textContent;
+        else if (len(d) >= 180) { head = '¶'; para = true; } // a little under the tool's 200: its text keeps spaces around inline tags
+        else return;
+      }
+      var key = para ? '¶' : letters(head); seen[key] = (seen[key] || 0) + 1;
+      out.push({ el: d, head: head.replace(/\s+/g, ' ').trim(), n: para ? 1 : seen[key], para: para, exam: badge });
     });
     return out;
   }
@@ -640,16 +656,18 @@
   function shortenNotes(root, id) {
     var data = (window.NOTES_SHORT || {})[id]; if (!data) return;
     var map = {}; Object.keys(data).forEach(function (k) { var m = k.match(/^(.*?)(#\d+)?$/); map[letters(m[1]) + (m[2] || '')] = { label: m[1], lines: data[k] }; });
+    var paras = Object.keys(map).filter(function (k) { return /^\s*¶/.test(map[k].label); });
     noteBlocks(root).forEach(function (b) {
-      var key = blockKey(b.head, b.n), hit = map[key];
-      if (!hit) { // headings that carry an inline word breakdown end with the term itself
+      var key = blockKey(b.head, b.n), hit = b.para ? null : map[key];
+      if (b.para) { var txt = letters(b.el.textContent); paras.some(function (k) { var base = k.replace(/#\d+$/, ''); if (base.length >= 12 && txt.indexOf(base) === 0) { hit = map[k]; return true; } }); }
+      if (!hit && !b.para) { // headings that carry an inline word breakdown end with the term itself
         var suffix = b.n > 1 ? '#' + b.n : '';
         Object.keys(map).some(function (k) { var base = k.replace(/#\d+$/, ''), kn = (k.match(/#\d+$/) || [''])[0]; if (kn === suffix && base.length > 5 && letters(b.head).slice(-base.length) === base) { hit = map[k]; return true; } });
       }
       if (!hit) return;
-      var why = /^why$/i.test(hit.label.trim());
-      var wrap = document.createElement('div'); wrap.className = 'sn' + (why ? ' sn-why' : '');
-      wrap.innerHTML = '<div class="sn-h">' + esc(hit.label) + '</div><ul>' + hit.lines.map(function (l) { return '<li>' + bulletHtml(l) + '</li>'; }).join('') + '</ul><details class="more sn-full"><summary>Full paragraph</summary></details>';
+      var why = /^why$/i.test(hit.label.trim()), plain = /^\s*¶/.test(hit.label);
+      var wrap = document.createElement('div'); wrap.className = 'sn' + (why ? ' sn-why' : '') + (b.exam ? ' sn-exam' : '');
+      wrap.innerHTML = (b.exam ? '<span class="sn-badge">On exam</span>' : '') + (plain ? '' : '<div class="sn-h">' + esc(hit.label) + '</div>') + '<ul>' + hit.lines.map(function (l) { return '<li>' + bulletHtml(l) + '</li>'; }).join('') + '</ul><details class="more sn-full"><summary>Full paragraph</summary></details>';
       b.el.parentNode.replaceChild(wrap, b.el);
       wrap.querySelector('details').appendChild(b.el);
     });
@@ -787,6 +805,6 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610021900"></script>
+<script src="nav.js?v=202610041200"></script>
 </body>
 </html>
