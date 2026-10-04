@@ -194,6 +194,20 @@
   .sn ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.42; }
   .sn li::marker { color: var(--color-accent-2-400); }
   .sn li b { color: var(--color-accent-100); font-weight: 600; }
+  .pics { display: flex; gap: 10px; overflow-x: auto; padding: 2px 0 8px; margin: 0 0 16px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .pic { flex: 0 0 auto; width: min(80%, 300px); margin: 0; scroll-snap-align: start; border: 1px solid var(--color-divider); border-radius: 12px; overflow: hidden; background: var(--color-neutral-900); cursor: zoom-in; }
+  .pics.one .pic { width: 100%; }
+  .pic img { display: block; width: 100%; height: 190px; object-fit: contain; background: #f6f3ea; }
+  .pic figcaption { padding: 8px 10px 9px; font-size: 13.5px; line-height: 1.35; color: var(--color-neutral-100); }
+  .pic small { display: block; margin-top: 3px; font-size: 10.5px; color: var(--color-neutral-500); }
+  .pics-h { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); margin: 0 0 6px; }
+  .lb { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; background: rgba(2, 10, 6, .92); }
+  .lb.on { display: flex; }
+  .lb img { max-width: 100%; max-height: 76vh; border-radius: 10px; background: #f6f3ea; }
+  .lb p { margin: 0; max-width: 760px; text-align: center; font-size: 15px; color: var(--color-neutral-100); }
+  .lb small { display: block; margin-top: 4px; font-size: 11.5px; color: var(--color-neutral-400); }
+  .lb small a { color: var(--color-accent-300); }
+  .lb button { position: absolute; top: 12px; right: 12px; }
   .sn-exam { border-color: var(--color-accent-600); background: var(--color-accent-900); }
   .sn-badge { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--color-bg); background: var(--color-accent); padding: 1px 6px; border-radius: 3px; margin-bottom: 4px; }
   .sn-why { border-color: var(--color-accent-700); background: linear-gradient(135deg, var(--color-accent-900), transparent); }
@@ -309,6 +323,7 @@
 <script src="data/notes-short/34.js?v=202610021900"></script>
 <script src="data/notes-short/more.js?v=202610021900"></script>
 <script src="data/notes-short/adpie.js?v=202610040900"></script>
+<script src="data/images.js?v=202610041500"></script>
 <script src="data/glossary.js?v=202610021900"></script>
 <script src="focus.js?v=202610022200"></script>
 <script>
@@ -570,11 +585,11 @@
     var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
     if (tab === 'notes' && t) {
       var hasShort = !!(window.NOTES_SHORT || {})[t.id];
-      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + '<div class="notes">' + t.html + '</div></div>';
+      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + picturesHtml(picsFor(t.id, nodesFor[t.id])) + '<div class="notes">' + t.html + '</div></div>';
       if (hasShort && bdMode === 'quick') shortenNotes(body.querySelector('.notes'), t.id);
       markWordsLater(body.querySelector('.notes'), delay);
     } else if (tab === 'breakdown') {
-      body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
+      body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + (t ? '' : picturesHtml(picsFor(null, [current.id]))) + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
       markWordsLater(body, delay);
     } else if (tab === 'words') {
       var text = t ? textOf[t.id] : JSON.stringify(nodes[0]);
@@ -585,6 +600,36 @@
       body.innerHTML = connectionsHtml(t, nodes);
     }
   }
+
+  // ---------- Pictures: openly licensed images (data/images.js), credited, tap to enlarge ----------
+  var PICS = window.IMAGES || [];
+  function picsFor(topicId, nodeIds) {
+    var out = [];
+    PICS.forEach(function (p, i) {
+      var on = (topicId && (p.topics || []).indexOf(topicId) >= 0) || (!topicId && (nodeIds || []).some(function (n) { return (p.nodes || []).indexOf(n) >= 0; }));
+      if (on) out.push(i);
+    });
+    return out;
+  }
+  function credit(p) { return esc(p.credit) + ' · ' + esc(p.license); }
+  function picturesHtml(list) {
+    if (!list.length) return '';
+    return '<div class="pics-h">Pictures · tap to enlarge</div><div class="pics' + (list.length === 1 ? ' one' : '') + '">' + list.map(function (i) {
+      var p = PICS[i];
+      return '<figure class="pic" data-pic="' + i + '"><img src="' + esc(p.file) + '" alt="' + esc(p.caption) + '" loading="lazy" decoding="async"><figcaption>' + esc(p.caption) + '<small>' + credit(p) + '</small></figcaption></figure>';
+    }).join('') + '</div>';
+  }
+  var lb = document.createElement('div'); lb.className = 'lb'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true');
+  lb.innerHTML = '<button class="btn" type="button" aria-label="Close picture">Close</button><img alt=""><p></p>';
+  document.body.appendChild(lb);
+  function openPic(i) {
+    var p = PICS[i]; lb.querySelector('img').src = p.file; lb.querySelector('img').alt = p.caption;
+    lb.querySelector('p').innerHTML = esc(p.caption) + '<small>' + credit(p) + ' · <a href="' + esc(p.source) + '" target="_blank" rel="noopener">source</a></small>';
+    lb.classList.add('on');
+  }
+  lb.addEventListener('click', function (e) { if (!e.target.closest('a')) lb.classList.remove('on'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lb.classList.remove('on'); });
+  body.addEventListener('click', function (e) { var f = e.target.closest('[data-pic]'); if (f) openPic(+f.dataset.pic); });
 
   // ---------- Breakdown: the one-line key first, every detail one tap away ----------
   var KEYS = window.CONCEPT_KEYS || {};
