@@ -201,6 +201,16 @@
   .pic figcaption { padding: 8px 10px 9px; font-size: 13.5px; line-height: 1.35; color: var(--color-neutral-100); }
   .pic small { display: block; margin-top: 3px; font-size: 10.5px; color: var(--color-neutral-500); }
   .pics-h { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-300); margin: 0 0 6px; }
+  .vids { display: flex; flex-direction: column; gap: 10px; margin: 0 0 18px; }
+  .vid { border: 1px solid var(--color-divider); border-radius: 12px; overflow: hidden; background: var(--color-neutral-900); }
+  .vid-frame { position: relative; aspect-ratio: 16 / 9; background: #000; cursor: pointer; }
+  .vid-frame img, .vid-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+  .vid-frame .play { position: absolute; left: 50%; top: 50%; width: 58px; height: 40px; margin: -20px 0 0 -29px; border-radius: 10px; background: rgba(0,0,0,.72); display: grid; place-items: center; }
+  .vid-frame .play::after { content: ""; border-style: solid; border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+  .vid-body { padding: 8px 10px 9px; font-size: 13.5px; line-height: 1.35; color: var(--color-neutral-100); }
+  .vid-body b { font-weight: 600; }
+  .vid-body span { display: block; color: var(--color-neutral-300); margin-top: 2px; }
+  .vid-body a { font-size: 11.5px; color: var(--color-accent-300); }
   .lb { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; background: rgba(2, 10, 6, .92); }
   .lb.on { display: flex; }
   .lb img { max-width: 100%; max-height: 76vh; border-radius: 10px; background: #f6f3ea; }
@@ -324,6 +334,7 @@
 <script src="data/notes-short/more.js?v=202610021900"></script>
 <script src="data/notes-short/adpie.js?v=202610040900"></script>
 <script src="data/images.js?v=202610041500"></script>
+<script src="data/videos.js?v=202610041700"></script>
 <script src="data/glossary.js?v=202610021900"></script>
 <script src="focus.js?v=202610022200"></script>
 <script>
@@ -585,11 +596,11 @@
     var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
     if (tab === 'notes' && t) {
       var hasShort = !!(window.NOTES_SHORT || {})[t.id];
-      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + picturesHtml(picsFor(t.id, nodesFor[t.id])) + '<div class="notes">' + t.html + '</div></div>';
+      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + picturesHtml(picsFor(t.id, nodesFor[t.id])) + videosHtml(vidsFor(t.id, null)) + '<div class="notes">' + t.html + '</div></div>';
       if (hasShort && bdMode === 'quick') shortenNotes(body.querySelector('.notes'), t.id);
       markWordsLater(body.querySelector('.notes'), delay);
     } else if (tab === 'breakdown') {
-      body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + (t ? '' : picturesHtml(picsFor(null, [current.id]))) + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
+      body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + (t ? '' : picturesHtml(picsFor(null, [current.id])) + videosHtml(vidsFor(null, [current.id]))) + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
       markWordsLater(body, delay);
     } else if (tab === 'words') {
       var text = t ? textOf[t.id] : JSON.stringify(nodes[0]);
@@ -619,6 +630,29 @@
       return '<figure class="pic" data-pic="' + i + '"><img src="' + esc(p.file) + '" alt="' + esc(p.caption) + '" loading="lazy" decoding="async"><figcaption>' + esc(p.caption) + '<small>' + credit(p) + '</small></figcaption></figure>';
     }).join('') + '</div>';
   }
+  // Videos: YouTube embeds that load only when tapped (privacy-enhanced youtube-nocookie player).
+  var VIDS = window.VIDEOS || [];
+  function vidsFor(topicId, nodeIds) {
+    return VIDS.filter(function (v) {
+      return topicId ? (v.topics || []).indexOf(topicId) >= 0 : (nodeIds || []).some(function (n) { return (v.nodes || []).indexOf(n) >= 0; });
+    });
+  }
+  function videosHtml(list) {
+    if (!list.length) return '';
+    return '<div class="pics-h">Videos · see it happen</div><div class="vids">' + list.map(function (v) {
+      return '<div class="vid"><div class="vid-frame" data-vid="' + esc(v.id) + '" role="button" tabindex="0" aria-label="Play: ' + esc(v.title) + '">' +
+        '<img src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" alt="" loading="lazy" decoding="async"><i class="play" aria-hidden="true"></i></div>' +
+        '<div class="vid-body"><b>' + esc(v.title) + '</b><span>Watch for: ' + esc(v.see) + '</span>' +
+        '<a href="https://www.youtube.com/watch?v=' + esc(v.id) + '" target="_blank" rel="noopener">Open on YouTube ↗</a></div></div>';
+    }).join('') + '</div>';
+  }
+  function playVid(el) {
+    if (el.querySelector('iframe')) return;
+    el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(el.dataset.vid) + '?autoplay=1&rel=0&playsinline=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  }
+  body.addEventListener('click', function (e) { var f = e.target.closest('[data-vid]'); if (f) playVid(f); });
+  body.addEventListener('keydown', function (e) { var f = e.target.closest('[data-vid]'); if (f && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playVid(f); } });
+
   var lb = document.createElement('div'); lb.className = 'lb'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true');
   lb.innerHTML = '<button class="btn" type="button" aria-label="Close picture">Close</button><img alt=""><p></p>';
   document.body.appendChild(lb);
