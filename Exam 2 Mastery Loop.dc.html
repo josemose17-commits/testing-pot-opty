@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610050100"></script>
+<script src="./nav.js?v=202610050200"></script>
 </head>
 <body>
 <x-dc>
@@ -71,7 +71,7 @@
 <script src="data/explain/30.js?v=202610040900"></script>
 <script src="data/explain/33.js?v=202610040900"></script>
 <script src="data/explain/34.js?v=202610040900"></script>
-<script src="data/explain/cards.js?v=202610050100"></script>
+<script src="data/explain/cards.js?v=202610050200"></script>
 <script src="data/explain/drugs-1.js?v=202610040900"></script>
 <script src="data/explain/drugs-2.js?v=202610040900"></script>
 <script src="data/explain/drug-whys.js?v=202610040900"></script>
@@ -1108,7 +1108,7 @@ class Component extends DCLogic {
       const W = b.words || words(P.q);
       const best = (arr, get, filt) => { let top = null, ts = 1; (arr || []).forEach((x, i) => { if (filt && !filt(x)) return; const s = overlap(W, words(get(x))); if (s > ts) { ts = s; top = [x, i]; } }); return top; };
       const CX = (window.EXPLAIN_CARDS || {})[P.ch] || {};
-      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
+      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: e.q || rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
       if (why.includes('words')) termsFor(P).slice(0, 4).forEach(t => add({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
       if (has('look')) rqCard(x => /see next|finding changes|compare/i.test(x[0]), 'What to look for');
       if (has('do')) rqCard(x => /first action|mini case|medication/i.test(x[0]), 'What to do');
@@ -1305,7 +1305,7 @@ class Component extends DCLogic {
         hasDeck: S.deck.length > 0,
         remedLabel: S.deckDone ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Start repair deck (' + S.deck.length + ' cards)',
         postLabel: pass ? 'Confirm with another post-test' : 'Take the post-test',
-        missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
+        missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: b.kind ? cardFront(b).stem.split('\n').slice(0, 2).join(' ') : P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
       };
     }
 
@@ -1319,7 +1319,7 @@ class Component extends DCLogic {
         hasEx: false, ex: [], hasFig: false, fig: '', groups: [],
         sub: c ? (c.streak ? 'One more correct recall clears it · ' : '') + c.sub : ''
       };
-      if (c && c.key.indexOf('m:') === 0) { const [, ch, i] = c.key.split(':'); const me = (((window.EXPLAIN_CARDS || {})[ch] || {}).mc || {})[i] || {}; if (me.q) v.rm.front = me.q; }
+      if (c && /^[mr]:/.test(c.key)) { const [k, ch, i] = c.key.split(':'); const me = (((window.EXPLAIN_CARDS || {})[ch] || {})[k === 'm' ? 'mc' : 'rq'] || {})[i] || {}; if (me.q) v.rm.front = me.q; }
       const qb = c && c.key.indexOf('q:') === 0 ? this.byId[c.key.slice(2)] : null;
       if (qb) {
         const F = cardFront(qb);

@@ -259,3 +259,22 @@ Object.assign(window.EXPLAIN_CARDS, {
     Object.keys(Q[ch]).forEach(i => { mc[i] = Object.assign({}, mc[i], { q: Q[ch][i] }); });
   });
 })();
+
+// Recall-card fronts written as full questions (the originals are note-style, like “Iron: teaching and why.”).
+(function () {
+  const Q = {
+    '24': { 6: 'How is cystic fibrosis diagnosed (three findings), and what is the core nutrition teaching?' },
+    '25': { 4: 'For a client with active TB, what room is used, what respirator do staff wear, and when is the client no longer considered infectious?', 10: 'Which regions or exposures are linked to histoplasmosis, coccidioidomycosis and blastomycosis?' },
+    '27': { 4: 'Before a cardiac catheterization with contrast dye, name three things the nurse checks.', 8: 'What are the target values for total cholesterol, LDL, HDL and triglycerides?', 11: 'What do elevated hsCRP and homocysteine levels suggest?' },
+    '28': { 2: 'What is adenosine used for, how is it given, and what should the nurse expect right after?', 3: 'When is atropine used, and why does it work?', 7: 'When do you hold digoxin, and what are the signs of digoxin toxicity?', 9: 'What should you teach a client after a pacemaker is inserted?', 11: 'Which adverse effects of amiodarone must be monitored?' },
+    '29': { 2: 'What are the side effects of furosemide, and why does each happen?', 3: 'How should a client with heart failure do daily weights, and what weight gain is reported?', 6: 'How is sublingual nitroglycerin taken for chest pain, and what is the key contraindication?', 7: 'A client has chest pain with ST elevation on the ECG. What is the priority?', 8: 'What pain pattern, position and heart sound point to pericarditis?', 9: 'What are the signs of cardiac tamponade, and what is the priority?', 10: 'What should you teach a client about preventing infective endocarditis?' },
+    '30': { 2: 'Heparin vs warfarin: which lab monitors each, how fast does each work, and what is the antidote for each?', 3: 'What is the key sign of heparin-induced thrombocytopenia (HIT), and what do you do?', 4: 'In a hypertensive crisis, how fast and how far should the BP be lowered?', 5: 'What are the key adverse effects of statins?', 6: 'What are the signs of a ruptured abdominal aortic aneurysm, and what is the action?', 8: 'What should you teach a client with peripheral arterial disease?', 9: 'What should you teach a client taking a DOAC such as apixaban or rivaroxaban?', 11: 'What are the blood pressure categories (normal, elevated, stage 1, stage 2), and what is DASH diet teaching?' },
+    '33': { 4: 'Which clotting pathway and which drug does the PT/INR monitor, and which does the aPTT monitor?', 5: 'A client’s absolute neutrophil count (ANC) is 400/mm³. What changes in their care?', 6: 'Which medications affect a hematologic assessment, and how?', 7: 'What hematologic changes are expected in older adults?' },
+    '34': { 1: 'What are the safety steps for giving a blood transfusion?', 3: 'What should you teach a client taking oral iron, and why?', 4: 'How is vitamin B₁₂ given for pernicious anemia, and why that route?', 6: 'What is the black box warning for epoetin alfa, and what is monitored?', 8: 'Why is hydroxyurea used in sickle cell disease, and what is monitored?', 10: 'What are the risks of polycythemia vera, and what is the teaching?', 11: 'What is filgrastim for, and what is its main side effect?' }
+  };
+  const C = window.EXPLAIN_CARDS = window.EXPLAIN_CARDS || {};
+  Object.keys(Q).forEach(ch => {
+    const rq = ((C[ch] = C[ch] || {}).rq = C[ch].rq || {});
+    Object.keys(Q[ch]).forEach(i => { rq[i] = Object.assign({}, rq[i], { q: Q[ch][i] }); });
+  });
+})();
