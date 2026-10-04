@@ -207,6 +207,9 @@
   .vid-frame img, .vid-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
   .vid-frame .play { position: absolute; left: 50%; top: 50%; width: 58px; height: 40px; margin: -20px 0 0 -29px; border-radius: 10px; background: rgba(0,0,0,.72); display: grid; place-items: center; }
   .vid-frame .play::after { content: ""; border-style: solid; border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+  .vid-out { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; text-align: center; background: rgba(0,0,0,.62); color: #fff; text-decoration: none; }
+  .vid-out b { padding: 9px 16px; border-radius: 999px; background: #c4302b; font-size: 15px; }
+  .vid-out span { font-size: 12px; color: #ddd; }
   .vid-body { padding: 8px 10px 9px; font-size: 13.5px; line-height: 1.35; color: var(--color-neutral-100); }
   .vid-body b { font-weight: 600; }
   .vid-body span { display: block; color: var(--color-neutral-300); margin-top: 2px; }
@@ -334,7 +337,7 @@
 <script src="data/notes-short/more.js?v=202610021900"></script>
 <script src="data/notes-short/adpie.js?v=202610040900"></script>
 <script src="data/images.js?v=202610041900"></script>
-<script src="data/videos.js?v=202610041700"></script>
+<script src="data/videos.js?v=202610042100"></script>
 <script src="data/glossary.js?v=202610021900"></script>
 <script src="focus.js?v=202610022200"></script>
 <script>
@@ -637,18 +640,58 @@
       return topicId ? (v.topics || []).indexOf(topicId) >= 0 : (nodeIds || []).some(function (n) { return (v.nodes || []).indexOf(n) >= 0; });
     });
   }
+  // Some owners turn off playing on other sites. The YouTube player reports that as error 101/150;
+  // then the frame becomes a "Watch on YouTube" button, and it is remembered so next time it starts that way.
+  var NOEMBED = {};
+  try { NOEMBED = JSON.parse(localStorage.getItem('map-noembed') || '{}'); } catch (e) {}
+  function ytUrl(id) { return 'https://www.youtube.com/watch?v=' + encodeURIComponent(id); }
+  function outHtml(id) {
+    return '<img src="https://i.ytimg.com/vi/' + esc(id) + '/hqdefault.jpg" alt="" loading="lazy" decoding="async">' +
+      '<a class="vid-out" href="' + ytUrl(id) + '" target="_blank" rel="noopener"><b>▶ Watch on YouTube</b><span>The owner only allows this video to play on YouTube</span></a>';
+  }
   function videosHtml(list) {
     if (!list.length) return '';
     return '<div class="pics-h">Videos · see it happen</div><div class="vids">' + list.map(function (v) {
-      return '<div class="vid"><div class="vid-frame" data-vid="' + esc(v.id) + '" role="button" tabindex="0" aria-label="Play: ' + esc(v.title) + '">' +
-        '<img src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" alt="" loading="lazy" decoding="async"><i class="play" aria-hidden="true"></i></div>' +
+      var out = NOEMBED[v.id];
+      return '<div class="vid"><div class="vid-frame"' + (out ? '' : ' data-vid="' + esc(v.id) + '" role="button" tabindex="0" aria-label="Play: ' + esc(v.title) + '"') + '>' +
+        (out ? outHtml(v.id) : '<img src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" alt="" loading="lazy" decoding="async"><i class="play" aria-hidden="true"></i>') + '</div>' +
         '<div class="vid-body"><b>' + esc(v.title) + '</b><span>Watch for: ' + esc(v.see) + '</span>' +
-        '<a href="https://www.youtube.com/watch?v=' + esc(v.id) + '" target="_blank" rel="noopener">Open on YouTube ↗</a></div></div>';
+        '<a href="' + ytUrl(v.id) + '" target="_blank" rel="noopener">Open on YouTube ↗</a></div></div>';
     }).join('') + '</div>';
   }
+  function noEmbed(el, id) {
+    NOEMBED[id] = 1;
+    try { localStorage.setItem('map-noembed', JSON.stringify(NOEMBED)); } catch (e) {}
+    el.removeAttribute('data-vid'); el.removeAttribute('role'); el.removeAttribute('tabindex');
+    el.innerHTML = outHtml(id);
+  }
+  var ytReady = null;
+  function loadYT() {
+    if (ytReady) return ytReady;
+    ytReady = new Promise(function (ok, fail) {
+      if (window.YT && window.YT.Player) return ok();
+      var prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function () { if (prev) prev(); ok(); };
+      var s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; s.onerror = fail;
+      document.head.appendChild(s);
+    });
+    return ytReady;
+  }
+  function plainFrame(el, id) {
+    el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0&playsinline=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  }
   function playVid(el) {
-    if (el.querySelector('iframe')) return;
-    el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(el.dataset.vid) + '?autoplay=1&rel=0&playsinline=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    var id = el.dataset.vid;
+    if (!id || el.querySelector('iframe') || el.dataset.loading) return;
+    el.dataset.loading = '1';
+    loadYT().then(function () {
+      var box = document.createElement('div'); el.innerHTML = ''; el.appendChild(box);
+      new YT.Player(box, {
+        host: 'https://www.youtube-nocookie.com', videoId: id, width: '100%', height: '100%',
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
+        events: { onError: function (e) { if (e.data === 101 || e.data === 150 || e.data === 153) noEmbed(el, id); } }
+      });
+    }, function () { plainFrame(el, id); });
   }
   body.addEventListener('click', function (e) { var f = e.target.closest('[data-vid]'); if (f) playVid(f); });
   body.addEventListener('keydown', function (e) { var f = e.target.closest('[data-vid]'); if (f && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); playVid(f); } });
@@ -884,6 +927,6 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610041200"></script>
+<script src="nav.js?v=202610042200"></script>
 </body>
 </html>
