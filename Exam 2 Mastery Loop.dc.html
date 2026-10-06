@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610060200"></script>
+<script src="./nav.js?v=202610070100"></script>
 </head>
 <body>
 <x-dc>
@@ -82,19 +82,9 @@
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:15px;line-height:1.55;">
 <div style="max-width:860px;padding:28px 20px 64px;display:flex;flex-direction:column;gap:22px;">
 
-  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px;">
-    <div style="display:flex;flex-direction:column;gap:4px;">
-      <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Exam 2 · Adaptive mastery loop</div>
-      <div style="font-family:var(--font-heading);font-weight:500;font-size:26px;line-height:1.15;">Test, diagnose, fix, retest — until {{ goal }}%</div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;">
-      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="padding:3px 10px;border-radius:6px;border:1px solid {{ s.bd }};color:{{ s.fg }};">{{ s.label }}</span>
-          <sc-if value="{{ s.arrow }}" hint-placeholder-val="{{ true }}"><span style="color:var(--color-neutral-500);">→</span></sc-if>
-        </div>
-      </sc-for>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);">Exam 2 · Mastery test</div>
+    <div style="font-family:var(--font-heading);font-weight:500;font-size:26px;line-height:1.15;">One adaptive test that follows your mistakes</div>
   </div>
 
   <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
@@ -102,59 +92,143 @@
   </sc-if>
 
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-    <div style="display:flex;flex-direction:column;gap:22px;">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
-        <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">1 · Diagnostic pre-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Once. {{ preNote }} Your answers save as you go: stop any time and resume later. The report shows exactly which topics are weak.</div>
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+      <div style="display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:12px;border:1px solid var(--color-accent-700);background:var(--color-surface);">
+        <sc-if value="{{ canResume }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <button class="btn btn-primary" onClick="{{ resume }}">{{ resumeLabel }}</button>
+            <span style="font-size:13px;color:var(--color-neutral-400);">Your answers are saved as you go.</span>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--color-neutral-300);">
+          <span>Length</span>
+          <sc-for list="{{ lenOpts }}" as="o" hint-placeholder-count="3">
+            <button onClick="{{ o.pick }}" style="padding:5px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ o.bg }};border:1px solid {{ o.bd }};">{{ o.label }}</button>
+          </sc-for>
+          <span style="color:var(--color-neutral-500);">+ follow-ups on what you miss</span>
         </div>
-        <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">2 · It finds why</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">After every miss it works out the likely gap from the answer you picked: the drug, what to look for, what to do, the priority, a number, or the mechanism. The next question probes that gap. You can change the reason if it’s off.</div>
+        <button onClick="{{ toggleRecall }}" style="display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px 12px;border-radius:10px;cursor:pointer;font:inherit;color:var(--color-text);background:{{ recallBg }};border:1px solid {{ recallBd }};">
+          <span style="flex:none;width:16px;height:16px;margin-top:3px;border-radius:4px;border:1.5px solid {{ recallBd }};background:{{ recallFill }};"></span>
+          <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;">Answer in your head first</span><span style="font-size:12.5px;color:var(--color-neutral-400);">Single-answer and select-all questions hide their options until you’ve thought of the answer — real recall, not recognition.</span></span>
+        </button>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:13px;color:var(--color-neutral-300);">
+          <span style="flex:1 1 240px;">{{ focusNote }}</span>
+          <a href="Exam 2 Map.html" style="color:var(--color-accent-300);">{{ focusLink }}</a>
         </div>
-        <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">3 · Repair deck</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Cards built from your misses and your reasons. A card only clears after you recall it right twice. Clear the deck and you’re eligible for the post-test.</div>
-        </div>
-        <div class="card" style="border:1px solid var(--color-neutral-800);">
-          <div class="card-kicker">4 · Post-test</div>
-          <div style="font-size:13px;color:var(--color-neutral-200);">Fresh questions weighted to your weak topics. Under {{ goal }}%? It loops repair → post-test only, never the pre-test again.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <button class="btn btn-primary" onClick="{{ start }}">{{ startLabel }}</button>
+          <span style="font-size:12.5px;color:var(--color-neutral-400);">{{ leanNote }}</span>
         </div>
       </div>
 
-      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--color-neutral-300);">
-        <span>Goal</span>
-        <sc-for list="{{ goalOpts }}" as="g" hint-placeholder-count="2">
-          <button onClick="{{ g.pick }}" style="padding:5px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ g.bg }};border:1px solid {{ g.bd }};">{{ g.label }}</button>
-        </sc-for>
-      </div>
+      <sc-if value="{{ hasReport }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <div style="font-size:12px;color:var(--color-neutral-400);">{{ rp.when }}</div>
+              <div style="font-family:var(--font-heading);font-weight:500;font-size:52px;line-height:1;font-variant-numeric:tabular-nums;">{{ rp.pct }}%</div>
+              <div style="font-size:12px;color:var(--color-neutral-400);">{{ rp.sub }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding-bottom:6px;max-width:470px;">
+              <div style="font-size:16px;color:var(--color-neutral-100);">{{ rp.verdict }}</div>
+              <div style="font-size:13px;color:var(--color-neutral-400);">{{ rp.detail }}</div>
+            </div>
+          </div>
 
-      <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid var(--color-neutral-800);font-size:13.5px;color:var(--color-neutral-200);">
-        <span style="flex:1 1 260px;">{{ focusNote }}</span>
-        <a href="Exam 2 Map.html" style="color:var(--color-accent-300);font-size:13px;">{{ focusLink }}</a>
-      </div>
+          <sc-if value="{{ rp.hasStudy }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What to study next — in this order</div>
+              <sc-for list="{{ rp.study }}" as="s" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:12px;background:var(--color-surface);border:1px solid {{ s.bd }};">
+                  <div style="display:flex;gap:10px;align-items:baseline;">
+                    <span style="font-family:var(--font-heading);font-size:13px;color:var(--color-accent-300);">{{ s.n }}</span>
+                    <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                      <b style="font-weight:500;font-size:16px;">{{ s.title }}</b>
+                      <span style="font-size:12px;color:var(--color-neutral-400);">{{ s.stat }}</span>
+                    </div>
+                  </div>
+                  <sc-if value="{{ s.hasGap }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--color-neutral-300);">{{ s.gap }}</div></sc-if>
+                  <sc-for list="{{ s.rules }}" as="r" hint-placeholder-count="2">
+                    <div style="font-size:14px;color:var(--color-accent-100);padding-left:10px;border-left:2px solid var(--color-accent-600);">{{ r.t }}</div>
+                  </sc-for>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <sc-for list="{{ s.links }}" as="l" hint-placeholder-count="2">
+                      <a href="{{ l.href }}" style="font-size:12.5px;padding:4px 10px;border-radius:99px;border:1px solid var(--color-neutral-700);text-decoration:none;color:var(--color-accent-200);">{{ l.label }}</a>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
 
-      <sc-if value="{{ hasStage }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--color-accent-700);background:var(--color-accent-900);font-size:14px;color:var(--color-accent-100);">{{ stageNote }}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;">
+              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Your study map — every topic, from all your tests</div>
+              <div style="display:flex;gap:10px;font-size:11.5px;color:var(--color-neutral-400);">
+                <sc-for list="{{ legend }}" as="g" hint-placeholder-count="4"><span style="display:flex;gap:5px;align-items:center;"><i style="width:10px;height:10px;border-radius:3px;background:{{ g.bg }};border:1px solid {{ g.bd }};"></i>{{ g.label }}</span></sc-for>
+              </div>
+            </div>
+            <sc-for list="{{ studyMap }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--color-neutral-800);">
+                <div style="display:flex;gap:8px;align-items:baseline;font-size:13px;"><b style="font-weight:500;">{{ c.title }}</b><span style="color:var(--color-neutral-500);font-size:12px;">{{ c.note }}</span></div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <sc-for list="{{ c.chips }}" as="t" hint-placeholder-count="5">
+                    <a href="{{ t.href }}" title="{{ t.tip }}" style="font-size:12.5px;padding:4px 10px;border-radius:8px;text-decoration:none;color:{{ t.fg }};background:{{ t.bg }};border:1px solid {{ t.bd }};">{{ t.label }}</a>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--color-neutral-800);">
+              <div style="font-size:13px;"><b style="font-weight:500;">Concept nodes</b> <span style="color:var(--color-neutral-500);font-size:12px;">organ → molecule breakdowns</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <sc-for list="{{ nodeMap }}" as="t" hint-placeholder-count="5">
+                  <a href="{{ t.href }}" title="{{ t.tip }}" style="font-size:12.5px;padding:4px 10px;border-radius:8px;text-decoration:none;color:{{ t.fg }};background:{{ t.bg }};border:1px solid {{ t.bd }};">{{ t.label }}</a>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ rp.hasProblems }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">What you had problems with ({{ rp.problemCount }})</div>
+              <sc-for list="{{ rp.problems }}" as="m" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:10px;background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:11px;">
+                    <span class="tag tag-neutral">{{ m.topic }}</span><span class="tag tag-neutral">{{ m.fmt }}</span><span style="color:var(--color-neutral-400);">{{ m.scoreLabel }}</span>
+                  </div>
+                  <div style="font-size:14px;color:var(--color-neutral-100);">{{ m.q }}</div>
+                  <div style="display:grid;grid-template-columns:86px minmax(0,1fr);gap:4px 12px;font-size:13px;">
+                    <span style="color:var(--color-neutral-400);">You</span><span style="white-space:pre-line;color:var(--color-neutral-200);">{{ m.your }}</span>
+                    <span style="color:var(--color-neutral-400);">Correct</span><span style="white-space:pre-line;color:var(--color-accent-200);">{{ m.correct }}</span>
+                    <sc-if value="{{ m.hasGap }}" hint-placeholder-val="{{ true }}"><span style="color:var(--color-neutral-400);">Likely gap</span></sc-if>
+                    <sc-if value="{{ m.hasGap }}" hint-placeholder-val="{{ true }}"><span style="color:var(--color-neutral-200);">{{ m.gap }}</span></sc-if>
+                    <sc-if value="{{ m.hasRule }}" hint-placeholder-val="{{ true }}"><span style="color:var(--color-neutral-400);">Rule</span></sc-if>
+                    <sc-if value="{{ m.hasRule }}" hint-placeholder-val="{{ true }}"><span style="color:var(--color-accent-100);">{{ m.rule }}</span></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ rp.hasMoreProblems }}" hint-placeholder-val="{{ false }}">
+                <div><button class="btn btn-ghost" onClick="{{ rp.toggleProblems }}">{{ rp.moreLabel }}</button></div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
       </sc-if>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <sc-if value="{{ canResume }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-primary" onClick="{{ resume }}">{{ resumeLabel }}</button>
-        </sc-if>
-        <sc-if value="{{ showStartPre }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-primary" onClick="{{ startPre }}">Start diagnostic pre-test</button>
-        </sc-if>
-        <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-ghost" onClick="{{ resetAll }}">Start over (new pre-test)</button>
-        </sc-if>
-      </div>
+      <sc-if value="{{ noReport }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;">
+          <sc-for list="{{ howItWorks }}" as="h" hint-placeholder-count="4">
+            <div class="card" style="border:1px solid var(--color-neutral-800);"><div class="card-kicker">{{ h.k }}</div><div style="font-size:13px;color:var(--color-neutral-200);">{{ h.t }}</div></div>
+          </sc-for>
+        </div>
+      </sc-if>
 
       <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="font-size:12px;color:var(--color-neutral-400);">History — exam-weighted score</div>
+          <div style="font-size:12px;color:var(--color-neutral-400);">Past tests — exam-weighted score</div>
           <sc-for list="{{ history }}" as="h" hint-placeholder-count="2">
-            <div style="display:grid;grid-template-columns:120px minmax(0,1fr) 92px;gap:12px;align-items:center;font-size:13px;">
+            <div style="display:grid;grid-template-columns:130px minmax(0,1fr) 96px;gap:12px;align-items:center;font-size:13px;">
               <span style="color:var(--color-neutral-200);">{{ h.label }}</span>
               <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ h.w }};background:var(--color-accent);"></div></div>
               <span style="text-align:right;font-variant-numeric:tabular-nums;">{{ h.pct }}% · {{ h.n }} q</span>
@@ -162,29 +236,26 @@
           </sc-for>
         </div>
       </sc-if>
-      <div style="font-size:12px;color:var(--color-neutral-500);">Bank: {{ bankSize }} questions from chapters {{ bankChs }}, weighted to the Exam 2 blueprint.</div>
+      <div style="font-size:12px;color:var(--color-neutral-500);">{{ bankNote }}</div>
     </div>
   </sc-if>
 
   <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;">
-        <span style="color:var(--color-neutral-200);">{{ testName }} · Question {{ qNum }}</span>
-        <span style="color:var(--color-neutral-400);">{{ settledLabel }}</span>
+        <span style="color:var(--color-neutral-200);">Question {{ qNum }}</span>
+        <span style="color:var(--color-neutral-400);">{{ progLabel }}</span>
       </div>
       <div style="height:4px;border-radius:2px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ progW }};background:var(--color-accent);"></div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
-          <span title="{{ c.title }}" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid {{ c.bd }};color:{{ c.fg }};background:{{ c.bg }};">{{ c.label }}</span>
-        </sc-for>
-      </div>
 
       <div style="display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:12px;background:var(--color-surface);border:1px solid var(--color-neutral-800);">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">{{ q.kindLabel }}</span>
-          <sc-if value="{{ q.isProbe }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">{{ q.probeLabel }}</span></sc-if>
+          <span class="tag tag-neutral" style="font-size:10px;padding:1px 7px;">{{ q.fmt }}</span>
+          <span style="font-size:11.5px;color:var(--color-neutral-500);">{{ q.topic }}</span>
+          <sc-if value="{{ q.isFollow }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">{{ q.followLabel }}</span></sc-if>
         </div>
-        <div style="font-size:17px;line-height:1.5;text-wrap:pretty;">{{ q.q }}</div>
+        <div style="font-size:17px;line-height:1.5;text-wrap:pretty;white-space:pre-line;">{{ q.q }}</div>
 
         <sc-if value="{{ q.hasEx }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:10px;">
@@ -207,6 +278,13 @@
         </sc-if>
         <sc-if value="{{ q.hasFig }}" hint-placeholder-val="{{ false }}">
           <pre style="margin:0;padding:12px;border-radius:8px;background:var(--color-bg);font-size:13px;line-height:1.5;white-space:pre-wrap;color:var(--color-neutral-100);">{{ q.fig }}</pre>
+        </sc-if>
+
+        <sc-if value="{{ q.hidden }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:10px;border:1px dashed var(--color-accent-600);background:var(--color-accent-900);">
+            <div style="font-size:14px;color:var(--color-accent-100);">Answer it in your head first — {{ q.hideHint }}</div>
+            <div><button class="btn btn-secondary" onClick="{{ q.reveal }}">I have my answer — show the options</button></div>
+          </div>
         </sc-if>
 
         <sc-if value="{{ q.isChoice }}" hint-placeholder-val="{{ true }}">
@@ -289,70 +367,107 @@
             </sc-for>
           </div>
         </sc-if>
+
+        <sc-if value="{{ q.isRecall }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <textarea value="{{ q.draft }}" onInput="{{ q.onDraft }}" placeholder="Type your answer — or say it out loud — before you look." rows="3" style="font:inherit;font-size:15px;padding:10px 12px;border-radius:8px;background:var(--color-bg);color:var(--color-text);border:1px solid var(--color-neutral-700);resize:vertical;"></textarea>
+            <sc-if value="{{ q.recallHidden }}" hint-placeholder-val="{{ true }}">
+              <div><button class="btn btn-secondary" onClick="{{ q.showAnswer }}">Show the answer</button></div>
+            </sc-if>
+            <sc-if value="{{ q.recallShown }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:10px;border:1px solid var(--color-accent-700);background:var(--color-bg);">
+                <sc-for list="{{ q.answer }}" as="a" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:2px;"><div class="fbh" style="color:var(--color-accent-300);">{{ a.h }}</div><div style="font-size:15px;color:var(--color-neutral-100);">{{ a.v }}</div></div>
+                </sc-for>
+                <sc-if value="{{ q.needRate }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:10px;border-top:1px solid var(--color-neutral-800);">
+                    <span style="font-size:14px;">How did your answer compare?</span>
+                    <sc-for list="{{ q.rates }}" as="r" hint-placeholder-count="3">
+                      <button class="btn btn-secondary" onClick="{{ r.onClick }}">{{ r.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
       </div>
+
+      <sc-if value="{{ askConf }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <span style="font-size:14px;color:var(--color-neutral-100);">How sure are you?</span>
+          <sc-for list="{{ confOpts }}" as="r" hint-placeholder-count="2">
+            <button onClick="{{ r.onClick }}" style="padding:7px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:13.5px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
+          </sc-for>
+          <span style="font-size:12px;color:var(--color-neutral-500);">Guessing adds a follow-up question even if you’re right.</span>
+        </div>
+      </sc-if>
 
       <sc-if value="{{ checked }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:14px;padding:18px 20px;border-radius:12px;border:1px solid {{ fb.bd }};background:var(--color-bg);">
           <div style="font-size:17px;color:{{ fb.fg }};">{{ fb.title }}</div>
-          <sc-if value="{{ fb.hasAsk }}" hint-placeholder-val="{{ true }}">
-            <div class="fbsec" style="border-top:0;padding-top:0;"><div class="fbh">What it’s really asking</div><div class="fbt">{{ fb.ask }}</div></div>
+          <sc-if value="{{ fb.hasFollow }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13.5px;color:var(--color-accent-100);padding:8px 12px;border-radius:8px;background:var(--color-accent-900);border:1px solid var(--color-accent-700);">{{ fb.follow }}</div>
           </sc-if>
-          <sc-if value="{{ fb.hasCues }}" hint-placeholder-val="{{ true }}">
-            <div class="fbsec"><div class="fbh">Cues to notice</div>
-              <sc-for list="{{ fb.cues }}" as="c" hint-placeholder-count="2"><div class="fbcue">{{ c.t }}</div></sc-for>
-            </div>
-          </sc-if>
-          <div class="fbsec"><div class="fbh">{{ fb.optHead }}</div>
-            <sc-for list="{{ fb.groups }}" as="g" hint-placeholder-count="1">
-              <sc-if value="{{ g.hasLabel }}" hint-placeholder-val="{{ false }}"><div class="fbg">{{ g.label }}</div></sc-if>
-              <sc-for list="{{ g.items }}" as="o" hint-placeholder-count="4">
-                <div class="fbopt" style="border-color:{{ o.bd }};">
-                  <div class="fbo-top"><span class="fbmark" style="color:{{ o.mfg }};">{{ o.mark }}</span><b>{{ o.t }}</b><sc-if value="{{ o.hasTag }}" hint-placeholder-val="{{ false }}"><span class="fbtag" style="color:{{ o.tfg }};">{{ o.tag }}</span></sc-if></div>
-                  <sc-if value="{{ o.hasR }}" hint-placeholder-val="{{ true }}"><div class="fbr">{{ o.r }}</div></sc-if>
+          <sc-if value="{{ fb.full }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <sc-if value="{{ fb.hasAsk }}" hint-placeholder-val="{{ true }}">
+                <div class="fbsec" style="border-top:0;padding-top:0;"><div class="fbh">What it’s really asking</div><div class="fbt">{{ fb.ask }}</div></div>
+              </sc-if>
+              <sc-if value="{{ fb.hasCues }}" hint-placeholder-val="{{ true }}">
+                <div class="fbsec"><div class="fbh">Cues to notice</div>
+                  <sc-for list="{{ fb.cues }}" as="c" hint-placeholder-count="2"><div class="fbcue">{{ c.t }}</div></sc-for>
                 </div>
-              </sc-for>
-            </sc-for>
-          </div>
-          <div class="fbsec"><div class="fbh">Why — the mechanism, step by step</div>
-            <div class="fbchain">
-              <sc-for list="{{ fb.chain }}" as="ch" hint-placeholder-count="2">
-                <div class="fbsteps" style="border-left-color:{{ ch.bl }};">
-                  <sc-for list="{{ ch.steps }}" as="st" hint-placeholder-count="3"><div class="{{ st.cls }}">{{ st.t }}</div></sc-for>
+              </sc-if>
+              <div class="fbsec"><div class="fbh">{{ fb.optHead }}</div>
+                <sc-for list="{{ fb.groups }}" as="g" hint-placeholder-count="1">
+                  <sc-if value="{{ g.hasLabel }}" hint-placeholder-val="{{ false }}"><div class="fbg">{{ g.label }}</div></sc-if>
+                  <sc-for list="{{ g.items }}" as="o" hint-placeholder-count="4">
+                    <div class="fbopt" style="border-color:{{ o.bd }};">
+                      <div class="fbo-top"><span class="fbmark" style="color:{{ o.mfg }};">{{ o.mark }}</span><b>{{ o.t }}</b><sc-if value="{{ o.hasTag }}" hint-placeholder-val="{{ false }}"><span class="fbtag" style="color:{{ o.tfg }};">{{ o.tag }}</span></sc-if></div>
+                      <sc-if value="{{ o.hasR }}" hint-placeholder-val="{{ true }}"><div class="fbr">{{ o.r }}</div></sc-if>
+                    </div>
+                  </sc-for>
+                </sc-for>
+              </div>
+              <sc-if value="{{ fb.hasChain }}" hint-placeholder-val="{{ true }}">
+                <div class="fbsec"><div class="fbh">Why — the mechanism, step by step</div>
+                  <div class="fbchain">
+                    <sc-for list="{{ fb.chain }}" as="ch" hint-placeholder-count="2">
+                      <div class="fbsteps" style="border-left-color:{{ ch.bl }};">
+                        <sc-for list="{{ ch.steps }}" as="st" hint-placeholder-count="3"><div class="{{ st.cls }}">{{ st.t }}</div></sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
                 </div>
-              </sc-for>
-            </div>
-          </div>
-          <div class="fbsec fbrule"><div class="fbh">Rule to carry into the exam</div><div class="fbt">{{ fb.rule }}</div></div>
-          <sc-if value="{{ fb.hasTerms }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
-              <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Words in this question</div>
-              <sc-for list="{{ fb.terms }}" as="w" hint-placeholder-count="2">
-                <div style="font-size:13px;color:var(--color-neutral-200);"><b style="color:var(--color-accent-200);font-weight:500;">{{ w.term }}</b> — {{ w.def }}</div>
-              </sc-for>
-            </div>
-          </sc-if>
-          <sc-if value="{{ fb.askWhy }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
-              <div style="font-size:14px;color:var(--color-neutral-100);">Likely why you missed it <span style="color:var(--color-neutral-400);font-size:12px;">— worked out from your answer. The next question tests this gap.</span></div>
-              <sc-for list="{{ fb.diag }}" as="d" hint-placeholder-count="2">
-                <div style="font-size:13px;color:var(--color-neutral-200);padding-left:10px;border-left:2px solid var(--color-accent-500);"><b style="color:var(--color-accent-200);font-weight:500;">{{ d.head }}.</b> {{ d.line }}</div>
-              </sc-for>
-              <details class="whyfix">
-                <summary style="cursor:pointer;font-size:12px;color:var(--color-neutral-400);">Not quite it? Change the reason</summary>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
-                  <sc-for list="{{ fb.reasons }}" as="r" hint-placeholder-count="8">
-                    <button onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
+              </sc-if>
+              <sc-if value="{{ fb.hasRule }}" hint-placeholder-val="{{ true }}">
+                <div class="fbsec fbrule"><div class="fbh">Rule to carry into the exam</div><div class="fbt">{{ fb.rule }}</div></div>
+              </sc-if>
+              <sc-if value="{{ fb.hasTerms }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Words in this question</div>
+                  <sc-for list="{{ fb.terms }}" as="w" hint-placeholder-count="2">
+                    <div style="font-size:13px;color:var(--color-neutral-200);"><b style="color:var(--color-accent-200);font-weight:500;">{{ w.term }}</b> — {{ w.def }}</div>
                   </sc-for>
                 </div>
-              </details>
-            </div>
-          </sc-if>
-          <sc-if value="{{ fb.askConf }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
-              <span style="font-size:14px;color:var(--color-neutral-100);">How sure were you?</span>
-              <sc-for list="{{ fb.conf }}" as="r" hint-placeholder-count="2">
-                <button onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
-              </sc-for>
+              </sc-if>
+              <sc-if value="{{ fb.askWhy }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--color-neutral-800);">
+                  <div style="font-size:14px;color:var(--color-neutral-100);">Likely why you missed it <span style="color:var(--color-neutral-400);font-size:12px;">— worked out from your answer. The follow-up targets this.</span></div>
+                  <sc-for list="{{ fb.diag }}" as="d" hint-placeholder-count="2">
+                    <div style="font-size:13px;color:var(--color-neutral-200);padding-left:10px;border-left:2px solid var(--color-accent-500);"><b style="color:var(--color-accent-200);font-weight:500;">{{ d.head }}.</b> {{ d.line }}</div>
+                  </sc-for>
+                  <details>
+                    <summary style="cursor:pointer;font-size:12px;color:var(--color-neutral-400);">Not quite it? Change the reason</summary>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+                      <sc-for list="{{ fb.reasons }}" as="r" hint-placeholder-count="8">
+                        <button onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;color:var(--color-text);background:{{ r.bg }};border:1px solid {{ r.bd }};">{{ r.label }}</button>
+                      </sc-for>
+                    </div>
+                  </details>
+                </div>
+              </sc-if>
             </div>
           </sc-if>
         </div>
@@ -361,10 +476,10 @@
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <div style="display:flex;gap:8px;">
           <button class="btn btn-ghost" onClick="{{ goHome }}">Pause</button>
-          <button class="btn btn-ghost" onClick="{{ finish }}">End test &amp; see report</button>
+          <button class="btn btn-ghost" onClick="{{ finish }}">End &amp; see report</button>
         </div>
         <div style="display:flex;gap:8px;">
-          <sc-if value="{{ notChecked }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary" onClick="{{ check }}" disabled="{{ cantCheck }}">Check answer</button></sc-if>
+          <sc-if value="{{ showCheck }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary" onClick="{{ check }}" disabled="{{ cantCheck }}">{{ checkLabel }}</button></sc-if>
           <sc-if value="{{ checked }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary" onClick="{{ next }}">{{ nextLabel }}</button></sc-if>
         </div>
       </div>
@@ -373,200 +488,7 @@
           <span title="{{ d.label }}" style="width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:{{ d.fg }};background:{{ d.bg }};border:1px solid {{ d.bd }};">{{ d.n }}</span>
         </sc-for>
       </div>
-      <div style="font-size:12px;color:var(--color-neutral-500);">Keys: 1–9 pick · Enter check / next</div>
-    </div>
-  </sc-if>
-
-  <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
-    <div style="display:flex;flex-direction:column;gap:24px;">
-      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;">
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <div style="font-size:12px;color:var(--color-neutral-400);">{{ res.name }}</div>
-          <div style="font-family:var(--font-heading);font-weight:500;font-size:56px;line-height:1;font-variant-numeric:tabular-nums;">{{ res.pct }}%</div>
-          <div style="font-size:12px;color:var(--color-neutral-400);">exam-weighted · {{ res.raw }}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;padding-bottom:6px;max-width:460px;">
-          <div style="font-size:16px;color:var(--color-neutral-100);">{{ res.verdict }}</div>
-          <div style="font-size:13px;color:var(--color-neutral-400);">{{ res.sub }}</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <sc-if value="{{ res.hasDeck }}" hint-placeholder-val="{{ true }}">
-          <button class="btn btn-primary" onClick="{{ startRemed }}">{{ res.remedLabel }}</button>
-        </sc-if>
-        <sc-if value="{{ eligible }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-primary" onClick="{{ startPost }}">{{ res.postLabel }}</button>
-        </sc-if>
-        <sc-if value="{{ notEligible }}" hint-placeholder-val="{{ true }}">
-          <span style="font-size:13px;color:var(--color-neutral-400);">Post-test unlocks when the repair deck is cleared.</span>
-        </sc-if>
-        <button class="btn btn-ghost" onClick="{{ goHome }}">Home</button>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">By study-guide topic — weakest first</div>
-          <sc-for list="{{ res.subs }}" as="tp" hint-placeholder-count="6">
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;">
-                <span style="display:flex;gap:8px;align-items:center;color:var(--color-neutral-100);">{{ tp.label }}<sc-if value="{{ tp.weak }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">Weak</span></sc-if></span>
-                <span style="color:var(--color-neutral-300);font-variant-numeric:tabular-nums;">{{ tp.pct }}% · {{ tp.n }}</span>
-              </div>
-              <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ tp.w }};background:{{ tp.fill }};"></div></div>
-            </div>
-          </sc-for>
-          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);margin-top:10px;">By chapter</div>
-          <sc-for list="{{ res.topics }}" as="tp" hint-placeholder-count="6">
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;">
-                <span style="display:flex;gap:8px;align-items:center;color:var(--color-neutral-100);">{{ tp.label }}<sc-if value="{{ tp.weak }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">{{ tp.status }}</span></sc-if></span>
-                <span style="color:var(--color-neutral-300);font-variant-numeric:tabular-nums;">{{ tp.pct }}% · {{ tp.n }}</span>
-              </div>
-              <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ tp.w }};background:{{ tp.fill }};"></div></div>
-            </div>
-          </sc-for>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:20px;">
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">By skill</div>
-            <sc-for list="{{ res.skills }}" as="tp" hint-placeholder-count="4">
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;">
-                  <span style="display:flex;gap:8px;align-items:center;color:var(--color-neutral-100);">{{ tp.label }}<sc-if value="{{ tp.weak }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent" style="font-size:10px;padding:1px 7px;">Focus</span></sc-if></span>
-                  <span style="color:var(--color-neutral-300);font-variant-numeric:tabular-nums;">{{ tp.pct }}% · {{ tp.n }}</span>
-                </div>
-                <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ tp.w }};background:{{ tp.fill }};"></div></div>
-              </div>
-            </sc-for>
-          </div>
-          <sc-if value="{{ res.hasReasons }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">Why you missed</div>
-              <sc-for list="{{ res.reasons }}" as="r" hint-placeholder-count="3">
-                <div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 24px;gap:10px;align-items:center;font-size:13px;">
-                  <span style="color:var(--color-neutral-100);">{{ r.label }}</span>
-                  <div style="height:6px;border-radius:3px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ r.w }};background:var(--color-accent-500);"></div></div>
-                  <span style="text-align:right;color:var(--color-neutral-300);">{{ r.n }}</span>
-                </div>
-              </sc-for>
-            </div>
-          </sc-if>
-        </div>
-      </div>
-
-      <sc-if value="{{ res.hasMissed }}" hint-placeholder-val="{{ true }}">
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">To repair ({{ res.missedCount }})</div>
-          <sc-for list="{{ res.missed }}" as="m" hint-placeholder-count="3">
-            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:10px;background:var(--color-surface);border:1px solid var(--color-neutral-800);">
-              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:11px;">
-                <span class="tag tag-neutral">{{ m.topic }}</span><span class="tag tag-neutral">{{ m.skill }}</span><span style="color:var(--color-neutral-400);">{{ m.scoreLabel }}</span>
-              </div>
-              <div style="font-size:14px;color:var(--color-neutral-100);">{{ m.q }}</div>
-              <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 12px;font-size:13px;">
-                <span style="color:var(--color-neutral-400);">You</span><span style="white-space:pre-line;color:var(--color-neutral-200);">{{ m.your }}</span>
-                <span style="color:var(--color-neutral-400);">Correct</span><span style="white-space:pre-line;color:var(--color-accent-200);">{{ m.correct }}</span>
-                <span style="color:var(--color-neutral-400);">Likely gap</span><span style="color:var(--color-neutral-200);">{{ m.why }}</span>
-              </div>
-            </div>
-          </sc-for>
-        </div>
-      </sc-if>
-    </div>
-  </sc-if>
-
-  <sc-if value="{{ isRemed }}" hint-placeholder-val="{{ false }}">
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;">
-        <span style="color:var(--color-neutral-200);">Repair deck · {{ rm.left }} cards left</span>
-        <span style="color:var(--color-neutral-400);">{{ rm.doneLabel }}</span>
-      </div>
-      <div style="height:4px;border-radius:2px;background:var(--color-neutral-800);overflow:hidden;"><div style="height:100%;width:{{ rm.w }};background:var(--color-accent);"></div></div>
-
-      <sc-if value="{{ rm.hasCard }}" hint-placeholder-val="{{ true }}">
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:12px;background:var(--color-surface);border:1px solid var(--color-neutral-800);min-height:220px;">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <span class="tag tag-accent">{{ rm.type }}</span><span class="tag tag-neutral">{{ rm.topic }}</span>
-              <span style="font-size:12px;color:var(--color-neutral-400);">{{ rm.sub }}</span>
-            </div>
-            <div style="font-size:18px;line-height:1.5;text-wrap:pretty;white-space:pre-line;">{{ rm.front }}</div>
-            <sc-if value="{{ rm.hasEx }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex;flex-direction:column;gap:10px;">
-                <sc-for list="{{ rm.ex }}" as="e" hint-placeholder-count="1">
-                  <div style="border:1px solid var(--color-neutral-700);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
-                    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">{{ e.h }}</div>
-                    <sc-if value="{{ e.hasTable }}" hint-placeholder-val="{{ false }}">
-                      <div style="display:flex;flex-direction:column;font-size:13px;overflow-x:auto;">
-                        <sc-for list="{{ e.rows }}" as="row" hint-placeholder-count="2">
-                          <div style="display:grid;grid-template-columns:{{ e.gtc }};gap:10px;padding:4px 0;border-bottom:1px solid var(--color-neutral-800);color:{{ row.fg }};">
-                            <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="3"><span>{{ cell }}</span></sc-for>
-                          </div>
-                        </sc-for>
-                      </div>
-                    </sc-if>
-                    <sc-for list="{{ e.lines }}" as="ln" hint-placeholder-count="0"><div style="font-size:13px;color:var(--color-neutral-100);">{{ ln }}</div></sc-for>
-                  </div>
-                </sc-for>
-              </div>
-            </sc-if>
-            <sc-if value="{{ rm.hasFig }}" hint-placeholder-val="{{ false }}">
-              <pre style="margin:0;padding:12px;border-radius:8px;background:var(--color-bg);font-size:13px;line-height:1.5;white-space:pre-wrap;color:var(--color-neutral-100);">{{ rm.fig }}</pre>
-            </sc-if>
-            <sc-for list="{{ rm.groups }}" as="g" hint-placeholder-count="0">
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-400);">{{ g.h }}</div>
-                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
-                  <div style="padding:8px 12px;border-radius:8px;border:1px solid var(--color-neutral-700);font-size:15px;line-height:1.4;color:var(--color-neutral-100);">{{ it }}</div>
-                </sc-for>
-              </div>
-            </sc-for>
-            <sc-if value="{{ rm.showBack }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex;flex-direction:column;gap:12px;padding-top:14px;border-top:1px solid var(--color-neutral-700);">
-                <sc-for list="{{ rm.back }}" as="b" hint-placeholder-count="3">
-                  <div style="display:flex;flex-direction:column;gap:2px;">
-                    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">{{ b.h }}</div>
-                    <div style="font-size:15px;white-space:pre-line;color:var(--color-neutral-100);">{{ b.v }}</div>
-                  </div>
-                </sc-for>
-                <sc-if value="{{ rm.hasMore }}" hint-placeholder-val="{{ false }}">
-                  <button class="btn btn-ghost" onClick="{{ toggleMore }}" style="align-self:flex-start;">{{ rm.moreLabel }}</button>
-                </sc-if>
-              </div>
-            </sc-if>
-          </div>
-          <sc-if value="{{ rm.showFront }}" hint-placeholder-val="{{ true }}">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="btn btn-primary" onClick="{{ flip }}">Show answer</button>
-              <span style="font-size:12px;color:var(--color-neutral-500);align-self:center;">Say it out loud first · Space</span>
-            </div>
-          </sc-if>
-          <sc-if value="{{ rm.showBack }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-              <button class="btn btn-secondary" onClick="{{ rateAgain }}">Again · 1</button>
-              <button class="btn btn-secondary" onClick="{{ rateHard }}">Shaky · 2</button>
-              <button class="btn btn-secondary" onClick="{{ rateGood }}">Got it · 3</button>
-              <button class="btn btn-primary" onClick="{{ rateEasy }}">Knew it — clear · 4</button>
-            </div>
-          </sc-if>
-        </div>
-      </sc-if>
-      <sc-if value="{{ rm.empty }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:12px;background:var(--color-accent-900);border:1px solid var(--color-accent-500);">
-          <div style="font-size:18px;color:var(--color-accent-100);">You’re eligible for the post-test.</div>
-          <div style="font-size:14px;color:var(--color-neutral-200);">Every card is cleared. Now prove it on fresh questions — the goal is {{ goal }}%.</div>
-        </div>
-      </sc-if>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <sc-if value="{{ eligible }}" hint-placeholder-val="{{ false }}">
-          <button class="btn btn-primary" onClick="{{ startPost }}">Take the post-test</button>
-        </sc-if>
-        <sc-if value="{{ notEligible }}" hint-placeholder-val="{{ true }}">
-          <span style="font-size:13px;color:var(--color-neutral-400);">Post-test unlocks when every card is cleared.</span>
-        </sc-if>
-        <button class="btn btn-ghost" onClick="{{ backToResults }}">Back to report</button>
-      </div>
+      <div style="font-size:12px;color:var(--color-neutral-500);">Keys: 1–9 pick · K know it · G guessing · Enter check / next</div>
     </div>
   </sc-if>
 
@@ -628,9 +550,6 @@ const REASONS = [
 ];
 const RLABEL = {}; REASONS.forEach(r => { RLABEL[r[0]] = r[1]; });
 const KIND_LABEL = { single: 'Choose one', sata: 'Select all that apply', order: 'Put the steps in order', matrix: 'Matrix — one answer per row', cloze: 'Drop-down — fill each blank', bow: 'Bow-tie — condition, actions, monitoring' };
-const STORE = 'e2-mastery-loop-v2';
-// Repair-card sections shown before "More detail".
-const ESSENTIAL = /^(Correct answer|Answer|Where it went wrong|Rule to carry|False — the fact|Meaning|Used for|Check first|Exam trap)/;
 const STOP = new Set('which client nurse following select apply should would patient these there about after before their other first while being client\u2019s during given order provider most likely statement complete indicate whether finding findings action actions'.split(' '));
 
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -845,7 +764,6 @@ function chainOf(phys) {
     return { bl: steps.length > 1 ? 'var(--color-accent-700)' : 'transparent', steps: steps.map((t, i) => ({ t, cls: 'fbstep' + (i ? ' next' : '') })) };
   });
 }
-const eff = (T, id) => (T.scores[id] || 0) * (T.conf[id] === 'guess' ? 0.5 : 1);
 // Glossary terms that appear in a question (same matching as the Concept Map).
 function termsFor(P) {
   // Only the question itself (stem, exhibit, figure, answer options) — not the explanations, which use plain words on purpose.
@@ -856,25 +774,77 @@ function termsFor(P) {
   return (window.GLOSSARY || []).filter(g => g[1].some(hit)).slice(0, 10).map(g => ({ term: g[0], def: g[2] }));
 }
 
+// ---------- Mastery test: one adaptive test, follow-ups on misses, a report and a study map ----------
+const STORE = 'e2-mastery-v3', OLD_STORE = 'e2-mastery-loop-v2';
+const LENS = [20, 40, 60];
+const FMT_LABEL = { ngn: 'NGN', trad: 'Traditional', drug: 'Drug question', myth: 'Myth check', recall: 'Active recall' };
+// The mix a test aims for, so every format keeps coming up.
+const MIX = { ngn: 0.30, trad: 0.28, drug: 0.22, myth: 0.08, recall: 0.12 };
+const CH_TITLE = { '22': 'Respiratory assessment', '23': 'Upper airway (not on the guide)', '24': 'Lower respiratory problems', '25': 'Respiratory infections', '27': 'Cardiac assessment', '28': 'ECG & dysrhythmias', '29': 'Heart failure & cardiac problems', '30': 'Vascular problems', '33': 'Hematologic assessment (not on the guide)', '34': 'Hematologic problems' };
+// Concept Map nodes (study-guide topics, then mechanisms) and the words that tie a question to each.
+const NODES = [
+  ['promo', 'Health promotion', '22', /smok|vaccin|prevent|cessation|nicotine|exposure|health promotion/i],
+  ['packyr', 'Pack-years', '22', /pack[- ]?year|packs? (a|per) day/i],
+  ['resp-age', 'Respiratory aging', '22', /older|aging|age-related|elderly|\b[6-9]\d-year-old/i],
+  ['asthma', 'Asthma', '24', /asthma|albuterol|SABA|peak flow|status asthmaticus|silent chest|montelukast|omalizumab/i],
+  ['copd', 'COPD', '24', /COPD|emphysema|bronchitis|pursed|barrel|tiotropium|88–92|cor pulmonale|roflumilast/i],
+  ['pna', 'Pneumonia', '25', /pneumonia|consolidat|aspiration|incentive spirometr|sputum/i],
+  ['cv-age', 'CV aging', '27', /older|aging|age-related|orthostatic|elderly/i],
+  ['ecg-r', 'ECG recording', '28', /\blead|electrode|artifact|telemetry|12-lead|monitor/i],
+  ['ecg-a', 'ECG analysis', '28', /P wave|QRS|PR interval|\bQT|ST segment|rhythm|sinus|fibrillation|flutter|tachycardia|heart block|asystole|PVC|SVT|torsades/i],
+  ['hf', 'Heart failure', '29', /heart failure|\bHF\b|BNP|daily weight|pulmonary edema|orthopnea|frothy|digoxin|furosemide/i],
+  ['htn', 'Hypertension', '30', /hypertens|blood pressure|DASH|crisis/i],
+  ['pad', 'PAD', '30', /\bPAD\b|peripheral arter|claudication|arterial|\bABI\b|pedal|bypass|cilostazol/i],
+  ['dvt', 'DVT', '30', /\bDVT\b|deep vein|\bVTE\b|heparin|warfarin|enoxaparin|apixaban|embol|anticoag|\bHIT\b|\bINR\b|aPTT/i],
+  ['labs', 'Lab interpretation', '34', /\bCBC\b|\bMCV\b|ferritin|reticulocyte|\bHgb\b|hemoglobin|\bANC\b|\blab|\bWBC\b/i],
+  ['anemia', 'Anemias', '34', /anemi|iron|B₁₂|B12|pernicious|folic|folate|ferrous/i],
+  ['sickle', 'Sickle cell', '34', /sickle|vaso-occlusive|acute chest|hydroxyurea/i],
+  ['leuk', 'Leukemia', '34', /leukemi|neutropen|\bANC\b|bleeding precaution|filgrastim|chemotherapy/i],
+  ['osa', 'Sleep apnea', '23', /apnea|CPAP|\bOSA\b|snor/i],
+  ['uaw', 'Upper airway', '23', /epistaxis|nosebleed|stridor|airway obstruct|laryng|tracheostom|nasal/i],
+  ['beta', 'β receptors', '', /\bbeta|β|-olol\b|olol\b|albuterol|salmeterol/i],
+  ['calcium', 'Calcium & smooth muscle', '', /calcium channel|diltiazem|amlodipine|verapamil|nifedipine/i],
+  ['alpha', 'α₁ receptors', '', /\balpha|α₁|α1|vasoconstrict/i],
+  ['musc', 'Muscarinic (vagus)', '', /atropine|ipratropium|tiotropium|vagal|vagus|muscarinic|anticholinergic/i],
+  ['raas', 'RAAS', '', /\bACE\b|\bARB\b|angiotensin|aldosterone|renin|lisinopril|losartan|spironolactone|sacubitril/i],
+  ['potassium', 'Diuretics & K⁺', '', /potassium|K⁺|hypokal|hyperkal|diuretic|furosemide|hydrochlorothiazide|spironolactone/i],
+  ['clot', 'Platelets vs clotting', '', /platelet|\bclot|heparin|warfarin|aspirin|clopidogrel|thrombo|coagul|\bINR\b|aPTT|fibrin/i],
+  ['o2', 'O₂ & hemoglobin', '', /SpO|oxygen|hemoglobin|hypox|\bABG\b|PaO/i]
+];
+const NODE_NAME = {}; NODES.forEach(n => { NODE_NAME[n[0]] = n[1]; });
+// Words too common to tell two drug facts apart.
+const DSTOP = new Set('iv im po mg ml of to in on or by as at be is it if no an up do so per the and for with per order check risk client may can from not take give use used when that this than are its into lower raise more less dose doses daily drug drugs effect effects sign signs level levels low high both each other only'.split(' '));
+// Side effects almost any drug can cause: never used as a "wrong" option, so a sensible pick is never marked wrong.
+const GENERIC_SE = /nausea|vomit|headache|dizz|fatigue|diarrh|constipat|rash|GI upset|upset stomach|hypotension|drowsi|insomnia|dry mouth/i;
+// Rescue questions use only real antidotes and reversal agents, not "supportive care".
+const ANTIDOTE = /antidote|immune Fab|protamine|vitamin K|phytonadione|naloxone|glucagon|atropine|calcium gluconate|deferoxamine|idarucizumab|andexanet|\bPCC\b|Kcentra|flumazenil|pyridoxine|leucovorin|aminocaproic|hydroxocobalamin|dantrolene|epinephrine|magnesium/i;
+const tok = s => new Set((String(s || '').toLowerCase().match(/[a-z0-9]{2,}/g) || []).filter(w => !DSTOP.has(w)));
+const clash = (txt, own) => { for (const w of tok(txt)) if (own.has(w)) return true; return false; };
+const pickOne = a => a[Math.floor(Math.random() * a.length)];
+const mlevel = m => m == null ? 'none' : m >= 0.85 ? 'strong' : m >= 0.6 ? 'ok' : 'weak';
+const MCOL = {
+  none: { bg: 'transparent', bd: 'var(--color-neutral-700)', fg: 'var(--color-neutral-400)', label: 'Not tested yet' },
+  weak: { bg: 'var(--color-accent-900)', bd: 'var(--color-accent-500)', fg: 'var(--color-accent-100)', label: 'Weak' },
+  ok: { bg: 'var(--color-neutral-800)', bd: 'var(--color-neutral-500)', fg: 'var(--color-neutral-100)', label: 'Getting there' },
+  strong: { bg: 'var(--color-neutral-700)', bd: 'var(--color-neutral-200)', fg: 'var(--color-text)', label: 'Strong' }
+};
+const eff = (T, id) => (T.scores[id] || 0) * (T.conf[id] === 'guess' ? 0.5 : 1);
+
 class Component extends DCLogic {
-  state = { ready: false, S: null, flipped: false };
+  state = { ready: false, S: null, draft: '' };
 
   componentDidMount() {
     const t0 = Date.now();
     const tryLoad = () => {
       if (!CHS.every(c => (window.EXPLAIN_CH || {})[c]) && Date.now() - t0 < 5000) return false;
-      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY || !window.EXTRA_Q) return false;
+      if (!window.NGN_EXTRA || !window.RECALL_EXTRA || !window.DRUG_DATA || (window.DRUG_DATA_PARTS || 0) < 3 || !window.GLOSSARY || !window.EXTRA_Q || !window.INFO_TOPICS || !window.E2Focus) return false;
       if (!CHS.every(c => window.NGN_EXTRA[c] || window.RECALL_EXTRA[c])) return false;
       this.build();
       let S = null; try { S = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
-      if (S && S.result && S.deck && S.deck.length && !S.deckCapped) {
-        try {
-          const keep = new Set(this.buildDeck(S.result).map(c => c.key));
-          S.deck = S.deck.filter(c => keep.has(c.key)); S.deckTotal = S.deckDone + S.deck.length; S.deckCapped = 1;
-          try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {}
-        } catch (e) {}
-      }
-      this.setState({ ready: true, S: S || this.blank() });
+      if (!S) S = this.migrate();
+      S = Object.assign(this.blank(), S || {});
+      if (S.test && !S.test.items.every(p => this.byId[p.id])) S.test = null;
+      this.setState({ ready: true, S });
       return true;
     };
     if (!tryLoad()) this._poll = setInterval(() => { if (tryLoad()) clearInterval(this._poll); }, 150);
@@ -882,11 +852,31 @@ class Component extends DCLogic {
     window.addEventListener('keydown', this._key);
   }
   componentWillUnmount() { clearInterval(this._poll); window.removeEventListener('keydown', this._key); }
-  blank() { return { phase: 'home', test: null, result: null, deck: [], deckTotal: 0, deckDone: 0, history: [], seen: {} }; }
+  blank() { return { phase: 'home', test: null, report: null, mastery: { topics: {}, nodes: {} }, log: {}, history: [], testNo: 0, settings: { len: 40, recallFirst: false } }; }
+
+  // Progress from the old pre-test / post-test version carries over: history, what was seen, and mastery.
+  migrate() {
+    const S = this.blank();
+    let O = null; try { O = JSON.parse(localStorage.getItem(OLD_STORE) || 'null'); } catch (e) {}
+    if (!O) return S;
+    (O.history || []).forEach(h => S.history.push({ at: h.at || 0, pct: h.pct, n: h.n || 0 }));
+    Object.keys(O.seen || {}).forEach(id => { S.log[id] = { seen: O.seen[id], lastTest: 0, last: null }; });
+    const T = O.result && O.result.test;
+    if (T && T.items) T.items.forEach(p => { const it = this.byId[p.id]; if (it && T.checked && T.checked[p.id]) this.learn(S, it, eff(T, p.id)); });
+    return S;
+  }
+
+  // ---------- The question pool ----------
+  topicsFor(text, ch) {
+    const F = window.E2Focus, out = [];
+    window.INFO_TOPICS.forEach(t => { if (t.ch !== ch || t.kind === 'adpie' || out.length >= 3) return; const kw = F.keywordsFor(t); if (kw && kw.test(text)) out.push(t.id); });
+    if (!out.length) { const ov = window.INFO_TOPICS.find(t => t.ch === ch && t.kind === 'overview'); if (ov) out.push(ov.id); }
+    return out;
+  }
+  nodesFor(text, ch) { return NODES.filter(n => (!n[2] || n[2] === ch) && n[3].test(text)).map(n => n[0]).slice(0, 3); }
 
   build() {
     const bank = [];
-    // Layer the full explanations (data/explain/*.js) over each question's short rationales.
     const EX = window.EXPLAIN || {};
     const patch = (base, p) => { base = base || []; if (!p) return base; if (Array.isArray(p)) return p.length === base.length ? p : base; const out = base.slice(); Object.keys(p).forEach(k => { out[+k] = p[k]; }); return out; };
     const explain = (x, id) => {
@@ -899,9 +889,7 @@ class Component extends DCLogic {
       ['ask', 'cues', 'phys', 'rule'].forEach(k => { if (E[k]) y[k] = E[k]; });
       return y;
     };
-    // Topic, focus and skill matching read the question's own short rule and mechanism, not the longer explanations.
-    const push = (x, id, ch, src) => bank.push(Object.assign(explain(x, id), { id, ch, src, rule0: x.rule || '', phys0: x.phys || '' }));
-    // Ch 33 items that test ch 34 study-guide topics are filed under 34 (below); the rest stay in 33.
+    const push = (x, id, ch, src) => bank.push(Object.assign(explain(x, id), { id, ch, src, rule0: x.rule || '', phys0: x.phys || '', bank: true }));
     const to34 = (x, src) => CH33_FOR_34.test(x.t || '') && (src === 'n' || /anemi|reticulocyte|ANC|neutropen/i.test(JSON.stringify(x)));
     const skip = (ch, x, src) => (ch === '33' && to34(x, src)) || (OFF_GUIDE_PICKS[ch] && OFF_GUIDE_PICKS[ch].indexOf(x.t) < 0);
     CHS.forEach(ch => {
@@ -911,37 +899,72 @@ class Component extends DCLogic {
     });
     (window.NGN_EXTRA['33'] || []).forEach((x, i) => { if (to34(x, 'n')) push(x, '33|n|' + i, '34', x.f); });
     ((window.RECALL_EXTRA['33'] || {}).nclex || []).forEach((x, i) => { if (to34(x, 'c')) push(x, '33|c|' + i, '34', 'mcq'); });
-    const drugs = (window.DRUG_DATA.drugs || []).map(d => {
-      const names = [d.n, d.g].concat(String(d.b || '').split(/[,/]/)).map(s => String(s || '').trim()).filter(s => s.length >= 5);
+
+    // Every drug, with its broken-down explanation layered on.
+    const DRUGS = (window.DRUG_DATA.drugs || []).filter((d, i, a) => a.findIndex(x => x.id === d.id) === i)
+      .map(d => Object.assign({}, d, (window.DRUG_EXPLAIN || {})[d.id] || {}, (window.DRUG_MORE || {})[d.id] || {}));
+    this.drugs = DRUGS; this.drugById = {}; DRUGS.forEach(d => { this.drugById[d.id] = d; });
+    const drugRe = DRUGS.map(d => {
+      const names = [d.n, d.g].concat(String(d.b || '').split(/[,/;()]/)).map(s => String(s || '').trim()).filter(s => s.length >= 5);
       return names.length ? { d, re: new RegExp('\\b(' + [...new Set(names)].map(esc).join('|') + ')\\b', 'i') } : null;
     }).filter(Boolean);
     const classRe = /beta[- ]?blocker|calcium channel|ACE inhibitor|\bARB\b|diuretic|anticoag|heparin|warfarin|nitro|digoxin|bronchodilat|inhaler|corticosteroid|antibiotic|statin|iron supplement|-olol|-pril|-sartan/i;
     bank.forEach(b => {
       const txt = [b.t, b.q, JSON.stringify(b.o || b.rows || b.parts || [b.cond, b.act, b.mon]), b.rule0, b.phys0].join(' ');
-      b.txt = txt;
-      b.kw = KW[b.ch].test(txt); b.words = words(b.t + ' ' + b.q + ' ' + b.rule0 + ' ' + b.phys0);
-      b.subs = (SUB[b.ch] || []).filter(s => s[1].test(txt)).map(s => s[0]);
+      b.txt = txt; b.words = words(b.t + ' ' + b.q + ' ' + b.rule0 + ' ' + b.phys0 + ' ' + JSON.stringify(b.o || b.rows || b.parts || ''));
       const k = b.src;
       b.kind = ['sata', 'matrix', 'order', 'bow', 'cloze'].includes(k) ? k : (Array.isArray(b.a) && b.a.length > 1 ? 'sata' : 'single');
-      b.drugs = drugs.filter(x => x.re.test(txt)).map(x => x.d);
+      b.fmt = b.id.indexOf('|n|') > 0 ? 'ngn' : 'trad';
+      b.drugs = drugRe.filter(x => x.re.test(txt)).map(x => x.d);
       b.skill = (b.drugs.length || classRe.test(txt)) ? SKILLS[0]
         : (b.kind === 'order' || b.kind === 'bow' || /priorit|first|immediate|best action|which client|sees? first|unsafe|report/i.test(b.q)) ? SKILLS[2]
         : (b.kind === 'cloze' || b.kind === 'matrix' || /\bwhy\b|mechanism|because|caus|explain/i.test(b.q)) ? SKILLS[1] : SKILLS[3];
+      b.topics = this.topicsFor(txt, b.ch); b.nodes = this.nodesFor(txt, b.ch);
     });
-    // byId keeps every question so saved tests still open after the focus changes;
-    // the bank the tests draw from is only the topics picked on the map.
-    this.byId = {}; bank.forEach(b => { this.byId[b.id] = b; });
-    const F = window.E2Focus, on = !!(F && F.active());
-    const inFocus = b => !on || (b.id.indexOf('33|') === 0 ? F.matches(b.txt, '33') || F.matches(b.txt, '34') : F.matches(b.txt, b.ch));
-    this.bank = bank.filter(inFocus);
-    this.focusEmpty = on && !this.bank.length;
-    if (this.focusEmpty) this.bank = bank;
-    this.chs = CHS.filter(ch => this.bank.some(b => b.ch === ch));
+    const pool = bank.slice();
+
+    // Drug questions, generated fresh each time (new wrong options every time you see one).
+    DRUGS.forEach(d => {
+      const chs = (String(d.ch).match(/\d\d/g) || []).filter(c => CHS.includes(c));
+      if (!chs.length) return;
+      const ch = chs.slice().sort((a, b) => (BP[b] || 0) - (BP[a] || 0))[0];
+      const name = [d.n, d.g, d.c].join(' '), full = [name, d.ind, d.moa, d.plain].join(' ');
+      let topics = []; chs.forEach(c => { this.topicsFor(name, c).forEach(t => { if (!topics.includes(t) && !/overview/.test(t)) topics.push(t); }); });
+      if (!topics.length) chs.forEach(c => this.topicsFor(full, c).forEach(t => { if (!topics.includes(t)) topics.push(t); }));
+      topics = topics.slice(0, 3);
+      ['use', 'how', 'check', 'se', 'sae', 'rescue'].forEach(tpl => {
+        const item = { id: 'g|' + d.id + '|' + tpl, ch, fmt: 'drug', gen: true, drug: d.id, tpl, kind: tpl === 'se' ? 'sata' : 'single', drugs: [d], skill: SKILLS[0], topics, nodes: this.nodesFor(full, ch), txt: full, words: words(full + ' ' + (d.trap || '') + ' ' + (d.steps || []).join(' ')) };
+        if (this.drugQ(item)) pool.push(item);
+      });
+    });
+
+    // Myth checks and active-recall prompts from the recall sets.
+    CHS.forEach(ch => {
+      const R = window.RECALL_EXTRA[ch] || {}, C = (window.EXPLAIN_CARDS || {})[ch] || {};
+      const mc = R.mc || [];
+      if (mc.length >= 4) mc.forEach((x, i) => {
+        const q = ((C.mc || {})[i] || {}).q || x[0], txt = q + ' ' + x[1];
+        pool.push({ id: 'm|' + ch + '|' + i, ch, fmt: 'myth', myth: i, kind: 'single', skill: SKILLS[1], drugs: drugRe.filter(z => z.re.test(txt)).map(z => z.d), topics: this.topicsFor(txt, ch), nodes: this.nodesFor(txt, ch), txt, words: words(txt) });
+      });
+      (R.rq || []).forEach((x, i) => {
+        const q = ((C.rq || {})[i] || {}).q || x[2], txt = q + ' ' + x[3];
+        pool.push({ id: 'r|' + ch + '|' + i, ch, fmt: 'recall', rq: i, kind: 'recall', skill: SKILLS[1], drugs: drugRe.filter(z => z.re.test(txt)).map(z => z.d), topics: this.topicsFor(txt, ch), nodes: this.nodesFor(txt, ch), txt, words: words(txt) });
+      });
+    });
+
+    this.byId = {}; pool.forEach(x => { this.byId[x.id] = x; });
+    const F = window.E2Focus, on = !!(F && F.active()), ids = on ? F.ids() : [];
+    this.pool = on ? pool.filter(x => x.topics.some(t => ids.includes(t))) : pool;
+    this.focusEmpty = on && this.pool.length < 10;
+    if (this.focusEmpty) this.pool = pool;
     this.focusLabel = on && !this.focusEmpty ? F.label() : 'Everything';
+    this.byTopic = {}; this.pool.forEach(x => x.topics.forEach(t => { (this.byTopic[t] = this.byTopic[t] || []).push(x); }));
+    this.counts = {}; this.pool.forEach(x => { this.counts[x.fmt] = (this.counts[x.fmt] || 0) + 1; });
   }
 
-  present(b) {
-    const P = { id: b.id, ch: b.ch, kind: b.kind, t: b.t || '', q: b.q || '', rule: b.rule || '', phys: b.phys || '', ex: b.ex || null, fig: b.fig || null };
+  // ---------- Building a question to show ----------
+  presentB(b) {
+    const P = { id: b.id, ch: b.ch, kind: b.kind, t: b.t || '', q: b.q || '', rule: b.rule || '', phys: b.phys || '', ex: b.ex || null, fig: b.fig || null, ask: b.ask || '', cues: b.cues || [] };
     const corr = Array.isArray(b.a) ? b.a : [b.a];
     if (b.kind === 'single' || b.kind === 'sata') P.choices = shuffle(b.o.map((t, i) => ({ k: i, t, r: (b.r || [])[i] || '', c: corr.includes(i) })));
     if (b.kind === 'order') P.choices = shuffle(b.o.map((t, i) => ({ k: i, t, r: (b.r || [])[i] || '', rank: b.a.indexOf(i) })));
@@ -951,13 +974,101 @@ class Component extends DCLogic {
       const x = b[g]; const a = Array.isArray(x.a) ? x.a : [x.a];
       return { g, short, multi, need: a.length, label: multi ? label + ' — choose ' + a.length : label, choices: shuffle(x.o.map((t, i) => ({ k: i, t, r: (x.r || [])[i] || '', c: a.includes(i) }))) };
     });
+    if (b.kind === 'cloze' && /^complete the statement\.?$/i.test(P.q.trim())) P.q = 'Pick the right choice for each blank in the sentence below.';
     return P;
   }
+  present(it) {
+    if (it.bank) return this.presentB(it);
+    if (it.gen) return this.presentB(Object.assign({ id: it.id, ch: it.ch, kind: it.kind }, this.drugQ(it)));
+    if (it.fmt === 'myth') return this.presentB(Object.assign({ id: it.id, ch: it.ch, kind: 'single' }, this.mythQ(it)));
+    const x = window.RECALL_EXTRA[it.ch].rq[it.rq], C = (((window.EXPLAIN_CARDS || {})[it.ch] || {}).rq || {})[it.rq] || {};
+    return { id: it.id, ch: it.ch, kind: 'recall', q: C.q || x[2], type: x[0], ans: x[3], why: C.why || x[4] || '', move: C.move || x[5] || '', trap: C.trap || x[6] || '', rule: C.move || x[5] || '' };
+  }
 
-  // A question as shown, with its rationales, mechanism and rule re-read from the bank,
-  // so tests saved before an explanation update still show the current one.
+  // A drug question from one of six templates; the three or four wrong options are drawn from drugs in other classes each time.
+  drugQ(it) {
+    const d = this.drugById[it.drug]; if (!d) return null;
+    const others = shuffle(this.drugs.filter(o => o.id !== d.id && o.k !== d.k));
+    const W = (window.DRUG_WHY || {});
+    const ok = v => v && v !== '—';
+    // Wrong options share no key word with this drug's own facts, or with each other.
+    const draw = (get, own, n, extra) => {
+      const out = [], used = new Set(tok(d.n + ' ' + d.g)), texts = new Set(ownTexts);
+      for (const o of others) {
+        const v = get(o); if (!ok(v) || texts.has(String(v).toLowerCase()) || clash(v, own) || clash(v, used) || (extra && !extra(v))) continue;
+        tok(v).forEach(w => used.add(w)); texts.add(String(v).toLowerCase()); out.push([o, v]); if (out.length >= n) break;
+      }
+      return out.length >= n ? out : null;
+    };
+    const ownTexts = [d.ind, d.plain, d.rescue].concat((d.checks || []).map(x => x[0]), (d.se || []).map(x => x[0]), (d.sae || []).map(x => x[0])).filter(Boolean).map(x => String(x).toLowerCase());
+    const steps = (d.steps || []).join(' → ');
+    const base = { rule: d.trap ? 'Trap to avoid: ' + d.trap : (d.nclex || ''), phys: steps || d.moa || '', cues: [] };
+    const N = d.n;
+    const mk = (q, right, rightWhy, wrong, wrongWhy, ask) => {
+      const o = [right].concat(wrong.map(x => x[1])), r = ['Correct. ' + (rightWhy || '')].concat(wrong.map(x => wrongWhy(x[0])));
+      return Object.assign({ q, o, a: [0], r, ask }, base);
+    };
+    switch (it.tpl) {
+      case 'use': {
+        const own = tok(d.ind + ' ' + d.fix + ' ' + d.plain), w = draw(o => o.ind, own, 3); if (!ok(d.ind) || !w) return null;
+        return mk(pickOne([N + ' is ordered for a client. Which condition is it used to treat?', 'A client is starting ' + N + '. What is it most likely being used for?']),
+          d.ind, d.fix || d.plain, w, o => 'That is what ' + o.n + ' (' + o.c + ') is used for.', 'Do you know what ' + N + ' is for?');
+      }
+      case 'how': {
+        const own = tok(d.plain + ' ' + d.moa + ' ' + steps), w = draw(o => o.plain, own, 3); if (!ok(d.plain) || !w) return null;
+        return mk(pickOne(['How does ' + N + ' work?', 'Which statement explains what ' + N + ' does in the body?']),
+          d.plain, steps || d.moa, w, o => 'That describes ' + o.n + ' (' + o.c + ').', 'Can you explain the mechanism, not just the name?');
+      }
+      case 'check': {
+        const c = (d.checks || [])[0]; if (!c) return null;
+        const own = tok((d.checks || []).map(x => x.join(' ')).join(' ') + ' ' + d.pre + ' ' + d.hold);
+        const w = draw(o => ((o.checks || [])[0] || [])[0], own, 3); if (!w) return null;
+        return mk(pickOne(['The nurse is about to give ' + N + '. Which assessment matters most right before the dose?', 'Before giving ' + N + ', what should the nurse check first?']),
+          c[0], c[1], w, o => 'That is the key check for ' + o.n + ': ' + ((o.checks || [])[0] || [])[1] + '.', 'What could make this dose unsafe right now?');
+      }
+      case 'se': {
+        const se = (d.se || []).slice(0, 3); if (se.length < 2) return null;
+        const own = tok((d.se || []).concat(d.sae || []).map(x => x.join(' ')).join(' ') + ' ' + d.ind);
+        const w = draw(o => ((o.se || []).find(x => !GENERIC_SE.test(x[0])) || [])[0], own, 2, v => !GENERIC_SE.test(v)); if (!w) return null;
+        const o = se.map(x => x[0]).concat(w.map(x => x[1]));
+        const r = se.map((x, i) => 'Expected. ' + (W[d.id + '|se|' + i] || x[1])).concat(w.map(x => 'Not typical of ' + N + ' — that is a side effect of ' + x[0].n + '.'));
+        return Object.assign({ q: 'A client is taking ' + N + '. Which findings are expected side effects? Select all that apply.', o, a: se.map((x, i) => i), r, ask: 'Which effects follow from how ' + N + ' works?' }, base);
+      }
+      case 'sae': {
+        const s = (d.sae || [])[0]; if (!s || GENERIC_SE.test(s[0])) return null;
+        const own = tok((d.sae || []).concat(d.se || []).map(x => x.join(' ')).join(' '));
+        const w = draw(o => ((o.sae || [])[0] || [])[0], own, 3, v => !GENERIC_SE.test(v)); if (!w) return null;
+        return mk(pickOne(['Which finding in a client taking ' + N + ' is a serious adverse effect to report right away?', 'A client on ' + N + ' develops a new problem. Which one is a known serious effect of this drug?']),
+          s[0], s[1], w, o => 'That is a serious effect of ' + o.n + ', not ' + N + '.', 'Which danger comes from this drug’s own action?');
+      }
+      case 'rescue': {
+        if (!ok(d.rescue) || !ANTIDOTE.test(d.rescue)) return null;
+        const w = draw(o => ANTIDOTE.test(o.rescue || '') ? o.rescue : '', tok(d.rescue), 3); if (!w) return null;
+        return mk(pickOne(['Toxicity or overdose of ' + N + ' is suspected. What is the antidote or rescue?', 'Which treatment reverses or rescues ' + N + ' toxicity?']),
+          d.rescue, d.emerg && ok(d.emerg) ? 'Watch for: ' + d.emerg : '', w, o => 'That is the rescue for ' + o.n + '.', 'Do you know the reversal before you ever need it?');
+      }
+    }
+    return null;
+  }
+
+  // A myth check: a classmate's wrong claim, and four true facts — only one of them corrects this claim.
+  mythQ(it) {
+    const ch = it.ch, M = window.RECALL_EXTRA[ch].mc, C = (((window.EXPLAIN_CARDS || {})[ch] || {}).mc || {});
+    const mq = i => (C[i] || {}).q || M[i][0];
+    const x = M[it.myth], e = C[it.myth] || {};
+    const claim = words(mq(it.myth) + ' ' + x[1]);
+    const pool = shuffle(M.map((y, i) => i).filter(i => i !== it.myth && M[i][1] !== x[1])).map(i => [i, overlap(claim, words(mq(i) + ' ' + M[i][1])) + Math.random()]).sort((a, b) => b[1] - a[1]).slice(0, 3).map(z => z[0]);
+    return {
+      q: 'A classmate says: “' + mq(it.myth) + '”\nWhich statement is accurate?',
+      o: [x[1]].concat(pool.map(i => M[i][1])), a: [0],
+      r: ['Correct — this is the fact that corrects the claim. ' + (e.why || '')].concat(pool.map(i => 'True, but it corrects a different claim: “' + mq(i) + '”')),
+      rule: 'If you believe the myth: ' + (e.harm || x[2] || ''), phys: e.why || '', ask: 'Is the claim true — and if not, what is?', cues: []
+    };
+  }
+
+  // Re-read a bank question's explanations (so saved tests show current text); generated questions carry their own.
   fresh(P) {
-    const b = this.byId[P.id]; if (!b) return P;
+    const b = this.byId[P.id]; if (!b || !b.bank) return P;
     const X = Object.assign({}, P, { phys: b.phys || P.phys, rule: b.rule || P.rule, ask: b.ask || '', cues: b.cues || (b.key ? [b.key] : []) });
     if (P.choices) X.choices = P.choices.map(c => Object.assign({}, c, { r: (b.r || [])[c.k] || c.r }));
     if (P.rows) X.rows = P.rows.map(r => Object.assign({}, r, { r: ((b.rows || [])[r.k] || {}).r || r.r }));
@@ -969,104 +1080,142 @@ class Component extends DCLogic {
   save(S) { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} this.setState({ S }); }
   upd(fn) { const S = JSON.parse(JSON.stringify(this.state.S)); fn(S); this.save(S); }
 
-  stats(T) {
-    const st = {};
-    CHS.forEach(ch => {
-      const its = T.items.filter(p => p.ch === ch && T.checked[p.id]);
-      const n = its.length, s = its.reduce((a, p) => a + eff(T, p.id), 0), acc = n ? s / n : 0;
-      const minN = MIN_N[ch] + (T.boost && T.boost[ch] ? 1 : 0);
-      const resolved = (!!T.plan && n > 0) || !!T.exhausted[ch] || n >= MAX_N[ch] || (n >= minN && (acc >= 0.85 || acc <= 0.5));
-      const status = !n ? 'Not yet' : !resolved ? 'Probing' : acc >= 0.85 ? 'Solid' : acc <= 0.5 ? 'Weak' : 'Borderline';
-      st[ch] = { n, s, acc, resolved, status };
+  // ---------- Mastery: a running score per Map topic and Concept Map node ----------
+  learn(S, it, e) {
+    const bump = (map, id) => { const m = map[id] || (map[id] = { m: null, n: 0 }); m.m = m.m == null ? e : m.m + (e - m.m) * Math.max(0.34, 1 / (m.n + 1)); m.n++; m.at = Date.now(); };
+    (it.topics || []).forEach(id => bump(S.mastery.topics, id));
+    (it.nodes || []).forEach(id => bump(S.mastery.nodes, id));
+  }
+
+  // ---------- Running a test ----------
+  startTest() {
+    const S = this.state.S;
+    if (S.test && !window.confirm('Discard the test in progress and start a new one?')) return;
+    this.upd(S => {
+      S.testNo = (S.testNo || 0) + 1;
+      const T = { no: S.testNo, len: S.settings.len || 40, base: 0, items: [], resp: {}, scores: {}, checked: {}, conf: {}, why: {}, follow: {}, depth: {}, revealed: {}, queue: [], followN: 0, focus: this.focusLabel, at: Date.now() };
+      const P = this.nextItem(S, T); if (P) T.items.push(P);
+      S.test = T; S.phase = 'test';
     });
-    return st;
+    this.setState({ draft: '' }); window.scrollTo(0, 0);
   }
 
-  startTest(kind) {
-    const S = this.state.S, last = kind === 'post' ? S.result : null;
-    const boost = {};
-    if (last) CHS.forEach(ch => { const t = last.topics[ch]; if (t && t.acc < 0.85) boost[ch] = true; });
-    const posts = S.history.filter(h => h.kind === 'post').length;
-    const T = { kind, name: kind === 'pre' ? 'Pre-test' : 'Post-test ' + (posts + 1), items: [], resp: {}, scores: {}, checked: {}, why: {}, conf: {}, probe: {}, exhausted: {}, probeRun: 0, boost,
-      lastIds: last ? last.test.items.map(p => p.id) : [], repeatIds: last ? last.test.items.filter(p => eff(last.test, p.id) < 1).map(p => p.id) : [] };
-    T.focus = this.focusLabel;
-    if (kind === 'pre') T.plan = this.makePlan();
-    const P = this.nextItem(T); if (P) T.items.push(P);
-    return T;
-  }
-
-  // The pre-test is every question in the bank (after the focus filter), in random order,
-  // so nothing you could be asked is left out. Scoring is still weighted to the exam blueprint.
-  makePlan() {
-    return shuffle(this.bank.map(b => b.id));
-  }
-
-  nextItem(T) {
-    if (T.plan) {
-      const used = new Set(T.items.map(p => p.id));
-      const id = T.plan.find(x => !used.has(x));
-      return id ? this.present(this.byId[id]) : null;
-    }
-    for (let guard = 0; guard < 12; guard++) {
-      const st = this.stats(T);
-      const open = this.chs.filter(ch => !st[ch].resolved);
-      if (!open.length) return null;
-      const used = new Set(T.items.map(p => p.id));
-      const last = T.items[T.items.length - 1];
-      let ch = null, skill = null, probe = '';
-      if (last && T.checked[last.id] && eff(T, last.id) < 1 && !st[last.ch].resolved && T.probeRun < 2) {
-        ch = last.ch;
-        const why = T.why[last.id] || [];
-        const target = why.map(w => REASONS.find(r => r[0] === w)).filter(r => r && r[2] >= 0).map(r => SKILLS[r[2]]);
-        skill = target[0] || (this.byId[last.id] || {}).skill || null;
-        const PL = { drug: 'drug knowledge', look: 'what to look for', do: 'what to do', mech: 'mechanism', fact: 'facts & values', cue: 'scenario cues', prio: 'prioritizing' };
-        probe = 'Follow-up: ' + ((why.map(w => PL[w]).find(Boolean)) || 'same topic');
-        T.probeRun++;
-      } else {
-        T.probeRun = 0;
-        const untested = open.filter(c => st[c].n === 0).sort((a, b) => BPW(b) - BPW(a));
-        ch = untested[0] || open.slice().sort((a, b) => {
-          const ua = (st[a].n / Math.sqrt(BPW(a) * (T.boost[a] ? 2 : 1))) - (st[a].acc < 0.85 ? 0.3 : 0);
-          const ub = (st[b].n / Math.sqrt(BPW(b) * (T.boost[b] ? 2 : 1))) - (st[b].acc < 0.85 ? 0.3 : 0);
-          return ua - ub;
-        })[0];
-      }
-      const b = this.pickItem(ch, used, skill, T);
-      if (!b) { T.exhausted[ch] = true; T.probeRun = 0; continue; }
-      const P = this.present(b);
-      if (probe) T.probe[P.id] = probe;
-      else if (T.repeatIds.includes(b.id)) T.probe[P.id] = 'Retest of an earlier miss';
-      return P;
-    }
+  nextItem(S, T) {
+    const done = T.items.filter(p => T.checked[p.id]).length;
+    const due = T.queue.findIndex(f => f.due <= done);
+    if (due >= 0) { const f = T.queue.splice(due, 1)[0]; const P = this.pickFollow(S, T, f); if (P) return P; }
+    if (T.base < T.len) { const P = this.pickBase(S, T); if (P) { T.base++; return P; } }
+    while (T.queue.length) { const f = T.queue.shift(); const P = this.pickFollow(S, T, f); if (P) return P; }
     return null;
   }
 
-  pickItem(ch, used, skill, T) {
-    const pool = this.bank.filter(b => b.ch === ch && !used.has(b.id));
-    if (!pool.length) return null;
-    const reps = pool.filter(b => T.repeatIds.includes(b.id));
-    if (reps.length && Math.random() < 0.35) return shuffle(reps)[0];
-    const seen = this.state.S.seen || {}, lastIds = new Set(T.lastIds);
-    const rank = b => (skill && b.skill === skill ? -6 : 0) + (seen[b.id] || 0) * 4 + (lastIds.has(b.id) && !T.repeatIds.includes(b.id) ? 8 : 0) - (b.kw ? 3 : 0) - (b.hy ? 1 : 0) + Math.random() * 2;
-    return pool.slice().sort((a, b) => rank(a) - rank(b))[0];
+  // An item's appeal: unseen beats seen, last test's questions wait a test, mastered ones step back, and formats stay mixed.
+  itemScore(S, T, x) {
+    const L = S.log[x.id] || {}, n = T.items.length || 1;
+    const share = T.items.filter(p => (this.byId[p.id] || {}).fmt === x.fmt).length / n;
+    // The case-style NGN items (matrix, cloze, bow-tie, ordering) are few, so they get a nudge to keep turning up.
+    const caseBonus = ['matrix', 'cloze', 'bow', 'order'].includes(x.kind) ? 1.8 : 0;
+    return caseBonus + Math.random() * 1.5 - (L.seen || 0) * 1.0 - (L.lastTest && L.lastTest === T.no - 1 ? 4 : 0) - (L.last === 1 && (L.seen || 0) >= 2 ? 2.5 : 0) + 6 * ((MIX[x.fmt] || 0.1) - (T.items.length ? share : 0));
+  }
+
+  pickBase(S, T) {
+    const used = new Set(T.items.map(p => p.id));
+    const asked = {}; T.items.forEach(p => ((this.byId[p.id] || {}).topics || []).forEach(t => { asked[t] = (asked[t] || 0) + 1; }));
+    const recent = new Set(); T.items.slice(-2).forEach(p => ((this.byId[p.id] || {}).topics || []).forEach(t => recent.add(t)));
+    const perCh = {}; Object.keys(this.byTopic).forEach(t => { const ch = t.slice(0, 2); perCh[ch] = (perCh[ch] || 0) + 1; });
+    const cands = Object.keys(this.byTopic).filter(t => this.byTopic[t].some(x => !used.has(x.id))).map(t => {
+      const ch = t.slice(0, 2), m = (S.mastery.topics[t] || {}).m;
+      const need = m == null ? 1.5 : 0.35 + 2.3 * (1 - m);
+      const w = ((BP[ch] || 0.7) / (perCh[ch] || 1)) * need / (1 + (asked[t] || 0) * 0.8) * (recent.has(t) ? 0.25 : 1);
+      return [t, w];
+    });
+    if (!cands.length) return null;
+    let r = Math.random() * cands.reduce((a, c) => a + c[1], 0), topic = cands[0][0];
+    for (const [t, w] of cands) { r -= w; if (r <= 0) { topic = t; break; } }
+    const items = this.byTopic[topic].filter(x => !used.has(x.id));
+    const best = items.map(x => [x, this.itemScore(S, T, x)]).sort((a, b) => b[1] - a[1])[0][0];
+    return this.present(best);
+  }
+
+  // What a miss was about: the options picked wrongly or left out, their rationales, and the rule.
+  missText(P, R) {
+    const X = this.fresh(P); R = R == null ? {} : R; const parts = [];
+    const add = c => parts.push(c.t + ' ' + (c.r || ''));
+    if (P.kind === 'single') X.choices.forEach(c => { if ((c.k === R) !== c.c) add(c); });
+    else if (P.kind === 'sata') X.choices.forEach(c => { if (!!R[c.k] !== c.c) add(c); });
+    else if (P.kind === 'order') X.choices.forEach(c => { if ((Array.isArray(R) ? R.indexOf(c.k) : -1) !== c.rank) add(c); });
+    else if (P.kind === 'matrix') X.rows.forEach(r => { if (R[r.k] !== r.a) add(r); });
+    else if (P.kind === 'cloze') X.segs.forEach(sg => { if (sg.opts) { const o = sg.opts.find(o => o.k === R[sg.blank]); if (!(o && o.c)) parts.push(sg.opts.find(o => o.c).t + ' ' + (sg.r || '')); } });
+    else if (P.kind === 'bow') X.groups.forEach(g => { const r = R[g.g]; g.choices.forEach(c => { const s = r == null ? false : g.multi ? !!r[c.k] : c.k === r; if (s !== c.c) add(c); }); });
+    else if (P.kind === 'recall') parts.push(P.q + ' ' + P.ans);
+    return parts.join(' ') + ' ' + (X.rule || '');
+  }
+
+  makeFollow(S, T, P, n) {
+    const it = this.byId[P.id] || {}, sc = T.scores[P.id] || 0, wrong = sc < 1;
+    const why = T.why[P.id] || [];
+    const want = why.includes('drug') ? ['check', 'how'] : why.includes('look') ? ['se', 'sae'] : why.includes('do') ? ['check', 'rescue'] : why.includes('mech') ? ['how'] : why.includes('fact') ? ['use'] : [];
+    const done = T.items.filter(p => T.checked[p.id]).length;
+    return { from: P.id, due: done + 2 + n, wrong, n, sure: T.conf[P.id] === 'sure', words: [...words(wrong ? this.missText(P, T.resp[P.id]) : (it.txt || P.q))], topics: it.topics || [], drugs: (it.drugs || []).map(d => d.id), fmt: it.fmt, want, depth: (T.depth[P.id] || 0) + 1 };
+  }
+
+  // A follow-up: same topic or drug, as close as possible to what went wrong, in a different format when it can be.
+  pickFollow(S, T, f) {
+    const used = new Set(T.items.map(p => p.id)), W = new Set(f.words);
+    const near = this.pool.filter(x => !used.has(x.id) && x.id !== f.from && (x.topics.some(t => f.topics.includes(t)) || (x.drugs || []).some(d => f.drugs.includes(d.id))));
+    if (!near.length) return null;
+    const scoreOf = x => {
+      const L = S.log[x.id] || {};
+      return overlap(W, x.words) * (f.wrong ? 2.5 : 1) + ((x.drugs || []).some(d => f.drugs.includes(d.id)) ? 4 : 0) + (x.fmt !== f.fmt ? 1.5 : 0)
+        + (x.gen && f.want.includes(x.tpl) ? 3 : 0) + (f.n ? (x.fmt === 'recall' ? 2 : 0) : 0) - (L.seen || 0) * 0.8 + Math.random();
+    };
+    const best = near.map(x => [x, scoreOf(x)]).sort((a, b) => b[1] - a[1])[0][0];
+    const P = this.present(best);
+    T.follow[P.id] = f.wrong ? (f.sure ? 'Follow-up · you were sure but missed it' : 'Follow-up on what you missed') : 'Follow-up · you were guessing';
+    T.depth[P.id] = f.depth; T.followN++;
+    return P;
   }
 
   cur() { const T = this.state.S.test; return T ? T.items[T.items.length - 1] : null; }
   setResp(fn) { this.upd(S => { const P = S.test.items[S.test.items.length - 1]; if (S.test.checked[P.id]) return; S.test.resp[P.id] = fn(S.test.resp[P.id], P); }); }
   pick(P, k) { this.setResp(r => P.kind === 'single' ? k : Object.assign({}, r || {}, { [k]: !(r || {})[k] })); }
+  setConf(k) { this.upd(S => { const P = S.test.items[S.test.items.length - 1]; if (!S.test.checked[P.id]) S.test.conf[P.id] = k; }); }
 
   check() {
-    const S = this.state.S, P = this.cur(); if (!P || !answered(P, S.test.resp[P.id])) return;
+    const S = this.state.S, P = this.cur(); if (!P || P.kind === 'recall') return;
+    if (!answered(P, S.test.resp[P.id]) || !S.test.conf[P.id] || S.test.checked[P.id]) return;
     this.upd(S => {
       const T = S.test, sc = score(P, T.resp[P.id]);
       T.scores[P.id] = sc; T.checked[P.id] = true;
-      if (sc < 1 && !(T.why[P.id] || []).length) T.why[P.id] = inferWhy(this.fresh(P), T.resp[P.id], this.byId[P.id]).map(x => x.k);
+      if (sc < 1) T.why[P.id] = inferWhy(this.fresh(P), T.resp[P.id], this.byId[P.id]).map(x => x.k);
+      this.afterAnswer(S, P);
     });
+  }
+  rateRecall(level) {
+    const P = this.cur(); if (!P || P.kind !== 'recall') return;
+    this.upd(S => {
+      const T = S.test; if (T.checked[P.id]) return;
+      T.scores[P.id] = level; T.checked[P.id] = true; T.conf[P.id] = 'sure';
+      if (level < 1) T.why[P.id] = ['fact'];
+      this.afterAnswer(S, P);
+    });
+  }
+  // Score it into mastery, log it, and queue follow-ups: one for a miss or a guess, two when you were sure and wrong.
+  afterAnswer(S, P) {
+    const T = S.test, it = this.byId[P.id] || {}, e = eff(T, P.id);
+    this.learn(S, it, e);
+    const L = S.log[P.id] || (S.log[P.id] = { seen: 0 }); L.seen++; L.lastTest = T.no; L.last = e;
+    const cap = Math.ceil(T.len * 0.6), depth = T.depth[P.id] || 0;
+    if (e < 1 && depth < 2 && T.followN + T.queue.length < cap) {
+      T.queue.push(this.makeFollow(S, T, P, 0));
+      if ((T.scores[P.id] || 0) === 0 && T.conf[P.id] === 'sure' && P.kind !== 'recall') T.queue.push(this.makeFollow(S, T, P, 2));
+    }
   }
   next() {
     const P = this.cur(); if (!P || !this.state.S.test.checked[P.id]) return;
     let done = false;
-    this.upd(S => { const N = this.nextItem(S.test); if (N) S.test.items.push(N); else done = true; });
+    this.upd(S => { const N = this.nextItem(S, S.test); if (N) S.test.items.push(N); else done = true; });
+    this.setState({ draft: '' });
     if (done) this.finish(); else window.scrollTo(0, 0);
   }
 
@@ -1074,188 +1223,148 @@ class Component extends DCLogic {
     const T0 = this.state.S.test; if (!T0) return;
     if (!T0.items.some(p => T0.checked[p.id])) { this.upd(S => { S.test = null; S.phase = 'home'; }); return; }
     this.upd(S => {
-      const T = S.test;
-      T.items = T.items.filter(p => T.checked[p.id]);
-      const st = this.stats(T);
-      let wsum = 0, wt = 0, raw = 0;
-      CHS.forEach(ch => { if (st[ch].n) { wsum += BP[ch] * st[ch].acc; wt += BP[ch]; } });
-      T.items.forEach(p => { raw += eff(T, p.id); S.seen[p.id] = (S.seen[p.id] || 0) + 1; });
-      // Only chapters on the exam count; if only off-guide chapters were tested, fall back to the raw score.
-      const pct = wt ? Math.round(100 * wsum / wt) : Math.round(100 * raw / T.items.length);
-      S.result = { kind: T.kind, name: T.name, pct, raw: Math.round(100 * raw / T.items.length), topics: st, test: T };
-      S.history.push({ kind: T.kind, name: T.name, pct, n: T.items.length, at: Date.now() });
-      S.test = null; S.deck = this.buildDeck(S.result); S.deckTotal = S.deck.length; S.deckDone = 0; S.deckCapped = 1; S.phase = 'results';
+      const T = S.test, done = T.items.filter(p => T.checked[p.id]);
+      const byCh = {}; let raw = 0;
+      done.forEach(p => { const c = byCh[p.ch] || (byCh[p.ch] = { s: 0, n: 0 }); const e = eff(T, p.id); c.s += e; c.n++; raw += e; });
+      let ws = 0, wt = 0; Object.keys(byCh).forEach(ch => { if (BP[ch]) { ws += BP[ch] * byCh[ch].s / byCh[ch].n; wt += BP[ch]; } });
+      const pct = wt ? Math.round(100 * ws / wt) : Math.round(100 * raw / done.length);
+      S.report = { at: Date.now(), no: T.no, n: done.length, base: T.base, follows: done.filter(p => T.follow[p.id]).length, pct, raw: Math.round(100 * raw / done.length), focus: T.focus, recs: done.map(P => this.record(T, P)) };
+      S.history.push({ at: Date.now(), pct, n: done.length });
+      S.test = null; S.phase = 'home';
     });
     window.scrollTo(0, 0);
   }
-
-  buildDeck(result) {
-    const T = result.test, cards = [], keys = new Set();
-    const add = c => { if (!keys.has(c.key)) { keys.add(c.key); cards.push(c); } };
-    const targets = T.items.filter(P => eff(T, P.id) < 1).sort((a, b) => eff(T, a.id) - eff(T, b.id));
-    targets.forEach(P0 => {
-      const P = this.fresh(P0), b = this.byId[P.id] || {}, R = T.resp[P.id], why = T.why[P.id] || [];
-      const guessed = (T.scores[P.id] || 0) >= 1 && T.conf[P.id] === 'guess';
-      const all = !why.length;
-      const has = k => all || why.includes(k);
-      const back = [{ h: 'Correct answer', v: correctText(P) }];
-      if (P.ask) back.push({ h: 'What it was really asking', v: P.ask });
-      if (P.cues && P.cues.length) back.push({ h: 'Cues to notice', v: P.cues.map(c => '• ' + c).join('\n') });
-      const wn = wrongNotes(P, R); if (wn && !guessed) back.push({ h: 'Where it went wrong', v: wn });
-      if (P.phys) back.push({ h: 'Why — the mechanism', v: P.phys });
-      if (P.rule) back.push({ h: 'Rule to carry into the exam', v: P.rule });
-      if (why.includes('read')) back.push({ h: 'Read-the-stem check', v: 'Before choosing, restate the question in five words: who, what, and whether it asks first / best / unsafe / expected.' });
-      if (why.includes('second')) back.push({ h: 'Second-guess check', v: 'Change an answer only if you can name the specific cue you missed the first time.' });
-      // At most two supporting cards per missed question (one for a lucky guess), most relevant first.
-      let room = guessed ? 1 : 2;
-      const addS = c => { if (room > 0 && !keys.has(c.key)) { room--; add(c); } };
-      add({ key: 'q:' + P.id, ch: P.ch, type: guessed ? 'Guessed right — lock it in' : 'Missed question', sub: why.length ? 'Likely gap: ' + why.map(w => RLABEL[w].split(' — ')[0].toLowerCase()).join(', ') : P.t, front: P.q, back });
-      if (has('drug') || b.skill === SKILLS[0]) (b.drugs || []).slice(0, 1).forEach(d0 => {
-        const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {});
-        const se = (d.se || []).slice(0, 3).map((s, i) => s[0] + ' — ' + ((window.DRUG_WHY || {})[d.id + '|se|' + i] || s[1])).join('\n');
-        const checks = (d.checks || []).map(c => '• ' + c[0] + ' — ' + c[1]).join('\n') || [d.pre, d.hold].filter(v => v && v !== '—').join('\nHold: ');
-        addS({ key: 'd:' + d.id, ch: P.ch, type: 'Drug', sub: d.c || '', front: (d.n || d.g) + ': what is it for, how does it work, and what do you check before giving it?', back: [
-          { h: 'Used for', v: d.ind }, { h: 'How it works — step by step', v: (d.steps || []).join('\n→ ') || d.moa }, { h: 'In plain words', v: d.plain }, { h: 'What it fixes', v: d.fix },
-          { h: 'Check first — and why', v: checks }, { h: 'Side effects — and why', v: se },
-          { h: 'Exam trap', v: d.trap }, { h: 'Anchor', v: d.anchor }
-        ].filter(x => x.v && x.v !== '—') });
-      });
-      const X = window.RECALL_EXTRA[P.ch] || {};
-      const W = b.words || words(P.q);
-      const best = (arr, get, filt) => { let top = null, ts = 1; (arr || []).forEach((x, i) => { if (filt && !filt(x)) return; const s = overlap(W, words(get(x))); if (s > ts) { ts = s; top = [x, i]; } }); return top; };
-      const CX = (window.EXPLAIN_CARDS || {})[P.ch] || {};
-      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; addS({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: e.q || rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
-      if (why.includes('words')) termsFor(P).slice(0, 1).forEach(t => addS({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
-      if (has('look')) rqCard(x => /see next|finding changes|compare/i.test(x[0]), 'What to look for');
-      if (has('do')) rqCard(x => /first action|mini case|medication/i.test(x[0]), 'What to do');
-      if (has('mech') || has('cue')) rqCard(x => !/direct recall/i.test(x[0]), 'Mechanism');
-      if (has('fact') || has('guess')) rqCard(x => /direct recall/i.test(x[0]), 'Fact');
-      if (has('prio') || has('second') || has('fact') || has('guess')) {
-        const mc = best(X.mc, x => x[0] + ' ' + x[1]);
-        const me = mc ? (CX.mc || {})[mc[1]] || {} : {};
-        if (mc) addS({ key: 'm:' + P.ch + ':' + mc[1], ch: P.ch, type: 'Myth check', sub: 'True or false?', front: me.q || mc[0][0], back: [{ h: 'False — the fact', v: mc[0][1] }, { h: 'Why', v: me.why }, { h: 'What goes wrong if you believe it', v: me.harm || mc[0][2] }].filter(x => x.v) });
-      }
+  record(T, P) {
+    const it = this.byId[P.id] || {}, e = eff(T, P.id);
+    const r = { id: P.id, ch: P.ch, fmt: it.fmt, topics: it.topics || [], nodes: it.nodes || [], drugs: (it.drugs || []).map(d => d.id), e, sc: T.scores[P.id] || 0, conf: T.conf[P.id] };
+    if (e >= 1) return r;
+    const X = this.fresh(P);
+    return Object.assign(r, {
+      q: P.kind === 'recall' ? P.q : it.bank && it.kind === 'cloze' ? cardFront(it).stem : P.q,
+      your: P.kind === 'recall' ? ['Didn’t know', 'Partly'][T.scores[P.id] ? 1 : 0] : yourText(P, T.resp[P.id]),
+      correct: P.kind === 'recall' ? P.ans : correctText(P), rule: X.rule || '', why: T.why[P.id] || []
     });
-    const order = [], q = cards.filter(c => c.key[0] === 'q'), o = cards.filter(c => c.key[0] !== 'q');
-    q.forEach(c => { order.push(c); o.filter(x => x.ch === c.ch).slice(0, 2).forEach(x => { order.push(x); o.splice(o.indexOf(x), 1); }); });
-    return order.concat(o);
   }
-
-  // Learning steps: "Got it" brings a card back once a few cards later and clears it on the second correct
-  // recall; "Knew it" clears it at once. Again / Shaky reset the streak.
-  rate(gap) {
-    this.upd(S => {
-      const c = S.deck.shift(); if (!c) return;
-      if (gap === 'easy') { S.deckDone++; return; }
-      if (gap == null) {
-        c.streak = (c.streak || 0) + 1;
-        if (c.streak >= 2) { S.deckDone++; return; }
-        S.deck.splice(Math.min(6, S.deck.length), 0, c);
-      } else {
-        c.streak = 0;
-        S.deck.splice(Math.min(gap, S.deck.length), 0, c);
-      }
-    });
-    this.setState({ flipped: false, more: false });
-  }
-  eligible(S) { return !!S.result && !S.test && S.deck.length === 0; }
 
   onKey(e) {
-    const S = this.state.S; if (!S || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
-    if (S.phase === 'test' && S.test) {
-      const P = this.cur(); if (!P) return;
-      if (e.key === 'Enter') { e.preventDefault(); if (S.test.checked[P.id]) this.next(); else this.check(); }
-      else if (/^[1-9]$/.test(e.key) && P.choices && (P.kind === 'single' || P.kind === 'sata')) { const c = P.choices[+e.key - 1]; if (c) this.pick(P, c.k); }
-    } else if (S.phase === 'remed' && S.deck.length) {
-      if (e.key === ' ') { e.preventDefault(); if (!this.state.flipped) this.setState({ flipped: true }); }
-      else if (this.state.flipped && e.key === '1') this.rate(2);
-      else if (this.state.flipped && e.key === '2') this.rate(5);
-      else if (this.state.flipped && e.key === '3') this.rate(null);
-      else if (this.state.flipped && e.key === '4') this.rate('easy');
-    }
+    const S = this.state.S; if (!S || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (S.phase !== 'test' || !S.test) return;
+    const P = this.cur(); if (!P) return;
+    const ck = !!S.test.checked[P.id];
+    if (e.key === 'Enter') { e.preventDefault(); if (ck) this.next(); else this.check(); }
+    else if (!ck && (e.key === 'k' || e.key === 'K')) this.setConf('sure');
+    else if (!ck && (e.key === 'g' || e.key === 'G')) this.setConf('guess');
+    else if (!ck && /^[1-9]$/.test(e.key) && P.choices && (P.kind === 'single' || P.kind === 'sata')) { const c = P.choices[+e.key - 1]; if (c) this.pick(P, c.k); }
   }
+
+  // ---------- What the page shows ----------
+  topicTitle(id) { const t = window.INFO_TOPICS.find(x => x.id === id); return !t ? id : t.kind === 'overview' ? CH_TITLE[t.ch].replace(/ \(.*\)$/, '') + ' — overview' : t.title; }
+  shortTitle(t) { return t.kind === 'overview' ? 'Overview' : t.title.split(/ — |: /)[0].replace(/^The /, ''); }
 
   renderVals() {
     const S = this.state.S, ready = this.state.ready && S;
-    const phase = ready ? S.phase : 'loading';
     const A = 'var(--color-accent)', N = 'var(--color-neutral-700)';
-    const v = {
-      loading: !ready, isHome: phase === 'home', isTest: phase === 'test' && !!(S && S.test), isResults: phase === 'results' && !!(S && S.result), isRemed: phase === 'remed',
-      goHome: () => this.upd(S => { S.phase = 'home'; }),
-      startPre: () => { if (this.state.S.test && !window.confirm('Discard the test in progress and start a new pre-test?')) return; const T = this.startTest('pre'); this.upd(S => { S.test = T; S.phase = 'test'; }); window.scrollTo(0, 0); },
-      startPost: () => { if (!this.eligible(this.state.S)) return; const T = this.startTest('post'); this.upd(S => { S.test = T; S.phase = 'test'; }); window.scrollTo(0, 0); },
-      startRemed: () => { this.upd(S => { S.phase = 'remed'; }); this.setState({ flipped: false }); window.scrollTo(0, 0); },
-      backToResults: () => this.upd(S => { S.phase = 'results'; }),
-      resetAll: () => { if (window.confirm('Clear all test history and take a new pre-test?')) this.save(Object.assign(this.blank(), { goal: this.state.S.goal })); },
-      check: () => this.check(), next: () => this.next(), finish: () => this.finish(),
-      flip: () => this.setState({ flipped: true }),
-      toggleMore: () => this.setState({ more: !this.state.more }),
-      rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null), rateEasy: () => this.rate('easy'),
-      bankSize: this.bank ? this.bank.length : 0,
-      preCount: this.bank ? this.bank.length : 0,
-      preNote: (() => {
-        const n = this.bank ? this.bank.length : 0, off = (this.chs || []).filter(c => !BP[c]);
-        return 'Every question in the bank for your focus — ' + n + ' of them — so no topic is skipped.' +
-          (off.length ? ' Chapter' + (off.length > 1 ? 's ' + off.join(' and ') + ' aren’t' : ' ' + off[0] + ' isn’t') + ' on the study guide, so ' + (off.length > 1 ? 'they get' : 'it gets') + ' just a few high-yield questions that don’t count toward the exam-weighted score.' : '');
-      })(),
-      bankChs: (this.chs || CHS).join(', ')
-    };
+    const v = { loading: !ready, isHome: !!ready && (S.phase !== 'test' || !S.test), isTest: !!ready && S.phase === 'test' && !!S.test };
+    if (!ready) return Object.assign(v, { q: {}, fb: {}, rp: {}, dots: [], lenOpts: [], history: [], studyMap: [], nodeMap: [], legend: [], confOpts: [], howItWorks: [] });
+    v.goHome = () => this.upd(S => { S.phase = 'home'; });
+    v.start = () => this.startTest(); v.check = () => this.check(); v.next = () => this.next(); v.finish = () => this.finish();
+    v.resume = () => this.upd(S => { S.phase = 'test'; });
+
+    // Home
+    const len = S.settings.len || 40;
+    v.lenOpts = LENS.map(n => ({ label: n + ' questions', bg: len === n ? 'var(--color-accent-900)' : 'transparent', bd: len === n ? A : N, pick: () => this.upd(S => { S.settings.len = n; }) }));
+    const rf = !!S.settings.recallFirst;
+    v.toggleRecall = () => this.upd(S => { S.settings.recallFirst = !S.settings.recallFirst; });
+    v.recallBg = rf ? 'var(--color-accent-900)' : 'transparent'; v.recallBd = rf ? A : N; v.recallFill = rf ? A : 'transparent';
     const fl = this.focusLabel || 'Everything';
-    v.focusNote = this.focusEmpty ? 'Your focus on the map has no questions in this bank yet, so tests use everything.'
-      : fl === 'Everything' ? 'Studying everything. Pick your professor’s exam topics on the map and the tests and repair deck will use only those.'
-      : 'Following your focus — ' + fl + '. Pre-test, repair cards and post-tests use only these topics.';
+    v.focusNote = this.focusEmpty ? 'Your focus on the map has too few questions yet, so this test uses everything.' : fl === 'Everything' ? 'Testing everything, weighted to the Exam 2 blueprint.' : 'Following your focus — ' + fl + '.';
     v.focusLink = fl === 'Everything' ? 'Pick topics on the map' : 'Change on the map';
-    const hist = ready ? S.history : [];
-    const goal = (S && S.goal) || 90;
-    v.goal = goal;
-    const mastered = hist.some(h => h.kind === 'post' && h.pct >= goal);
-    const elig = ready && this.eligible(S);
-    v.eligible = elig; v.notEligible = !elig;
-    const stepAt = phase === 'test' ? (S.test.kind === 'pre' ? 0 : 3) : phase === 'results' ? 1 : phase === 'remed' ? 2 : -1;
-    v.steps = ['Pre-test', 'Report', 'Repair', 'Post-test'].map((label, i) => ({ label, arrow: i < 3, bd: i === stepAt ? A : N, fg: i === stepAt ? 'var(--color-accent-200)' : 'var(--color-neutral-400)' }));
-    v.steps.push({ label: mastered ? goal + '% reached' : 'Goal ' + goal + '%', arrow: false, bd: mastered ? A : 'transparent', fg: mastered ? 'var(--color-accent-200)' : 'var(--color-neutral-500)' });
-    if (!ready) return Object.assign(v, { history: [], q: {}, dots: [], chips: [], fb: {}, res: {}, rm: {}, goalOpts: [] });
+    v.canResume = !!S.test;
+    v.resumeLabel = S.test ? 'Resume test — question ' + S.test.items.length : '';
+    v.startLabel = (S.test ? 'Start a new ' : 'Start a ') + len + '-question test';
+    const weak = Object.keys(S.mastery.topics).filter(t => this.byTopic[t] && S.mastery.topics[t].m != null).sort((a, b) => S.mastery.topics[a].m - S.mastery.topics[b].m).slice(0, 3).filter(t => S.mastery.topics[t].m < 0.85);
+    v.leanNote = weak.length ? 'Leans toward your weakest: ' + weak.map(t => this.topicTitle(t)).join(' · ') : 'Your first test samples every topic; later tests lean toward what you miss.';
+    v.howItWorks = [
+      { k: 'One test', t: 'NCLEX questions in both formats — single answer, select all, matrix, cloze, bow-tie, ordering, exhibits — plus drug questions built fresh each time, myth checks and recall prompts.' },
+      { k: 'Know it or guessing', t: 'Before you check, say whether you knew it. A guess counts half, even when it’s right.' },
+      { k: 'Follow-ups', t: 'Miss one or guess and a new question on that exact point comes up two questions later — never the same question again.' },
+      { k: 'Report + study map', t: 'What you struggled with, what to study in order with links to the Map, and every topic colored by mastery. The next test leans toward the weak ones.' }
+    ];
+    v.hasHistory = S.history.length > 0;
+    v.history = S.history.slice(-8).reverse().map(h => ({ label: h.at ? new Date(h.at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Earlier', pct: h.pct, n: h.n || '—', w: h.pct + '%' }));
+    const c = this.counts || {};
+    v.bankNote = 'Pool: ' + (c.ngn || 0) + ' NGN · ' + (c.trad || 0) + ' traditional · ' + (c.drug || 0) + ' drug questions (new wrong options each time) · ' + (c.myth || 0) + ' myth checks · ' + (c.recall || 0) + ' recall prompts.';
 
-    v.goalOpts = [90, 100].map(n => ({ label: n + '%', bg: goal === n ? 'var(--color-accent-900)' : 'transparent', bd: goal === n ? A : N, pick: () => this.upd(S => { S.goal = n; }) }));
-    v.hasHistory = hist.length > 0;
-    v.history = hist.map(h => ({ label: h.name, pct: h.pct, n: h.n || '—', w: h.pct + '%' }));
-    // The pre-test runs once; after that the loop is repair deck → post-test only.
-    v.showStartPre = !S.result && !S.test;
-    const lastPost = hist.filter(h => h.kind === 'post').slice(-1)[0];
-    v.hasStage = !!S.result && !S.test;
-    v.stageNote = !v.hasStage ? '' : mastered && lastPost && lastPost.pct >= goal ? 'Goal reached: ' + lastPost.pct + '% on ' + lastPost.name + '. Take one more post-test on fresh questions to make sure it holds.'
-      : elig ? 'You’re eligible for the post-test. Your repair deck is cleared.'
-      : 'Next step: clear your repair deck (' + S.deck.length + ' card' + (S.deck.length === 1 ? '' : 's') + ' left). The post-test unlocks when it’s empty.'
-    const testedOn = S.result && S.result.test && S.result.test.focus;
-    if (v.hasStage && testedOn && testedOn !== (this.focusLabel || 'Everything')) v.stageNote += ' Your focus changed since that test (it was: ' + testedOn + '). Post-tests now use the new topics — or tap “Start over” for a fresh pre-test on them.';
-    v.canResume = !!S.test || !!S.result;
-    v.resumeLabel = S.test ? 'Resume ' + S.test.name + ' (question ' + S.test.items.length + ')' : (S.deck.length ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Take the post-test');
-    v.resume = () => { if (!S.test && !S.deck.length) return v.startPost(); this.upd(S => { S.phase = S.test ? 'test' : 'remed'; }); };
+    // Report and study map (stay on the home screen until the next test)
+    const M = S.mastery;
+    const chip = (m, label, href, tip) => { const L = mlevel(m), C = MCOL[L]; return { label: label + (m == null ? '' : ' · ' + Math.round(m * 100) + '%'), href, tip: tip + ' — ' + C.label, bg: C.bg, bd: C.bd, fg: C.fg, lvl: L }; };
+    v.legend = ['weak', 'ok', 'strong', 'none'].map(k => ({ label: MCOL[k].label, bg: MCOL[k].bg, bd: MCOL[k].bd }));
+    v.studyMap = CHS.map(ch => {
+      const tops = window.INFO_TOPICS.filter(t => t.ch === ch && t.kind !== 'adpie');
+      const ms = tops.map(t => (M.topics[t.id] || {}).m).filter(m => m != null);
+      const order = { weak: 0, ok: 1, none: 2, strong: 3 };
+      return { title: ch + ' · ' + CH_TITLE[ch], note: ms.length ? Math.round(100 * ms.reduce((a, b) => a + b, 0) / ms.length) + '% across ' + ms.length + ' tested topic' + (ms.length > 1 ? 's' : '') : 'not tested yet',
+        chips: tops.map(t => chip((M.topics[t.id] || {}).m, this.shortTitle(t), 'Exam 2 Map.html#' + t.id, t.title + ' — open on the Map')).sort((a, b) => order[a.lvl] - order[b.lvl]) };
+    });
+    v.nodeMap = NODES.map(n => chip((M.nodes[n[0]] || {}).m, n[1], 'Exam 2 Map.html#n-' + n[0], 'Open the breakdown'));
+    const R = S.report;
+    v.hasReport = !!R; v.noReport = !R;
+    v.rp = {};
+    if (R) {
+      const recs = R.recs || [], missed = recs.filter(r => r.e < 1);
+      const prev = S.history.length > 1 ? S.history[S.history.length - 2] : null;
+      const tstat = {};
+      recs.forEach(r => r.topics.forEach(t => { const s = tstat[t] || (tstat[t] = { n: 0, miss: 0, loss: 0, recs: [] }); s.n++; if (r.e < 1) { s.miss++; s.loss += 1 - r.e; s.recs.push(r); } }));
+      const rank = Object.keys(tstat).filter(t => tstat[t].miss).map(t => [t, tstat[t].loss * 2 + (1 - ((M.topics[t] || {}).m || 0)) * 1.5]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+      Object.keys(M.topics).filter(t => !rank.includes(t) && M.topics[t].m != null && M.topics[t].m < 0.6 && this.byTopic[t]).sort((a, b) => M.topics[a].m - M.topics[b].m).forEach(t => { if (rank.length < 3) rank.push(t); });
+      const study = rank.slice(0, 5).map((t, i) => {
+        const s = tstat[t] || { n: 0, miss: 0, recs: [] }, m = (M.topics[t] || {}).m;
+        const rc = {}; s.recs.forEach(r => (r.why || []).forEach(k => { rc[k] = (rc[k] || 0) + 1; }));
+        const gaps = Object.keys(rc).sort((a, b) => rc[b] - rc[a]).slice(0, 2).map(k => RLABEL[k].split(' (')[0].toLowerCase());
+        const rules = [...new Set(s.recs.map(r => r.rule).filter(Boolean))].slice(0, 2).map(t => ({ t }));
+        const nodes = [...new Set([].concat(...s.recs.map(r => r.nodes)))].slice(0, 2);
+        const drugs = [...new Set([].concat(...s.recs.map(r => r.drugs)))].slice(0, 2);
+        const links = [{ label: 'Study it on the Map →', href: 'Exam 2 Map.html#' + t }]
+          .concat(nodes.map(n => ({ label: 'Breakdown: ' + NODE_NAME[n], href: 'Exam 2 Map.html#n-' + n })))
+          .concat(drugs.filter(d => this.drugById[d]).map(d => ({ label: 'Drug card: ' + this.drugById[d].n, href: 'Exam 2 Drug Cards.dc.html#drug-' + d })));
+        return { n: i + 1, title: this.topicTitle(t) + ' · Ch ' + t.slice(0, 2), stat: (s.n ? s.miss + ' of ' + s.n + ' missed or guessed' : 'not tested this time') + (m != null ? ' · mastery ' + Math.round(m * 100) + '%' : ''), gap: gaps.length ? 'Mostly: ' + gaps.join('; ') + '.' : '', hasGap: gaps.length > 0, rules, links, bd: i === 0 ? 'var(--color-accent-500)' : 'var(--color-neutral-800)' };
+      });
+      const verdict = R.pct >= 90 ? 'Exam-ready on what this test covered.' : R.pct >= 75 ? 'Close — tighten the topics below.' : 'The topics below are where the points are.';
+      v.rp = {
+        when: 'Test ' + R.no + ' · ' + new Date(R.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+        pct: R.pct, sub: 'exam-weighted · ' + R.raw + '% raw · ' + R.n + ' questions (' + R.follows + ' follow-ups)',
+        verdict, detail: (prev ? (R.pct - prev.pct >= 0 ? '+' : '') + (R.pct - prev.pct) + ' points vs your last test. ' : '') + (missed.length ? missed.length + ' to work on — study them in the order below, then take the test again. It will lean toward these.' : 'Nothing missed or guessed — take another test to confirm it holds.'),
+        study, hasStudy: study.length > 0,
+        problems: missed.slice().sort((a, b) => a.e - b.e).slice(0, this.state.allProblems ? 999 : 5).map(r => ({ topic: this.topicTitle(r.topics[0]) + ' · Ch ' + r.ch, fmt: FMT_LABEL[r.fmt] || '', scoreLabel: r.sc >= 1 ? 'Right, but guessed' : r.sc > 0 ? 'Partly right — ' + Math.round(r.sc * 100) + '%' : 'Missed', q: r.q, your: r.your, correct: r.correct, gap: (r.why || []).map(k => RLABEL[k]).join('; '), hasGap: (r.why || []).length > 0, rule: r.rule, hasRule: !!r.rule })),
+        hasProblems: missed.length > 0, problemCount: missed.length,
+        hasMoreProblems: missed.length > 5, moreLabel: this.state.allProblems ? 'Show only the worst 5' : 'Show all ' + missed.length,
+        toggleProblems: () => this.setState({ allProblems: !this.state.allProblems })
+      };
+    }
 
-    v.q = {}; v.dots = []; v.chips = []; v.fb = {};
+    // Test
+    v.q = {}; v.fb = {}; v.dots = []; v.confOpts = [];
     if (v.isTest) {
-      const T = S.test, P = T.items[T.items.length - 1], R = T.resp[P.id], ck = !!T.checked[P.id];
-      const st = this.stats(T), settled = this.chs.filter(c => st[c].resolved).length;
-      v.testName = T.name;
-      if (T.plan) {
-        const done = T.items.filter(p => T.checked[p.id]).length;
-        v.qNum = T.items.length + ' of ' + T.plan.length;
-        v.settledLabel = done + ' answered';
-        v.progW = Math.round(100 * done / T.plan.length) + '%';
-      } else {
-        v.qNum = T.items.length;
-        v.settledLabel = settled + ' of ' + this.chs.length + ' topics settled';
-        v.progW = Math.round(100 * settled / this.chs.length) + '%';
-      }
-      const planN = ch => T.plan ? T.plan.filter(id => this.byId[id].ch === ch).length : 0;
-      v.chips = this.chs.map(ch => { const s = st[ch]; const on = ch === P.ch; return { label: 'Ch ' + ch + ' · ' + (T.plan ? s.n + '/' + planN(ch) + (s.n ? ' · ' + Math.round(s.acc * 100) + '%' : '') : s.status), title: TOPIC[ch] + (s.n ? ' — ' + Math.round(s.acc * 100) + '% on ' + s.n : ''), bd: on ? A : (s.status === 'Weak' ? 'var(--color-accent-700)' : N), fg: s.status === 'Solid' ? 'var(--color-neutral-100)' : s.status === 'Weak' ? 'var(--color-accent-200)' : 'var(--color-neutral-400)', bg: s.status === 'Weak' ? 'var(--color-accent-900)' : 'transparent' }; });
-      v.checked = ck; v.notChecked = !ck; v.cantCheck = !answered(P, R);
+      const T = S.test, P = T.items[T.items.length - 1], R = T.resp[P.id], ck = !!T.checked[P.id], it = this.byId[P.id] || {};
+      const doneN = T.items.filter(p => T.checked[p.id]).length;
+      v.qNum = T.items.length;
+      v.progLabel = Math.min(T.base, T.len) + ' of ' + T.len + ' · ' + T.followN + ' follow-up' + (T.followN === 1 ? '' : 's') + (T.queue.length ? ' · ' + T.queue.length + ' coming' : '');
+      v.progW = Math.round(100 * Math.min(1, doneN / Math.max(1, T.len + T.followN + T.queue.length))) + '%';
+      const isRecall = P.kind === 'recall';
+      const hidden = !ck && !isRecall && rf && (P.kind === 'single' || P.kind === 'sata') && !T.revealed[P.id] && R == null;
+      v.checked = ck; v.askConf = !ck && !isRecall; v.showCheck = !ck && !isRecall;
+      v.cantCheck = !answered(P, R) || !T.conf[P.id];
+      v.checkLabel = !answered(P, R) ? 'Check answer' : !T.conf[P.id] ? 'Pick: know it or guessing' : 'Check answer';
+      v.confOpts = [['sure', 'I know this'], ['guess', 'I’m guessing']].map(([k, label]) => { const on = T.conf[P.id] === k; return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.setConf(k) }; });
       const mark = (sel, multi, isC) => {
         if (!ck) return { bg: sel ? 'var(--color-accent-900)' : 'transparent', bd: sel ? A : N, mr: multi ? '4px' : '50%', mf: sel ? A : 'transparent' };
         return { bg: isC ? 'var(--color-accent-900)' : 'transparent', bd: isC ? 'var(--color-accent-300)' : (sel ? 'var(--color-neutral-300)' : N), mr: multi ? '4px' : '50%', mf: sel ? (isC ? A : 'var(--color-neutral-400)') : 'transparent' };
       };
       const note = (sel, isC, i) => !ck ? { n: i == null ? '' : i + 1, nfg: 'var(--color-neutral-500)' } : { n: isC ? (sel ? 'Correct' : 'Missed') : (sel ? 'Your pick' : ''), nfg: isC ? 'var(--color-accent-200)' : 'var(--color-neutral-300)' };
-      const q = { q: P.kind === 'cloze' && /^complete the statement\.?$/i.test(P.q.trim()) ? 'Pick the right choice for each blank in the sentence below.' : P.q, kindLabel: KIND_LABEL[P.kind], isChoice: P.kind === 'single' || P.kind === 'sata', isOrder: P.kind === 'order', isMatrix: P.kind === 'matrix', isCloze: P.kind === 'cloze', isBow: P.kind === 'bow', isProbe: !!T.probe[P.id], probeLabel: T.probe[P.id] || '' };
+      const q = { q: P.q, kindLabel: isRecall ? 'Active recall — answer from memory' : KIND_LABEL[P.kind], fmt: FMT_LABEL[it.fmt] || '', topic: (it.topics || [])[0] ? this.topicTitle(it.topics[0]) + ' · Ch ' + P.ch : 'Ch ' + P.ch,
+        isFollow: !!T.follow[P.id], followLabel: T.follow[P.id] || '', hidden, hideHint: P.kind === 'sata' ? 'which of them could be right, and how many?' : 'what would you choose, and why?',
+        reveal: () => this.upd(S => { S.test.revealed[P.id] = true; }),
+        isChoice: !hidden && (P.kind === 'single' || P.kind === 'sata'), isOrder: P.kind === 'order', isMatrix: P.kind === 'matrix', isCloze: P.kind === 'cloze', isBow: P.kind === 'bow', isRecall };
       q.hasEx = !!(P.ex && P.ex.length);
       q.ex = (P.ex || []).map(e => { const t = e.table || []; return { h: e.h || '', hasTable: t.length > 0, gtc: 'repeat(' + ((t[0] || []).length || 1) + ', minmax(80px,1fr))', rows: t.map((r, i) => ({ cells: r, fg: i === 0 ? 'var(--color-neutral-400)' : 'var(--color-neutral-100)' })), lines: e.lines || [] }; });
       q.hasFig = !!P.fig; q.fig = P.fig ? P.fig.join('\n') : '';
@@ -1272,90 +1381,41 @@ class Component extends DCLogic {
       }
       if (q.isCloze) q.segs = P.segs.map(s => { if (!s.opts) return { isText: true, isBlank: false, text: s.text }; const has = R && R[s.blank] != null; const ok = has && s.opts.find(o => o.k === R[s.blank]).c; return { isBlank: true, isText: false, locked: ck, val: has ? String(R[s.blank]) : '', bd: ck ? (ok ? 'var(--color-accent-300)' : 'var(--color-neutral-300)') : (has ? A : 'var(--color-neutral-500)'), opts: s.opts.map(o => ({ v: String(o.k), t: o.t })), onChange: e => { const val = e.target.value; this.setResp(x => { const n = Object.assign({}, x || {}); if (val === '') delete n[s.blank]; else n[s.blank] = +val; return n; }); } }; });
       if (q.isBow) q.groups = P.groups.map(g => ({ label: g.label, choices: g.choices.map(c => { const r = R && R[g.g]; const sel = g.multi ? !!(r && r[c.k]) : r === c.k; return Object.assign({ t: c.t, onClick: () => this.setResp(x => { const n = Object.assign({}, x || {}); n[g.g] = g.multi ? Object.assign({}, n[g.g] || {}, { [c.k]: !((n[g.g] || {})[c.k]) }) : c.k; return n; }) }, mark(sel, g.multi, c.c), note(sel, c.c, null)); }) }));
+      if (isRecall) {
+        const shown = !!T.revealed[P.id] || ck;
+        q.draft = this.state.draft; q.onDraft = e => this.setState({ draft: e.target.value });
+        q.recallHidden = !shown; q.recallShown = shown; q.needRate = !ck;
+        q.showAnswer = () => this.upd(S => { S.test.revealed[P.id] = true; });
+        q.answer = [['Answer', P.ans], ['Why', P.why], ['Nursing move', P.move], ['Trap', P.trap]].filter(x => x[1]).map(([h, v]) => ({ h, v }));
+        q.rates = [['Got it all', 1], ['Partly', 0.5], ['Didn’t know it', 0]].map(([label, lv]) => ({ label, onClick: () => this.rateRecall(lv) }));
+      }
       v.q = q;
       if (ck) {
-        const sc = T.scores[P.id] || 0, full = sc >= 1, why = T.why[P.id] || [], conf = T.conf[P.id];
-        const X = this.fresh(P), bd = breakdown(X, R);
-        const terms = termsFor(P);
-        const auto = full ? [] : inferWhy(X, R, this.byId[P.id]);
-        const diag = auto.filter(x => why.includes(x.k)).concat(why.filter(k => !auto.some(x => x.k === k)).map(k => ({ k, line: 'You added: ' + RLABEL[k].toLowerCase() + '.' })));
-        v.fb = {
-          terms, hasTerms: terms.length > 0,
-          title: full ? 'Correct.' : sc > 0 ? 'Partially correct — ' + Math.round(sc * 100) + '% credit.' : 'Incorrect.',
-          fg: full ? 'var(--color-accent-200)' : 'var(--color-neutral-100)', bd: full ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
-          ask: X.ask, hasAsk: !!X.ask, cues: (X.cues || []).map(t => ({ t })), hasCues: !!(X.cues || []).length,
-          optHead: bd.optHead, groups: bd.groups, chain: chainOf(X.phys), rule: X.rule || '—',
-          askWhy: !full, askConf: full,
-          diag: diag.map(x => ({ head: RLABEL[x.k].split(' — ')[0].split(' (')[0], line: x.line })), hasDiag: diag.length > 0,
-          reasons: REASONS.map(([k, label]) => { const on = why.includes(k); return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { const w = S.test.why[P.id] || []; S.test.why[P.id] = w.includes(k) ? w.filter(x => x !== k) : w.concat([k]); }) }; }),
-          conf: [['sure', 'Knew it'], ['guess', 'Guessed — add to repair deck']].map(([k, label]) => { const on = conf === k; return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { S.test.conf[P.id] = S.test.conf[P.id] === k ? null : k; }) }; })
+        const sc = T.scores[P.id] || 0, full = sc >= 1, why = T.why[P.id] || [], guess = T.conf[P.id] === 'guess';
+        const queued = T.queue.filter(f => f.from === P.id).length;
+        const fbBase = {
+          title: isRecall ? (full ? 'Good — that one’s yours.' : sc > 0 ? 'Partly there.' : 'Not yet — it’s coming back.') : full ? (guess ? 'Correct — but you were guessing, so it counts half.' : 'Correct.') : sc > 0 ? 'Partially correct — ' + Math.round(sc * 100) + '% credit.' : 'Incorrect.',
+          fg: full && !guess ? 'var(--color-accent-200)' : 'var(--color-neutral-100)', bd: full && !guess ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+          hasFollow: queued > 0, follow: queued > 1 ? 'You were sure and missed it, so two follow-ups on this point are coming — the first in two questions.' : 'A follow-up on ' + (full ? 'this topic' : 'exactly what you missed') + ' is coming in two questions — a different question, not this one again.',
+          full: !isRecall
         };
-        const stAfter = this.stats(T);
-        const last = T.plan ? T.items.length >= T.plan.length : this.chs.every(c => stAfter[c].resolved);
-        v.nextLabel = last ? 'Finish — see report' : 'Next question';
-      }
-      v.dots = T.items.map((p, i) => { const c = T.checked[p.id], e = eff(T, p.id); const isCur = i === T.items.length - 1; return { n: i + 1, label: 'Q' + (i + 1) + ' · Ch ' + p.ch + (c ? ' · ' + Math.round(e * 100) + '%' : ''), bd: isCur ? A : N, bg: !c ? 'transparent' : e >= 1 ? 'var(--color-neutral-700)' : 'var(--color-accent-800)', fg: !c ? 'var(--color-neutral-400)' : e >= 1 ? 'var(--color-neutral-100)' : 'var(--color-accent-100)' }; });
-    }
-
-    v.res = {};
-    if (v.isResults) {
-      const Rz = S.result, T = Rz.test, items = T.items;
-      const bar = (label, s, n, status) => { const pct = Math.round(100 * s / n); return { label, pct, n: n + ' q', w: pct + '%', weak: pct < 85, status: status || 'Focus', fill: pct < 85 ? 'var(--color-accent-500)' : 'var(--color-neutral-300)' }; };
-      const topics = CHS.filter(c => Rz.topics[c].n).map(c => bar(TOPIC[c], Rz.topics[c].s, Rz.topics[c].n, Rz.topics[c].status === 'Solid' ? '' : Rz.topics[c].status)).sort((a, b) => a.pct - b.pct);
-      const sb = {}; items.forEach(P => { const b = this.byId[P.id] || {}; (b.subs || []).forEach(s => { const k = 'Ch ' + P.ch + ' · ' + s; (sb[k] = sb[k] || { s: 0, n: 0 }); sb[k].s += eff(T, P.id); sb[k].n++; }); });
-      const subs = Object.keys(sb).map(k => bar(k, sb[k].s, sb[k].n)).sort((a, b) => a.pct - b.pct);
-      const sk = {}; items.forEach(P => { const k = (this.byId[P.id] || {}).skill || SKILLS[3]; (sk[k] = sk[k] || { s: 0, n: 0 }); sk[k].s += eff(T, P.id); sk[k].n++; });
-      const skills = SKILLS.filter(s => sk[s]).map(s => bar(s, sk[s].s, sk[s].n)).sort((a, b) => a.pct - b.pct);
-      const rc = {}; Object.values(T.why).forEach(w => (w || []).forEach(k => { rc[k] = (rc[k] || 0) + 1; }));
-      const rmax = Math.max(1, ...Object.values(rc));
-      const reasons = REASONS.filter(r => rc[r[0]]).map(r => ({ label: r[1], n: rc[r[0]], w: Math.round(100 * rc[r[0]] / rmax) + '%' })).sort((a, b) => b.n - a.n);
-      const prev = hist.length > 1 ? hist[hist.length - 2] : null;
-      const pass = Rz.pct >= goal;
-      const weakList = topics.filter(t => t.weak).slice(0, 2).map(t => t.label.replace(/^Ch \d+ · /, ''));
-      const missed = items.filter(P => eff(T, P.id) < 1).sort((a, b) => eff(T, a.id) - eff(T, b.id));
-      const untested = this.chs.filter(c => !Rz.topics[c].n).length;
-      v.res = {
-        name: Rz.name + ' · ' + items.length + ' questions' + (prev ? ' · ' + (Rz.pct - prev.pct >= 0 ? '+' : '') + (Rz.pct - prev.pct) + ' vs ' + prev.name : ''),
-        pct: Rz.pct, raw: Rz.raw + '% raw',
-        verdict: pass ? 'Goal reached.' : (goal - Rz.pct) + ' points to the ' + goal + '% goal.',
-        sub: (untested ? untested + ' topic' + (untested > 1 ? 's' : '') + ' not reached — test ended early. ' : '') + (pass ? 'Run one more post-test on fresh questions to confirm it holds.' : (weakList.length ? 'Weakest: ' + weakList.join(' and ') + '. Clear the repair deck, then the post-test starts deeper on these.' : 'Clear the repair deck, then retest.')),
-        topics, subs, skills, reasons, hasReasons: reasons.length > 0,
-        hasMissed: missed.length > 0, missedCount: missed.length,
-        hasDeck: S.deck.length > 0,
-        remedLabel: S.deckDone ? 'Continue repair deck (' + S.deck.length + ' left)' : 'Start repair deck (' + S.deck.length + ' cards)',
-        postLabel: pass ? 'Confirm with another post-test' : 'Take the post-test',
-        missed: missed.map(P => { const b = this.byId[P.id] || {}; const sc = T.scores[P.id] || 0; const g = sc >= 1 && T.conf[P.id] === 'guess'; return { topic: TOPIC[P.ch].split(' · ')[0], skill: b.skill || '', scoreLabel: g ? 'Right, but guessed' : sc > 0 ? 'Partial — ' + Math.round(sc * 100) + '%' : 'Missed', q: b.kind ? cardFront(b).stem : P.q, your: yourText(P, T.resp[P.id]), correct: correctText(P), why: g ? 'Guessed' : ((T.why[P.id] || []).map(k => RLABEL[k]).join('; ') || 'Not given') }; })
-      };
-    }
-
-    v.rm = {};
-    if (v.isRemed) {
-      const c = S.deck[0], fl = this.state.flipped, total = Math.max(1, S.deckTotal);
-      v.rm = {
-        left: S.deck.length, doneLabel: S.deckDone + ' of ' + S.deckTotal + ' cleared', w: Math.round(100 * S.deckDone / total) + '%',
-        hasCard: !!c, empty: !c, showBack: !!c && fl, showFront: !!c && !fl,
-        type: c ? c.type : '', topic: c ? TOPIC[c.ch].split(' · ')[0] : '', front: c ? c.front : '', back: c ? c.back : [], hasMore: false, moreLabel: '',
-        hasEx: false, ex: [], hasFig: false, fig: '', groups: [],
-        sub: c ? (c.streak ? 'One more correct recall clears it · ' : '') + c.sub : ''
-      };
-      // The answer side opens on the essentials; the rest of the explanation is one tap away.
-      if (c && c.back.length > 3) {
-        const main = c.back.filter(x => ESSENTIAL.test(x.h)), rest = c.back.filter(x => !ESSENTIAL.test(x.h));
-        if (main.length && rest.length) {
-          v.rm.hasMore = true;
-          v.rm.back = this.state.more ? main.concat(rest) : main;
-          v.rm.moreLabel = this.state.more ? 'Less detail' : 'More detail (' + rest.map(x => x.h.split(' — ')[0].toLowerCase()).join(', ') + ')';
+        if (isRecall) v.fb = fbBase;
+        else {
+          const X = this.fresh(P), bd = breakdown(X, R), terms = termsFor(P);
+          const auto = full ? [] : inferWhy(X, R, it);
+          const diag = auto.filter(x => why.includes(x.k)).concat(why.filter(k => !auto.some(x => x.k === k)).map(k => ({ k, line: 'You added: ' + RLABEL[k].toLowerCase() + '.' })));
+          const chain = chainOf(X.phys);
+          v.fb = Object.assign(fbBase, {
+            terms, hasTerms: terms.length > 0, ask: X.ask, hasAsk: !!X.ask, cues: (X.cues || []).map(t => ({ t })), hasCues: !!(X.cues || []).length,
+            optHead: bd.optHead, groups: bd.groups, chain, hasChain: chain.length > 0, rule: X.rule || '', hasRule: !!X.rule,
+            askWhy: !full, diag: diag.map(x => ({ head: RLABEL[x.k].split(' — ')[0].split(' (')[0], line: x.line })),
+            reasons: REASONS.map(([k, label]) => { const on = why.includes(k); return { label, bg: on ? 'var(--color-accent-900)' : 'transparent', bd: on ? A : N, onClick: () => this.upd(S => { const w = S.test.why[P.id] || []; S.test.why[P.id] = w.includes(k) ? w.filter(x => x !== k) : w.concat([k]); }) }; })
+          });
         }
+        const more = T.base < T.len || T.queue.length > 0;
+        v.nextLabel = more ? 'Next question' : 'Finish — see report';
       }
-      if (c && /^[mr]:/.test(c.key)) { const [k, ch, i] = c.key.split(':'); const me = (((window.EXPLAIN_CARDS || {})[ch] || {})[k === 'm' ? 'mc' : 'rq'] || {})[i] || {}; if (me.q) v.rm.front = me.q; }
-      const qb = c && c.key.indexOf('q:') === 0 ? this.byId[c.key.slice(2)] : null;
-      if (qb) {
-        const F = cardFront(qb);
-        v.rm.front = F.stem; v.rm.groups = F.groups;
-        v.rm.hasEx = F.ex.length > 0;
-        v.rm.ex = F.ex.map(e => { const t = e.table || []; return { h: e.h || '', hasTable: t.length > 0, gtc: 'repeat(' + ((t[0] || []).length || 1) + ', minmax(80px,1fr))', rows: t.map((r, i) => ({ cells: r, fg: i === 0 ? 'var(--color-neutral-400)' : 'var(--color-neutral-100)' })), lines: e.lines || [] }; });
-        v.rm.hasFig = !!F.fig; v.rm.fig = F.fig ? F.fig.join('\n') : '';
-      }
+      v.dots = T.items.map((p, i) => { const c = T.checked[p.id], e = eff(T, p.id); const isCur = i === T.items.length - 1; return { n: i + 1, label: 'Q' + (i + 1) + (T.follow[p.id] ? ' · follow-up' : '') + (c ? ' · ' + Math.round(e * 100) + '%' : ''), bd: isCur ? A : (T.follow[p.id] ? 'var(--color-accent-700)' : N), bg: !c ? 'transparent' : e >= 1 ? 'var(--color-neutral-700)' : 'var(--color-accent-800)', fg: !c ? 'var(--color-neutral-400)' : e >= 1 ? 'var(--color-neutral-100)' : 'var(--color-accent-100)' }; });
     }
     return v;
   }
