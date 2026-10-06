@@ -35,10 +35,61 @@
   if (document.readyState === 'complete') setTimeout(prefetch, 1500); else window.addEventListener('load', function () { setTimeout(prefetch, 1500); });
   new MutationObserver(attach).observe(document.documentElement, { childList: true, subtree: true });
 
+  // Moving progress between devices: everything this site saves (keys starting e2- / exam2-) is packed into a link.
+  // Opening the link on another device asks first, then replaces that device's progress. The data rides in the
+  // part of the address after #, which browsers never send to the server.
+  var SYNC = /^(e2-|exam2-|map-noembed$)/;
+  function b64(bytes) { var s = ''; for (var i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64(t) { t = t.replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; var s = atob(t), out = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) out[i] = s.charCodeAt(i); return out; }
+  function pipe(bytes, stream) { return new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
+  function snapshot() {
+    var d = {};
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (SYNC.test(k)) d[k] = localStorage.getItem(k); }
+    return { v: 1, at: Date.now(), d: d };
+  }
+  function makeLink() {
+    var bytes = new TextEncoder().encode(JSON.stringify(snapshot()));
+    var base = location.href.split('#')[0].replace(/[^/]*$/, '') + 'index.html#e2sync=';
+    if (window.CompressionStream) return pipe(bytes, new CompressionStream('deflate-raw')).then(function (z) { return base + 'z' + b64(z); }).catch(function () { return base + 'p' + b64(bytes); });
+    return Promise.resolve(base + 'p' + b64(bytes));
+  }
+  function readLink(code) {
+    var bytes = unb64(code.slice(1));
+    var p = code[0] === 'z' ? pipe(bytes, new DecompressionStream('deflate-raw')) : Promise.resolve(bytes);
+    return p.then(function (b) { return JSON.parse(new TextDecoder().decode(b)); });
+  }
+  function describe(snap) {
+    var M = null; try { M = JSON.parse(snap.d['e2-mastery-loop-v2'] || 'null'); } catch (e) {}
+    var bits = [];
+    if (M && M.history && M.history.length) bits.push(M.history.length + ' test' + (M.history.length > 1 ? 's' : '') + ' taken, last ' + M.history[M.history.length - 1].pct + '%');
+    if (M && M.deck && M.deck.length) bits.push(M.deck.length + ' repair cards left');
+    if (M && M.test) bits.push('a test in progress');
+    if (snap.d['e2-focus']) bits.push('your focus topics');
+    return (bits.length ? bits.join(', ') : 'your saved settings') + ' — saved ' + new Date(snap.at).toLocaleString();
+  }
+  window.E2Sync = { makeLink: makeLink };
+  function importFromHash() {
+  var hm = /#e2sync=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (hm) {
+    var clear = function () { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} };
+    readLink(hm[1]).then(function (snap) {
+      if (!snap || !snap.d) throw new Error('empty');
+      if (!window.confirm('Load progress from the link?\n\n' + describe(snap) + '\n\nThis replaces the progress saved on this device.')) { clear(); return; }
+      var old = []; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (SYNC.test(k)) old.push(k); }
+      old.forEach(function (k) { localStorage.removeItem(k); });
+      Object.keys(snap.d).forEach(function (k) { if (SYNC.test(k)) localStorage.setItem(k, snap.d[k]); });
+      clear(); location.reload();
+    }).catch(function () { clear(); window.alert('That progress link is incomplete or damaged. Copy it again from the other device.'); });
+  }
+  }
+  importFromHash();
+  // The link may also be opened in a tab that already shows this site (only the part after # changes).
+  window.addEventListener('hashchange', importFromHash);
+
   // Browsers keep a page for a few minutes, so a phone can show yesterday's version after an update.
   // version.json is never cached: if it names a newer build than this script, reload once to pick it up.
   // Bump BUILD here and in version.json together on every release.
-  var BUILD = '202610050400';
+  var BUILD = '202610060100';
   window.addEventListener('load', function () {
     if (!window.fetch || location.protocol === 'file:') return;
     fetch(root + 'version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (v) {
