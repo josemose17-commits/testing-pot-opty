@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610060100"></script>
+<script src="./nav.js?v=202610060200"></script>
 </head>
 <body>
 <x-dc>
@@ -530,6 +530,9 @@
                     <div style="font-size:15px;white-space:pre-line;color:var(--color-neutral-100);">{{ b.v }}</div>
                   </div>
                 </sc-for>
+                <sc-if value="{{ rm.hasMore }}" hint-placeholder-val="{{ false }}">
+                  <button class="btn btn-ghost" onClick="{{ toggleMore }}" style="align-self:flex-start;">{{ rm.moreLabel }}</button>
+                </sc-if>
               </div>
             </sc-if>
           </div>
@@ -543,7 +546,8 @@
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
               <button class="btn btn-secondary" onClick="{{ rateAgain }}">Again · 1</button>
               <button class="btn btn-secondary" onClick="{{ rateHard }}">Shaky · 2</button>
-              <button class="btn btn-primary" onClick="{{ rateGood }}">Got it · 3</button>
+              <button class="btn btn-secondary" onClick="{{ rateGood }}">Got it · 3</button>
+              <button class="btn btn-primary" onClick="{{ rateEasy }}">Knew it — clear · 4</button>
             </div>
           </sc-if>
         </div>
@@ -551,7 +555,7 @@
       <sc-if value="{{ rm.empty }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:12px;background:var(--color-accent-900);border:1px solid var(--color-accent-500);">
           <div style="font-size:18px;color:var(--color-accent-100);">You’re eligible for the post-test.</div>
-          <div style="font-size:14px;color:var(--color-neutral-200);">Every card was recalled correctly twice. Now prove it on fresh questions — the goal is {{ goal }}%.</div>
+          <div style="font-size:14px;color:var(--color-neutral-200);">Every card is cleared. Now prove it on fresh questions — the goal is {{ goal }}%.</div>
         </div>
       </sc-if>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
@@ -625,6 +629,8 @@ const REASONS = [
 const RLABEL = {}; REASONS.forEach(r => { RLABEL[r[0]] = r[1]; });
 const KIND_LABEL = { single: 'Choose one', sata: 'Select all that apply', order: 'Put the steps in order', matrix: 'Matrix — one answer per row', cloze: 'Drop-down — fill each blank', bow: 'Bow-tie — condition, actions, monitoring' };
 const STORE = 'e2-mastery-loop-v2';
+// Repair-card sections shown before "More detail".
+const ESSENTIAL = /^(Correct answer|Answer|Where it went wrong|Rule to carry|False — the fact|Meaning|Used for|Check first|Exam trap)/;
 const STOP = new Set('which client nurse following select apply should would patient these there about after before their other first while being client\u2019s during given order provider most likely statement complete indicate whether finding findings action actions'.split(' '));
 
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -861,6 +867,13 @@ class Component extends DCLogic {
       if (!CHS.every(c => window.NGN_EXTRA[c] || window.RECALL_EXTRA[c])) return false;
       this.build();
       let S = null; try { S = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) {}
+      if (S && S.result && S.deck && S.deck.length && !S.deckCapped) {
+        try {
+          const keep = new Set(this.buildDeck(S.result).map(c => c.key));
+          S.deck = S.deck.filter(c => keep.has(c.key)); S.deckTotal = S.deckDone + S.deck.length; S.deckCapped = 1;
+          try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {}
+        } catch (e) {}
+      }
       this.setState({ ready: true, S: S || this.blank() });
       return true;
     };
@@ -1071,7 +1084,7 @@ class Component extends DCLogic {
       const pct = wt ? Math.round(100 * wsum / wt) : Math.round(100 * raw / T.items.length);
       S.result = { kind: T.kind, name: T.name, pct, raw: Math.round(100 * raw / T.items.length), topics: st, test: T };
       S.history.push({ kind: T.kind, name: T.name, pct, n: T.items.length, at: Date.now() });
-      S.test = null; S.deck = this.buildDeck(S.result); S.deckTotal = S.deck.length; S.deckDone = 0; S.phase = 'results';
+      S.test = null; S.deck = this.buildDeck(S.result); S.deckTotal = S.deck.length; S.deckDone = 0; S.deckCapped = 1; S.phase = 'results';
     });
     window.scrollTo(0, 0);
   }
@@ -1093,12 +1106,15 @@ class Component extends DCLogic {
       if (P.rule) back.push({ h: 'Rule to carry into the exam', v: P.rule });
       if (why.includes('read')) back.push({ h: 'Read-the-stem check', v: 'Before choosing, restate the question in five words: who, what, and whether it asks first / best / unsafe / expected.' });
       if (why.includes('second')) back.push({ h: 'Second-guess check', v: 'Change an answer only if you can name the specific cue you missed the first time.' });
+      // At most two supporting cards per missed question (one for a lucky guess), most relevant first.
+      let room = guessed ? 1 : 2;
+      const addS = c => { if (room > 0 && !keys.has(c.key)) { room--; add(c); } };
       add({ key: 'q:' + P.id, ch: P.ch, type: guessed ? 'Guessed right — lock it in' : 'Missed question', sub: why.length ? 'Likely gap: ' + why.map(w => RLABEL[w].split(' — ')[0].toLowerCase()).join(', ') : P.t, front: P.q, back });
-      if (has('drug') || b.skill === SKILLS[0]) (b.drugs || []).slice(0, 2).forEach(d0 => {
+      if (has('drug') || b.skill === SKILLS[0]) (b.drugs || []).slice(0, 1).forEach(d0 => {
         const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {});
         const se = (d.se || []).slice(0, 3).map((s, i) => s[0] + ' — ' + ((window.DRUG_WHY || {})[d.id + '|se|' + i] || s[1])).join('\n');
         const checks = (d.checks || []).map(c => '• ' + c[0] + ' — ' + c[1]).join('\n') || [d.pre, d.hold].filter(v => v && v !== '—').join('\nHold: ');
-        add({ key: 'd:' + d.id, ch: P.ch, type: 'Drug', sub: d.c || '', front: (d.n || d.g) + ': what is it for, how does it work, and what do you check before giving it?', back: [
+        addS({ key: 'd:' + d.id, ch: P.ch, type: 'Drug', sub: d.c || '', front: (d.n || d.g) + ': what is it for, how does it work, and what do you check before giving it?', back: [
           { h: 'Used for', v: d.ind }, { h: 'How it works — step by step', v: (d.steps || []).join('\n→ ') || d.moa }, { h: 'In plain words', v: d.plain }, { h: 'What it fixes', v: d.fix },
           { h: 'Check first — and why', v: checks }, { h: 'Side effects — and why', v: se },
           { h: 'Exam trap', v: d.trap }, { h: 'Anchor', v: d.anchor }
@@ -1108,8 +1124,8 @@ class Component extends DCLogic {
       const W = b.words || words(P.q);
       const best = (arr, get, filt) => { let top = null, ts = 1; (arr || []).forEach((x, i) => { if (filt && !filt(x)) return; const s = overlap(W, words(get(x))); if (s > ts) { ts = s; top = [x, i]; } }); return top; };
       const CX = (window.EXPLAIN_CARDS || {})[P.ch] || {};
-      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; add({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: e.q || rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
-      if (why.includes('words')) termsFor(P).slice(0, 4).forEach(t => add({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
+      const rqCard = (filt, type) => { const rq = best(X.rq, x => x[2] + ' ' + x[3], filt); if (!rq) return; const e = (CX.rq || {})[rq[1]] || {}; addS({ key: 'r:' + P.ch + ':' + rq[1], ch: P.ch, type, sub: rq[0][0], front: e.q || rq[0][2], back: [{ h: 'Answer', v: rq[0][3] }, { h: 'Why', v: e.why || rq[0][4] }, { h: 'Nursing move', v: e.move || rq[0][5] }, { h: 'Trap', v: e.trap || rq[0][6] }].filter(x => x.v) }); };
+      if (why.includes('words')) termsFor(P).slice(0, 1).forEach(t => addS({ key: 'w:' + t.term, ch: P.ch, type: 'Word', sub: 'Say it in your own words first', front: 'What does “' + t.term + '” mean?', back: [{ h: 'Meaning', v: t.def }] }));
       if (has('look')) rqCard(x => /see next|finding changes|compare/i.test(x[0]), 'What to look for');
       if (has('do')) rqCard(x => /first action|mini case|medication/i.test(x[0]), 'What to do');
       if (has('mech') || has('cue')) rqCard(x => !/direct recall/i.test(x[0]), 'Mechanism');
@@ -1117,7 +1133,7 @@ class Component extends DCLogic {
       if (has('prio') || has('second') || has('fact') || has('guess')) {
         const mc = best(X.mc, x => x[0] + ' ' + x[1]);
         const me = mc ? (CX.mc || {})[mc[1]] || {} : {};
-        if (mc) add({ key: 'm:' + P.ch + ':' + mc[1], ch: P.ch, type: 'Myth check', sub: 'True or false?', front: me.q || mc[0][0], back: [{ h: 'False — the fact', v: mc[0][1] }, { h: 'Why', v: me.why }, { h: 'What goes wrong if you believe it', v: me.harm || mc[0][2] }].filter(x => x.v) });
+        if (mc) addS({ key: 'm:' + P.ch + ':' + mc[1], ch: P.ch, type: 'Myth check', sub: 'True or false?', front: me.q || mc[0][0], back: [{ h: 'False — the fact', v: mc[0][1] }, { h: 'Why', v: me.why }, { h: 'What goes wrong if you believe it', v: me.harm || mc[0][2] }].filter(x => x.v) });
       }
     });
     const order = [], q = cards.filter(c => c.key[0] === 'q'), o = cards.filter(c => c.key[0] !== 'q');
@@ -1125,11 +1141,12 @@ class Component extends DCLogic {
     return order.concat(o);
   }
 
-  // Learning steps: a card clears only after two correct recalls in a row,
-  // the second one a few cards later. Again / Shaky reset the streak.
+  // Learning steps: "Got it" brings a card back once a few cards later and clears it on the second correct
+  // recall; "Knew it" clears it at once. Again / Shaky reset the streak.
   rate(gap) {
     this.upd(S => {
       const c = S.deck.shift(); if (!c) return;
+      if (gap === 'easy') { S.deckDone++; return; }
       if (gap == null) {
         c.streak = (c.streak || 0) + 1;
         if (c.streak >= 2) { S.deckDone++; return; }
@@ -1139,7 +1156,7 @@ class Component extends DCLogic {
         S.deck.splice(Math.min(gap, S.deck.length), 0, c);
       }
     });
-    this.setState({ flipped: false });
+    this.setState({ flipped: false, more: false });
   }
   eligible(S) { return !!S.result && !S.test && S.deck.length === 0; }
 
@@ -1154,6 +1171,7 @@ class Component extends DCLogic {
       else if (this.state.flipped && e.key === '1') this.rate(2);
       else if (this.state.flipped && e.key === '2') this.rate(5);
       else if (this.state.flipped && e.key === '3') this.rate(null);
+      else if (this.state.flipped && e.key === '4') this.rate('easy');
     }
   }
 
@@ -1171,7 +1189,8 @@ class Component extends DCLogic {
       resetAll: () => { if (window.confirm('Clear all test history and take a new pre-test?')) this.save(Object.assign(this.blank(), { goal: this.state.S.goal })); },
       check: () => this.check(), next: () => this.next(), finish: () => this.finish(),
       flip: () => this.setState({ flipped: true }),
-      rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null),
+      toggleMore: () => this.setState({ more: !this.state.more }),
+      rateAgain: () => this.rate(2), rateHard: () => this.rate(5), rateGood: () => this.rate(null), rateEasy: () => this.rate('easy'),
       bankSize: this.bank ? this.bank.length : 0,
       preCount: this.bank ? this.bank.length : 0,
       preNote: (() => {
@@ -1315,10 +1334,19 @@ class Component extends DCLogic {
       v.rm = {
         left: S.deck.length, doneLabel: S.deckDone + ' of ' + S.deckTotal + ' cleared', w: Math.round(100 * S.deckDone / total) + '%',
         hasCard: !!c, empty: !c, showBack: !!c && fl, showFront: !!c && !fl,
-        type: c ? c.type : '', topic: c ? TOPIC[c.ch].split(' · ')[0] : '', front: c ? c.front : '', back: c ? c.back : [],
+        type: c ? c.type : '', topic: c ? TOPIC[c.ch].split(' · ')[0] : '', front: c ? c.front : '', back: c ? c.back : [], hasMore: false, moreLabel: '',
         hasEx: false, ex: [], hasFig: false, fig: '', groups: [],
         sub: c ? (c.streak ? 'One more correct recall clears it · ' : '') + c.sub : ''
       };
+      // The answer side opens on the essentials; the rest of the explanation is one tap away.
+      if (c && c.back.length > 3) {
+        const main = c.back.filter(x => ESSENTIAL.test(x.h)), rest = c.back.filter(x => !ESSENTIAL.test(x.h));
+        if (main.length && rest.length) {
+          v.rm.hasMore = true;
+          v.rm.back = this.state.more ? main.concat(rest) : main;
+          v.rm.moreLabel = this.state.more ? 'Less detail' : 'More detail (' + rest.map(x => x.h.split(' — ')[0].toLowerCase()).join(', ') + ')';
+        }
+      }
       if (c && /^[mr]:/.test(c.key)) { const [k, ch, i] = c.key.split(':'); const me = (((window.EXPLAIN_CARDS || {})[ch] || {})[k === 'm' ? 'mc' : 'rq'] || {})[i] || {}; if (me.q) v.rm.front = me.q; }
       const qb = c && c.key.indexOf('q:') === 0 ? this.byId[c.key.slice(2)] : null;
       if (qb) {
