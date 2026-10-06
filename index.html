@@ -57,7 +57,13 @@
       <li><a href="Exam 2 Mastery Loop v1.dc.html">Mastery loop v1</a> — fixed-length version</li>
       <li><a href="notes/Exam 2 Audio Notes.txt">Audio notes</a> · <a href="notes/NRS 114 Exam 2 Study Guide.docx">Study guide</a></li>
     </ul>
-    <p style="margin:8px 0 0;font-size:12.5px;color:var(--color-neutral-400)">Progress is saved in this browser only.</p>
+  </div>
+
+  <div class="glass more" id="sync">
+    <b style="display:block;font-weight:500;font-size:16px;color:var(--color-text)">Move your progress to another device</b>
+    <p style="margin:6px 0 10px">Progress is saved in each browser. Make a link here, send it to yourself (text, email, notes), and open it on the other device — it asks first, then loads your tests, repair deck and focus topics there. Do it again whenever you switch.</p>
+    <button class="btn btn-primary" id="sync-btn" type="button">Copy my progress link</button>
+    <p id="sync-msg" style="margin:8px 0 0;font-size:13px;color:var(--color-accent-200)" aria-live="polite"></p>
   </div>
 </main>
 <script>
@@ -82,6 +88,21 @@
   if (status) document.getElementById('mastery-status').textContent = status;
 })();
 </script>
-<script src="nav.js?v=202610050400"></script>
+<script src="nav.js?v=202610060100"></script>
+<script>
+(function () {
+  // The link is built when the page loads, so a tap can share or copy it right away (phones only allow that inside the tap).
+  var btn = document.getElementById('sync-btn'), msg = document.getElementById('sync-msg'), url = null;
+  if (window.E2Sync) window.E2Sync.makeLink().then(function (u) { url = u; });
+  function done(how) { msg.textContent = how + ' Open it on your other device. It’s a snapshot — make a new one after you study more.'; }
+  function fallback() { window.prompt('Copy this link:', url); done('Link ready.'); }
+  btn.addEventListener('click', function () {
+    if (!url) { msg.textContent = 'Still preparing the link — tap again in a second.'; return; }
+    if (navigator.share) { navigator.share({ title: 'My Exam 2 progress', url: url }).then(function () { done('Shared.'); }, function (e) { if (!e || e.name !== 'AbortError') fallback(); }); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function () { done('Link copied.'); }, fallback);
+    else fallback();
+  });
+})();
+</script>
 </body>
 </html>
