@@ -16,7 +16,7 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610021900"></script>
-<script src="./nav.js?v=202610060200"></script>
+<script src="./nav.js?v=202610070100"></script>
 </head>
 <body>
 <x-dc>
@@ -156,7 +156,7 @@
                                   <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px">
                                     <sc-for list="{{ r.pics }}" as="pic" hint-placeholder-count="1">
                                       <a href="{{ pic.source }}" target="_blank" rel="noopener" style="flex:0 0 auto;width:min(78%,260px);text-decoration:none;border:1px solid var(--color-divider);border-radius:10px;overflow:hidden;background:var(--color-bg)">
-                                        <img src="{{ pic.file }}" alt="{{ pic.caption }}" loading="lazy" onerror="this.parentNode.style.display='none'" style="display:block;width:100%;height:170px;object-fit:contain;background:#f6f3ea">
+                                        <img src="{{ pic.file }}" alt="{{ pic.caption }}" loading="lazy" onError="{{ pic.hide }}" style="display:block;width:100%;height:170px;object-fit:contain;background:#f6f3ea">
                                         <span style="display:block;padding:7px 9px;font-size:13px;line-height:1.35;color:var(--color-neutral-100)">{{ pic.caption }}<small style="display:block;margin-top:2px;font-size:10.5px;color:var(--color-neutral-500)">{{ pic.credit }}</small></span>
                                       </a>
                                     </sc-for>
@@ -226,10 +226,17 @@ class Component extends DCLogic {
       ticks++;
       const n = (window.DRUG_DATA || { drugs: [] }).drugs.length;
       if (n !== seen) { seen = n; this.forceUpdate(); }
-      if (ticks > 30 && n === seen || ticks > 80) { clearInterval(this._poll); this.forceUpdate(); }
+      if (ticks > 30 && n === seen || ticks > 80) { clearInterval(this._poll); this.forceUpdate(); this.openFromHash(); }
     }, 100);
+    this._hash = () => this.openFromHash();
+    window.addEventListener('hashchange', this._hash);
   }
-  componentWillUnmount() { if (this._poll) clearInterval(this._poll); }
+  // A link straight to one drug (from the mastery test report) opens its card.
+  openFromHash() {
+    const m = /^#drug-([a-z0-9]+)$/.exec(location.hash);
+    if (m && (window.DRUG_DATA || { drugs: [] }).drugs.some(d => d.id === m[1])) this.jump(m[1]);
+  }
+  componentWillUnmount() { if (this._poll) clearInterval(this._poll); window.removeEventListener('hashchange', this._hash); }
 
   jump(id) {
     const open = Object.assign({}, this.state.open, { [id]: true });
@@ -252,7 +259,7 @@ class Component extends DCLogic {
       const d = Object.assign({}, d0, (window.DRUG_EXPLAIN || {})[d0.id] || {}, (window.DRUG_MORE || {})[d0.id] || {}, (window.DRUG_LOOKS || {})[d0.id] || {});
       if (d.brands) d.b = '';
       d.pics = (window.DRUG_PICS || []).filter(p => (p.drugs || []).indexOf(d.id) >= 0)
-        .map(p => ({ file: p.file, source: p.source, caption: p.caption, credit: p.credit + ' · ' + p.license + ' · tap for source' }));
+        .map(p => ({ file: p.file, source: p.source, caption: p.caption, credit: p.credit + ' · ' + p.license + ' · tap for source', hide: e => { const a = e.target.closest('a'); if (a) a.style.display = 'none'; } }));
       const WHY = window.DRUG_WHY || {};
       const open = this.state.all || !!this.state.open[d.id];
       const row = f => {

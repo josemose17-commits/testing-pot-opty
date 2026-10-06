@@ -6,7 +6,7 @@ Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claud
 | --- | --- |
 | `Exam 2 Map.html` | All the content as one map: notes, organ → molecule breakdowns, tap-to-define words, connections, and your focus topics |
 | `Exam 2 Drug Cards.dc.html` | Drug cards by system and class; each card opens in sections (what it is, how it works step by step, before you give it and why, what to watch for and why, teaching, the exam angle) |
-| `Exam 2 Mastery Loop.dc.html` | Pre-test → report → repair → post-test until 90%. After every question: what it is really asking, the cues, every option explained, the mechanism step by step, the rule, and the likely reason you missed it |
+| `Exam 2 Mastery Loop.dc.html` | The mastery test: one adaptive test (20/40/60) mixing NGN items, traditional NCLEX items, drug questions generated fresh from the drug data (new wrong options each time), myth checks and active-recall prompts. You mark each answer “I know this” or “I’m guessing”; a miss or a guess queues a follow-up on that exact point two questions later (two if you were sure and wrong). Never repeats a question within a test and avoids the last test’s questions. Ends in a report — what to study in order with links to Map topics, nodes and drug cards — and a study map of every Map topic colored by mastery, which the next test leans toward. Mastery is stored in `e2-mastery-v3` and also marks weak topics on the Map. |
 | `Exam 2 Concept Map.dc.html` | The older one-page concept map |
 | `Exam 2 Info.dc.html` | Source the map's topics are extracted from (`tools/extract_info_topics.py`); visiting it opens the map |
 
@@ -15,7 +15,7 @@ Study pages for Exam 2 (chapters 22, 24, 25, 27, 28, 29, 30, 34), built in Claud
 On the map, tap **Pick topics** and choose the topics (or **Lists → Study guide topics**). That choice is saved as your focus, and:
 
 - the map glows those topics and can hide the rest (**Focus only**);
-- the Mastery Loop builds its pre-test, repair deck and post-tests from those topics only.
+- the mastery test draws only questions tied to those topics.
 
 **Lists → Save this focus as a list** keeps it under a name, so each exam (or quiz) can have its own list. `focus.js` holds the keyword rules that decide which questions belong to each map topic; add a rule there when you add a topic.
 

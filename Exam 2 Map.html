@@ -67,6 +67,9 @@
   .chip .k { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-neutral-500); white-space: nowrap; padding-top: 2px; }
   .chip .bd { font-size: 10px; letter-spacing: .06em; color: var(--color-accent-2-300); white-space: nowrap; padding-top: 2px; }
   .chip .star { width: 16px; flex: none; color: var(--color-neutral-600); }
+  .chip .ms { font-size: 10.5px; white-space: nowrap; padding: 1px 6px; border-radius: 99px; border: 1px solid var(--color-neutral-600); color: var(--color-neutral-300); margin-top: 1px; }
+  .chip .ms-weak { border-color: var(--color-accent-500); color: var(--color-accent-100); background: var(--color-accent-900); }
+  .chip .ms-strong { border-color: var(--color-neutral-300); color: var(--color-text); }
   .chip.focus { border-color: var(--color-accent); background: var(--color-accent-900); box-shadow: 0 0 18px rgba(245, 196, 0, .22); }
   .chip.focus .star { color: var(--color-accent); }
   body.has-focus .chip:not(.focus) { opacity: .5; }
@@ -407,10 +410,18 @@
   function order(ch) { return TOPICS.filter(function (t) { return t.ch === ch; }); }
   function kindLabel(t) { return t.kind === 'overview' ? 'Start' : t.kind === 'adpie' ? 'ADPIE' : (t.tag === 'Foundation' ? 'Base' : ''); }
 
+  // Mastery from the mastery test (all tests so far): weak topics are marked on their chips.
+  var MASTERY = {};
+  try { MASTERY = ((JSON.parse(localStorage.getItem('e2-mastery-v3') || 'null') || {}).mastery || {}).topics || {}; } catch (e) {}
+  function masteryHtml(id) {
+    var m = MASTERY[id]; if (!m || m.m == null) return '';
+    var pct = Math.round(m.m * 100), lvl = m.m >= 0.85 ? 'strong' : m.m >= 0.6 ? 'ok' : 'weak';
+    return '<span class="ms ms-' + lvl + '" title="Mastery test: ' + pct + '% on ' + m.n + ' question' + (m.n > 1 ? 's' : '') + '">' + (lvl === 'weak' ? 'Weak ' : '') + pct + '%</span>';
+  }
   function chipHtml(t) {
     var nb = nodesFor[t.id] ? '<span class="bd" title="Has an organ → molecule breakdown">⇣ molecule</span>' : '';
     var k = kindLabel(t);
-    return '<button class="chip" data-id="' + t.id + '"><svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="t">' + esc(t.title) + '</span>' + nb + (k ? '<span class="k">' + k + '</span>' : '') + '</button>';
+    return '<button class="chip" data-id="' + t.id + '"><svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="t">' + esc(t.title) + '</span>' + masteryHtml(t.id) + nb + (k ? '<span class="k">' + k + '</span>' : '') + '</button>';
   }
   function chapterHtml(ch) {
     var q = EXAM_Q[ch];
@@ -927,6 +938,6 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610060200"></script>
+<script src="nav.js?v=202610070100"></script>
 </body>
 </html>

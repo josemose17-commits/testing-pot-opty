@@ -37,7 +37,7 @@
     <div class="kicker">NRS 114 · Med-Surg 1 · Exam 2</div>
     <h1>Oxygen in, blood around.</h1>
   </div>
-  <p class="lead">Chapters 22, 24, 25, 27, 28, 29, 30 and 34 — the real exam is 60 questions, a third of them hematology. Learn on the map, then let the mastery loop find what is still weak and fix it. When your professor gives the exam topics, pick them on the map and everything else follows.</p>
+  <p class="lead">Chapters 22, 24, 25, 27, 28, 29, 30 and 34 — the real exam is 60 questions, a third of them hematology. Learn on the map, then let the mastery test find what is still weak and point you to it. When your professor gives the exam topics, pick them on the map and everything else follows.</p>
 
   <div class="glass next" id="next">
     <div><b id="next-title">Start here</b><span id="next-body">Study on the map, then take the diagnostic pre-test.</span></div>
@@ -47,14 +47,14 @@
   <div class="tiles">
     <a class="glass tile" href="Exam 2 Map.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v4M12 8 6 13M12 8l6 5M6 13v3M18 13v3M4 16h4v4H4zM16 16h4v4h-4zM10 2h4v4h-4z"/></svg><span class="step">1 · Learn</span><b>Exam map</b><p>All the content as one map — notes, organ → molecule breakdowns, every word defined. Pick your focus topics here.</p><em id="focus-status"></em></a>
     <a class="glass tile" href="Exam 2 Drug Cards.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 4.5a4.95 4.95 0 0 1 7 7l-6 6a4.95 4.95 0 0 1-7-7Zm-3 3 7 7"/></svg><span class="step">1 · Learn</span><b>Drug cards</b><p>Every drug by system and class, with the why behind each effect.</p></a>
-    <a class="glass tile wide" href="Exam 2 Mastery Loop.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span class="step">2 · Prove it</span><b>Mastery loop</b><p>Pre-test on every question, repair deck, post-test — until your goal.</p><em id="mastery-status"></em></a>
+    <a class="glass tile wide" href="Exam 2 Mastery Loop.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span class="step">2 · Prove it</span><b>Mastery test</b><p>One adaptive test: NCLEX + NGN, follow-ups on what you miss, then a study plan.</p><em id="mastery-status"></em></a>
   </div>
 
   <div class="glass more">
     Also here
     <ul>
       <li><a href="Exam 2 Concept Map.dc.html">Concept map</a> — the old one-page version (the map now holds it)</li>
-      <li><a href="Exam 2 Mastery Loop v1.dc.html">Mastery loop v1</a> — fixed-length version</li>
+      <li><a href="Exam 2 Mastery Loop v1.dc.html">Mastery loop v1</a> — the old fixed-length version</li>
       <li><a href="notes/Exam 2 Audio Notes.txt">Audio notes</a> · <a href="notes/NRS 114 Exam 2 Study Guide.docx">Study guide</a></li>
     </ul>
   </div>
@@ -70,17 +70,15 @@
 // "Pick up where you left off": reads the progress the study pages save.
 (function () {
   function read(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
-  var M = read('e2-mastery-loop-v2');
-  var title = 'Start here', body = 'Study on the map, then take the diagnostic pre-test — every question in the bank.', label = 'Open the map', href = 'Exam 2 Map.html', status = '';
+  var M = read('e2-mastery-v3');
+  var title = 'Start here', body = 'Study on the map, then take a mastery test — it finds what is weak and tells you what to study.', label = 'Open the map', href = 'Exam 2 Map.html', status = '';
   var focus = read('e2-focus');
   if (focus && focus.ids && focus.ids.length) document.getElementById('focus-status').textContent = 'Focus: ' + focus.name + ' · ' + focus.ids.length + ' topics';
-  if (M && M.test) { title = 'Finish your ' + M.test.name.toLowerCase(); body = 'You stopped at question ' + M.test.items.length + '.'; label = 'Resume'; href = 'Exam 2 Mastery Loop.dc.html'; status = 'Test in progress'; }
-  else if (M && M.result) {
-    var goal = M.goal || 90, last = (M.history || []).slice(-1)[0] || {};
-    if (M.deck && M.deck.length) { title = M.deck.length + ' repair card' + (M.deck.length > 1 ? 's' : '') + ' left'; body = 'Clear them to unlock the post-test. Last score: ' + last.pct + '%.'; label = 'Continue repair deck'; status = M.deck.length + ' cards left'; }
-    else if (last.kind === 'post' && last.pct >= goal) { title = 'Goal reached — ' + last.pct + '%'; body = 'Take one more post-test on fresh questions to make sure it holds.'; label = 'Confirm with a post-test'; status = 'Goal reached'; }
-    else { title = 'You’re eligible for the post-test'; body = 'Repair deck cleared. Goal: ' + goal + '%.'; label = 'Take the post-test'; status = 'Post-test unlocked'; }
-    href = 'Exam 2 Mastery Loop.dc.html';
+  if (M && M.test) { title = 'Finish your test'; body = 'You stopped at question ' + M.test.items.length + '.'; label = 'Resume'; href = 'Exam 2 Mastery Loop.dc.html'; status = 'Test in progress'; }
+  else if (M && M.report) {
+    var R = M.report, miss = (R.recs || []).filter(function (r) { return r.e < 1; }).length;
+    title = 'Last test: ' + R.pct + '%'; body = miss ? miss + ' things to work on — your report says what to study first, then retest.' : 'Nothing missed — take another test to confirm it holds.';
+    label = 'See your report'; href = 'Exam 2 Mastery Loop.dc.html'; status = 'Last: ' + R.pct + '%';
   }
   document.getElementById('next-title').textContent = title;
   document.getElementById('next-body').textContent = body;
@@ -88,7 +86,7 @@
   if (status) document.getElementById('mastery-status').textContent = status;
 })();
 </script>
-<script src="nav.js?v=202610060200"></script>
+<script src="nav.js?v=202610070100"></script>
 <script>
 (function () {
   // The link is built when the page loads, so a tap can share or copy it right away (phones only allow that inside the tap).
