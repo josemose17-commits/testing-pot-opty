@@ -30,6 +30,7 @@ On the map, tap **Pick topics** and choose the topics (or **Lists → Study guid
 ## Layout
 
 - `data/` — question banks and drug data the pages load (`ngn-*`, `recall-*` — the Mastery Loop's question bank and repair cards — `drugs-*`), the glossary, the map's topics (`info-topics.js`, generated) and breakdowns (`concept-nodes.js`, with the short memory keys in `concept-keys.js`).
+- `say.js` — tap-to-hear pronunciation on every page: the 🔊 button highlights drug names (generic and brand) and medical words; tapping one speaks it with the device's own voice and shows a respelling (CAPITALS = stressed syllable), with a slow syllable-by-syllable option. Add words to its `WORDS` list as `term|respelling|what to say`.
 - `focus.js` — the shared focus (which topics you picked) that the map and the Mastery Loop read.
 - `data/notes-short/` — the short, bullet versions of the notes (Quick mode on the map); every fact kept, the full paragraph one tap away. `adpie.js` covers the nursing-process cells and overview paragraphs.
 - `data/explain/` — the explanation layer over the question and drug data: `<chapter>.js` (per question: what it asks, cues, every option's rationale, mechanism, rule), `cards.js` (myth and recall repair cards), `drugs-1.js`/`drugs-2.js` (mechanism steps and checks per drug), `drug-whys.js` (why each side effect happens), `drug-more.js` (teaching, emergency actions, comparisons).
