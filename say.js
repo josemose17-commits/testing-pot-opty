@@ -1,8 +1,10 @@
-// Tap-to-hear pronunciation for drug names and medical words, on every page.
-// A 🔊 button turns "hear words" on: known words get a light highlight; tapping one speaks it (the phone's own
-// voice, free and offline) and shows how to say it — CAPITALS mark the stressed syllable. While it is on, a tap
-// on a highlighted word only speaks it (it never picks a test answer); everything else works as usual.
+// Tap any drug name, medical word or abbreviation to hear it and see what it means — on every page.
+// The 🔊 "Words" button turns it on: known words get a light highlight; tapping one speaks it (the phone's own
+// voice, free and offline) and shows its full name, a plain-English meaning and how to say it (CAPITALS mark the
+// stressed syllable). Meanings come from data/words.js (built by tools/build_words.js). While it is on, a tap on a
+// highlighted word only explains it (it never picks a test answer); everything else works as usual.
 (function () {
+  var SRC = (document.currentScript && document.currentScript.src) || '';
   // term | respelling | what to say aloud (when it differs from the term, e.g. an abbreviation's full name)
   var WORDS = [
     // ---- Drugs (generic) ----
@@ -119,24 +121,40 @@
     'VF|V-F|V F, ventricular fibrillation', 'VT|V-T|V T, ventricular tachycardia', 'HF|H-F|H F, heart failure', 'HTN|H-T-N|H T N, hypertension', 'CAD|C-A-D|C A D, coronary artery disease'
   ];
 
-  var E = {}, CI = [], CS = [];
-  WORDS.forEach(function (w) {
-    var p = w.split('|'), term = p[0];
-    var e = { term: term, re: p[1], say: p[2] || term.toLowerCase().replace(/₂/g, ' 2').replace(/₃⁻/g, '3') };
-    E[term.toLowerCase()] = e;
-    (/[A-Z].*[A-Z]|₂/.test(term) ? CS : CI).push(term);
-  });
+  var E = {}, CI = [], CS = [], DEF = {}, RE_CI, RE_CS;
+  function addWord(term, re, say) {
+    if (E[term.toLowerCase()]) return;
+    E[term.toLowerCase()] = { term: term, re: re, say: say || term.toLowerCase().replace(/₂/g, ' 2').replace(/₃⁻/g, '3') };
+    (/[A-Z].*[A-Z]|[₀-₉]/.test(term) ? CS : CI).push(term);
+  }
+  WORDS.forEach(function (w) { var p = w.split('|'); addWord(p[0], p[1], p[2]); });
   var esc = function (s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
-  var alt = function (list, plural) { return list.slice().sort(function (a, b) { return b.length - a.length; }).map(function (t) { return esc(t) + (plural && /[a-z]$/.test(t) ? '(?:e?s)?' : ''); }).join('|'); };
+  var alt = function (list, plural) { return list.slice().sort(function (a, b) { return b.length - a.length; }).map(function (t) { return esc(t) + (plural && /[a-z]$/.test(t) ? '(?:e?s)?' : /[A-Z0-9]$/.test(t) ? 's?' : ''); }).join('|'); };
   // A word boundary that also works on older Safari (no lookbehind): group 1 is the character before the word.
-  var RE_CI = new RegExp('(^|[^A-Za-z])(' + alt(CI, true) + ')(?![A-Za-z])', 'gi');
-  var RE_CS = new RegExp('(^|[^A-Za-z])(' + alt(CS, false) + ')(?![A-Za-z])', 'g');
+  function compile() {
+    RE_CI = new RegExp('(^|[^A-Za-z])(' + alt(CI, true) + ')(?![A-Za-z])', 'gi');
+    RE_CS = new RegExp('(^|[^A-Za-z])(' + alt(CS, false) + ')(?![A-Za-z])', 'g');
+  }
+  compile();
+  // The meanings (and ~270 more abbreviations) load once, in the background.
+  function loadWords() {
+    if (window.E2_WORDS || document.getElementById('e2-words')) return;
+    var sc = document.createElement('script'); sc.id = 'e2-words';
+    sc.src = (location.pathname.indexOf('/offline/') >= 0 ? '../' : '') + 'data/words.js?v=' + (SRC.split('?v=')[1] || '1');
+    sc.onload = function () {
+      var W = window.E2_WORDS || {}; DEF = W.def || {};
+      (W.add || []).forEach(function (a) { addWord(a[0], a[1], a[2]); });
+      compile(); if (on) scan();
+    };
+    document.head.appendChild(sc);
+  }
   function lookup(word) {
     var k = word.toLowerCase();
     if (E[k]) return E[k];
     var s = k.replace(/es$/, ''), t = k.replace(/s$/, '');
-    return E[s] || E[t] || E[word] || null;
+    return E[s] || E[t] || null;
   }
+  function meaning(e) { var k = e.term.toLowerCase(); return DEF[k] || DEF[k.replace(/e?s$/, '')] || {}; }
   function matches(text) {
     var out = [], m;
     [RE_CI, RE_CS].forEach(function (re) {
@@ -175,8 +193,10 @@
     '.e2say-on .e2say-uline{text-decoration:underline dotted rgba(245,196,0,.8)}' +
     '.e2say-pop{position:fixed;z-index:70;max-width:min(320px,calc(100vw - 24px));padding:12px 14px;border-radius:14px;border:1px solid rgba(245,196,0,.55);background:#0a2418;color:#f3efe2;font:14px/1.4 Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45)}' +
     '.e2say-pop b{display:block;font-size:17px;font-weight:600;color:#ffe27a}' +
-    '.e2say-pop .r{font-size:16px;letter-spacing:.02em;margin:2px 0 2px}' +
-    '.e2say-pop .full{font-size:12.5px;color:#c9c2ae}' +
+    '.e2say-pop .r{font-size:14px;letter-spacing:.02em;margin:4px 0 0;color:#c9c2ae}' +
+    '.e2say-pop .fn{font-size:13px;color:#ffe9a8;margin-top:1px}' +
+    '.e2say-pop .def{font-size:14px;color:#f3efe2;margin-top:6px}' +
+    '.e2say-pop .dc{display:inline-block;margin-top:6px;font-size:13px;color:#ffd84d}' +
     '.e2say-pop .hint{font-size:11px;color:#9a937f;margin-top:4px}' +
     '.e2say-pop .row{display:flex;gap:6px;margin-top:8px}' +
     '.e2say-pop button{flex:1;padding:7px 8px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}' +
@@ -186,7 +206,7 @@
   function setOn(v) {
     on = v; try { localStorage.setItem('e2-say', v ? '1' : '0'); } catch (e) {}
     btn.setAttribute('aria-pressed', v ? 'true' : 'false');
-    btn.innerHTML = ICON + (v ? 'Tap a word' : 'Hear words');
+    btn.innerHTML = ICON + (v ? 'Tap a word' : 'Words');
     document.documentElement.classList.toggle('e2say-on', v);
     if (v) { scan(); showTip(); } else { clearMarks(); hidePop(); }
   }
@@ -195,18 +215,22 @@
     if (seen) return;
     try { localStorage.setItem('e2-say-tip', '1'); } catch (e) {}
     tip = document.createElement('div'); tip.className = 'e2say-tip';
-    tip.textContent = 'Drug names and medical words are highlighted. Tap one to hear it and see how to say it. Tap this button again to turn it off.';
+    tip.textContent = 'Drug names, medical words and abbreviations are highlighted. Tap one to hear it and see what it means. Tap this button again to turn it off.';
     document.body.appendChild(tip); setTimeout(function () { if (tip) { tip.remove(); tip = null; } }, 7000);
   }
   function hidePop() { if (pop) { pop.remove(); pop = null; } }
   function showPop(e, x, y, said) {
     hidePop();
     pop = document.createElement('div'); pop.className = 'e2say-pop'; pop.setAttribute('role', 'dialog');
-    var full = e.say && e.say.indexOf(',') > 0 ? e.say.split(', ').slice(1).join(', ') : '';
-    pop.innerHTML = '<b></b><div class="r"></div>' + (full ? '<div class="full"></div>' : '') + '<div class="hint"></div><div class="row"><button type="button" data-a="again">▶ Again</button><button type="button" data-a="slow">🐢 Slow, by syllable</button></div>';
+    var M = meaning(e);
+    var full = M.full || (e.say && e.say.indexOf(',') > 0 ? e.say.split(', ').slice(1).join(', ') : '');
+    pop.innerHTML = '<b></b>' + (full ? '<div class="fn"></div>' : '') + '<div class="r"></div>' + (M.def ? '<div class="def"></div>' : '') +
+      (M.drug && !/Drug%20Cards|Drug Cards/.test(location.pathname) ? '<a class="dc"></a>' : '') + '<div class="hint"></div><div class="row"><button type="button" data-a="again">▶ Again</button><button type="button" data-a="slow">🐢 Slow, by syllable</button></div>';
     pop.querySelector('b').textContent = e.term;
-    pop.querySelector('.r').textContent = e.re;
-    if (full) pop.querySelector('.full').textContent = full;
+    pop.querySelector('.r').textContent = '🔊 ' + e.re;
+    if (full) pop.querySelector('.fn').textContent = full;
+    if (M.def) pop.querySelector('.def').textContent = M.def;
+    var dc = pop.querySelector('.dc'); if (dc) { dc.textContent = 'Open the drug card →'; dc.href = (location.pathname.indexOf('/offline/') >= 0 ? '../' : '') + 'Exam 2 Drug Cards.dc.html#drug-' + M.drug; }
     pop.querySelector('.hint').textContent = said ? 'CAPITALS = the stressed syllable' : 'This browser has no voice — use the spelling above. CAPITALS = stressed.';
     pop.addEventListener('click', function (ev) {
       var a = ev.target.closest('button'); if (!a) return;
@@ -266,12 +290,14 @@
     ev.preventDefault(); ev.stopPropagation(); if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
     var said = speak(e.say);
     showPop(e, ev.clientX, ev.clientY, said);
+    try { window.dispatchEvent(new CustomEvent('e2say', { detail: { term: e.term } })); } catch (er) {}
   }
 
   function init() {
     document.head.appendChild(css);
+    loadWords();
     btn = document.createElement('button'); btn.type = 'button'; btn.className = 'e2say-btn';
-    btn.title = 'Tap medical words and drug names to hear them';
+    btn.title = 'Tap drug names, medical words and abbreviations to hear them and see what they mean';
     btn.addEventListener('click', function (ev) { ev.stopPropagation(); setOn(!on); });
     document.body.appendChild(btn);
     window.addEventListener('click', onTap, true);
@@ -282,6 +308,14 @@
     window.addEventListener('scroll', function () { hidePop(); }, { passive: true });
     setOn(on);
   }
-  window.E2Say = { lookup: lookup, speak: function (w) { var e = lookup(w); return e ? speak(e.say) : speak(w); }, count: WORDS.length };
+  function termsIn(text) {
+    var seen = {}, out = [];
+    matches(String(text || '')).forEach(function (m) {
+      var e = lookup(m.word); if (!e || seen[e.term]) return; seen[e.term] = 1;
+      var M = meaning(e); if (M.def || M.full) out.push({ term: e.term, full: M.full || '', def: M.def || '', re: e.re });
+    });
+    return out;
+  }
+  window.E2Say = { lookup: lookup, meaning: function (w) { var e = lookup(w); return e ? Object.assign({ term: e.term, re: e.re }, meaning(e)) : null; }, termsIn: termsIn, ready: function () { return !!window.E2_WORDS; }, speak: function (w) { var e = lookup(w); return e ? speak(e.say) : speak(w); }, count: WORDS.length };
   if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);
 })();

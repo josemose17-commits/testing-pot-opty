@@ -16,8 +16,8 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610070200"></script>
-<script src="./say.js?v=202610070200"></script>
+<script src="./nav.js?v=202610080100"></script>
+<script src="./say.js?v=202610080100"></script>
 </head>
 <body>
 <x-dc>
@@ -158,6 +158,19 @@
                       <a href="{{ l.href }}" style="font-size:12.5px;padding:4px 10px;border-radius:99px;border:1px solid var(--color-neutral-700);text-decoration:none;color:var(--color-accent-200);">{{ l.label }}</a>
                     </sc-for>
                   </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ rp.hasLooked }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">Words you had to look up — learn these</div>
+              <div style="font-size:12.5px;color:var(--color-neutral-400);">The exam won’t explain them. Tap 🔊 Words, then tap a word to hear it again.</div>
+              <sc-for list="{{ rp.looked }}" as="w" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:10px;background:var(--color-surface);border:1px solid var(--color-neutral-800);">
+                  <div style="font-size:15px;"><b style="font-weight:600;color:var(--color-accent-200);">{{ w.term }}</b><sc-if value="{{ w.hasFull }}" hint-placeholder-val="{{ false }}"><span style="color:var(--color-neutral-200);"> — {{ w.full }}</span></sc-if></div>
+                  <div style="font-size:13.5px;color:var(--color-neutral-300);">{{ w.def }}</div>
                 </div>
               </sc-for>
             </div>
@@ -772,7 +785,15 @@ function termsFor(P) {
   const txt = JSON.stringify([P.q, P.ex, P.fig, opts]);
   // Short abbreviations (AP, MI, PE…) must match as whole words, not inside MAP or PEA.
   const hit = m => /^[A-Z][A-Z0-9₀-₉⁺]{0,3}$/.test(m) ? new RegExp('(^|[^A-Za-z])' + m + '([^A-Za-z]|$)').test(txt) : txt.includes(m);
-  return (window.GLOSSARY || []).filter(g => g[1].some(hit)).slice(0, 10).map(g => ({ term: g[0], def: g[2] }));
+  const out = (window.GLOSSARY || []).filter(g => g[1].some(hit)).map(g => ({ term: g[0], def: g[2] }));
+  // Abbreviations and other terms from the shared word list (say.js / data/words.js).
+  const have = new Set(out.map(t => t.term.toLowerCase()));
+  ((window.E2Say && window.E2Say.termsIn) ? window.E2Say.termsIn(txt) : []).forEach(w => {
+    if ([...have].some(h => h.split(/\s*[\/(]\s*/)[0] === w.term.toLowerCase())) return;
+    have.add(w.term.toLowerCase());
+    out.push({ term: w.term, def: (w.full ? w.full + (w.def ? ' — ' : '') : '') + (w.def || '') });
+  });
+  return out.slice(0, 14);
 }
 
 // ---------- Mastery test: one adaptive test, follow-ups on misses, a report and a study map ----------
@@ -851,8 +872,16 @@ class Component extends DCLogic {
     if (!tryLoad()) this._poll = setInterval(() => { if (tryLoad()) clearInterval(this._poll); }, 150);
     this._key = e => this.onKey(e);
     window.addEventListener('keydown', this._key);
+    // Words looked up (tap-to-hear) while a question is open are noted; the report lists them as words to learn.
+    this._say = ev => {
+      const S = this.state.S, T = S && S.test, P = T && T.items[T.items.length - 1];
+      if (!P || S.phase !== 'test' || T.checked[P.id]) return;
+      const w = ev.detail && ev.detail.term; if (!w) return;
+      this.upd(S => { const T = S.test; const L = T.looked || (T.looked = {}); const a = L[P.id] || (L[P.id] = []); if (!a.includes(w)) a.push(w); S.vocab = S.vocab || {}; S.vocab[w] = (S.vocab[w] || 0) + 1; });
+    };
+    window.addEventListener('e2say', this._say);
   }
-  componentWillUnmount() { clearInterval(this._poll); window.removeEventListener('keydown', this._key); }
+  componentWillUnmount() { clearInterval(this._poll); window.removeEventListener('keydown', this._key); window.removeEventListener('e2say', this._say); }
   blank() { return { phase: 'home', test: null, report: null, mastery: { topics: {}, nodes: {} }, log: {}, history: [], testNo: 0, settings: { len: 40, recallFirst: false } }; }
 
   // Progress from the old pre-test / post-test version carries over: history, what was seen, and mastery.
@@ -1229,7 +1258,8 @@ class Component extends DCLogic {
       done.forEach(p => { const c = byCh[p.ch] || (byCh[p.ch] = { s: 0, n: 0 }); const e = eff(T, p.id); c.s += e; c.n++; raw += e; });
       let ws = 0, wt = 0; Object.keys(byCh).forEach(ch => { if (BP[ch]) { ws += BP[ch] * byCh[ch].s / byCh[ch].n; wt += BP[ch]; } });
       const pct = wt ? Math.round(100 * ws / wt) : Math.round(100 * raw / done.length);
-      S.report = { at: Date.now(), no: T.no, n: done.length, base: T.base, follows: done.filter(p => T.follow[p.id]).length, pct, raw: Math.round(100 * raw / done.length), focus: T.focus, recs: done.map(P => this.record(T, P)) };
+      const looked = [...new Set([].concat(...Object.values(T.looked || {})))];
+      S.report = { at: Date.now(), no: T.no, n: done.length, base: T.base, follows: done.filter(p => T.follow[p.id]).length, pct, raw: Math.round(100 * raw / done.length), focus: T.focus, looked, recs: done.map(P => this.record(T, P)) };
       S.history.push({ at: Date.now(), pct, n: done.length });
       S.test = null; S.phase = 'home';
     });
@@ -1287,7 +1317,7 @@ class Component extends DCLogic {
     v.leanNote = weak.length ? 'Leans toward your weakest: ' + weak.map(t => this.topicTitle(t)).join(' · ') : 'Your first test samples every topic; later tests lean toward what you miss.';
     v.howItWorks = [
       { k: 'One test', t: 'NCLEX questions in both formats — single answer, select all, matrix, cloze, bow-tie, ordering, exhibits — plus drug questions built fresh each time, myth checks and recall prompts.' },
-      { k: 'Know it or guessing', t: 'Before you check, say whether you knew it. A guess counts half, even when it’s right.' },
+      { k: 'Know it or guessing', t: 'Before you check, say whether you knew it. A guess counts half, even when it’s right. Stuck on an abbreviation? Tap 🔊 Words, then the word — the report lists every word you looked up.' },
       { k: 'Follow-ups', t: 'Miss one or guess and a new question on that exact point comes up two questions later — never the same question again.' },
       { k: 'Report + study map', t: 'What you struggled with, what to study in order with links to the Map, and every topic colored by mastery. The next test leans toward the weak ones.' }
     ];
@@ -1338,6 +1368,8 @@ class Component extends DCLogic {
         study, hasStudy: study.length > 0,
         problems: missed.slice().sort((a, b) => a.e - b.e).slice(0, this.state.allProblems ? 999 : 5).map(r => ({ topic: this.topicTitle(r.topics[0]) + ' · Ch ' + r.ch, fmt: FMT_LABEL[r.fmt] || '', scoreLabel: r.sc >= 1 ? 'Right, but guessed' : r.sc > 0 ? 'Partly right — ' + Math.round(r.sc * 100) + '%' : 'Missed', q: r.q, your: r.your, correct: r.correct, gap: (r.why || []).map(k => RLABEL[k]).join('; '), hasGap: (r.why || []).length > 0, rule: r.rule, hasRule: !!r.rule })),
         hasProblems: missed.length > 0, problemCount: missed.length,
+        looked: (R.looked || []).map(w => { const m = (window.E2Say && window.E2Say.meaning(w)) || {}; return { term: w, full: m.full || '', def: m.def || '', hasFull: !!m.full }; }),
+        hasLooked: (R.looked || []).length > 0,
         hasMoreProblems: missed.length > 5, moreLabel: this.state.allProblems ? 'Show only the worst 5' : 'Show all ' + missed.length,
         toggleProblems: () => this.setState({ allProblems: !this.state.allProblems })
       };
