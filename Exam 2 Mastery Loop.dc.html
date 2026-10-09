@@ -16,8 +16,8 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610100100"></script>
-<script src="./say.js?v=202610100100"></script>
+<script src="./nav.js?v=202610100200"></script>
+<script src="./say.js?v=202610100200"></script>
 </head>
 <body>
 <x-dc>
@@ -140,7 +140,7 @@
           <sc-if value="{{ rp.hasStudy }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;flex-direction:column;gap:10px;">
               <a class="btn btn-primary" href="Exam 2 Map.html#weak" style="align-self:flex-start;text-decoration:none;">Read all my weak areas in full →</a>
-              <div style="font-size:12.5px;color:var(--color-neutral-400);margin-top:-4px;">One page, nothing to tap open: what you missed, the notes in full, why it works, the breakdowns and the drugs, for every topic below.</div>
+              <div style="font-size:12.5px;color:var(--color-neutral-400);margin-top:-4px;">One page, nothing to tap open, only from this test: what you missed, the notes in full, why it works, the breakdowns and the drugs, for every topic you missed.</div>
               <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What to study next — in this order</div>
               <sc-for list="{{ rp.study }}" as="s" hint-placeholder-count="3">
                 <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:12px;background:var(--color-surface);border:1px solid {{ s.bd }};">
@@ -1348,10 +1348,10 @@ class Component extends DCLogic {
       const prev = S.history.length > 1 ? S.history[S.history.length - 2] : null;
       const tstat = {};
       recs.forEach(r => r.topics.forEach(t => { const s = tstat[t] || (tstat[t] = { n: 0, miss: 0, loss: 0, recs: [] }); s.n++; if (r.e < 1) { s.miss++; s.loss += 1 - r.e; s.recs.push(r); } }));
-      const rank = Object.keys(tstat).filter(t => tstat[t].miss).map(t => [t, tstat[t].loss * 2 + (1 - ((M.topics[t] || {}).m || 0)) * 1.5]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-      Object.keys(M.topics).filter(t => !rank.includes(t) && M.topics[t].m != null && M.topics[t].m < 0.6 && this.byTopic[t]).sort((a, b) => M.topics[a].m - M.topics[b].m).forEach(t => { if (rank.length < 3) rank.push(t); });
+      // Only this test: cumulative mastery (earlier tests, the old pre-test) doesn't rank or add topics here.
+      const rank = Object.keys(tstat).filter(t => tstat[t].miss).sort((a, b) => tstat[b].loss - tstat[a].loss || tstat[b].miss - tstat[a].miss);
       const study = rank.slice(0, 5).map((t, i) => {
-        const s = tstat[t] || { n: 0, miss: 0, recs: [] }, m = (M.topics[t] || {}).m;
+        const s = tstat[t];
         const rc = {}; s.recs.forEach(r => (r.why || []).forEach(k => { rc[k] = (rc[k] || 0) + 1; }));
         const gaps = Object.keys(rc).sort((a, b) => rc[b] - rc[a]).slice(0, 2).map(k => RLABEL[k].split(' (')[0].toLowerCase());
         const rules = [...new Set(s.recs.map(r => r.rule).filter(Boolean))].slice(0, 2).map(t => ({ t }));
@@ -1360,7 +1360,7 @@ class Component extends DCLogic {
         const links = [{ label: 'Study it on the Map →', href: 'Exam 2 Map.html#' + t }]
           .concat(nodes.map(n => ({ label: 'Breakdown: ' + NODE_NAME[n], href: 'Exam 2 Map.html#n-' + n })))
           .concat(drugs.filter(d => this.drugById[d]).map(d => ({ label: 'Drug card: ' + this.drugById[d].n, href: 'Exam 2 Drug Cards.dc.html#drug-' + d })));
-        return { n: i + 1, title: this.topicTitle(t) + ' · Ch ' + t.slice(0, 2), stat: (s.n ? s.miss + ' of ' + s.n + ' missed or guessed' : 'not tested this time') + (m != null ? ' · mastery ' + Math.round(m * 100) + '%' : ''), gap: gaps.length ? 'Mostly: ' + gaps.join('; ') + '.' : '', hasGap: gaps.length > 0, rules, links, bd: i === 0 ? 'var(--color-accent-500)' : 'var(--color-neutral-800)' };
+        return { n: i + 1, title: this.topicTitle(t) + ' · Ch ' + t.slice(0, 2), stat: s.miss + ' of ' + s.n + ' missed or guessed', gap: gaps.length ? 'Mostly: ' + gaps.join('; ') + '.' : '', hasGap: gaps.length > 0, rules, links, bd: i === 0 ? 'var(--color-accent-500)' : 'var(--color-neutral-800)' };
       });
       const verdict = R.pct >= 90 ? 'Exam-ready on what this test covered.' : R.pct >= 75 ? 'Close — tighten the topics below.' : 'The topics below are where the points are.';
       v.rp = {

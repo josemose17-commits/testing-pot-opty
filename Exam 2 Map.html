@@ -364,7 +364,7 @@
 
 <script src="data/info-topics.js?v=202610021900"></script>
 <script src="data/concept-nodes.js?v=202610022200"></script>
-<script src="data/basics.js?v=202610100100"></script>
+<script src="data/basics.js?v=202610100200"></script>
 <script src="data/concept-keys.js?v=202610022200"></script>
 <script src="data/notes-short/22.js?v=202610021900"></script>
 <script src="data/notes-short/23.js?v=202610021900"></script>
@@ -1039,17 +1039,15 @@
   function weakPlan() {
     var S = null; try { S = JSON.parse(localStorage.getItem('e2-mastery-v3') || 'null'); } catch (e) {}
     if (!S || !S.report) return null;
-    var R = S.report, M = (S.mastery && S.mastery.topics) || {}, stat = {};
+    // Only the last test: no cumulative mastery, so earlier tests and the old pre-test don't add topics.
+    var R = S.report, stat = {};
     (R.recs || []).forEach(function (r) { (r.topics || []).forEach(function (t) {
       var x = stat[t] || (stat[t] = { n: 0, miss: 0, loss: 0, recs: [] }); x.n++;
       if (r.e < 1) { x.miss++; x.loss += 1 - r.e; x.recs.push(r); }
     }); });
     var rank = Object.keys(stat).filter(function (t) { return stat[t].miss && byId[t]; })
-      .map(function (t) { return [t, stat[t].loss * 2 + (1 - ((M[t] || {}).m || 0)) * 1.5]; })
-      .sort(function (a, b) { return b[1] - a[1]; }).map(function (x) { return x[0]; });
-    Object.keys(M).filter(function (t) { return rank.indexOf(t) < 0 && byId[t] && M[t].m != null && M[t].m < 0.6; })
-      .sort(function (a, b) { return M[a].m - M[b].m; }).forEach(function (t) { rank.push(t); });
-    return { R: R, M: M, stat: stat, rank: rank };
+      .sort(function (a, b) { return stat[b].loss - stat[a].loss || stat[b].miss - stat[a].miss; });
+    return { R: R, stat: stat, rank: rank };
   }
   function lines(t) { return esc(t == null ? '' : t); }
   function drugHtml(id) {
@@ -1075,7 +1073,7 @@
     bdMode = 'full'; quiz = false;
     var when = new Date(R.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     var h = '<div class="wk-head"><div class="kicker">From Mastery test ' + esc(R.no) + ' · ' + esc(when) + ' · ' + esc(R.pct) + '%</div><h1>Your weak areas, in full</h1>' +
-      '<p class="lead">Everything for each topic you struggled with, open on one page: what you missed, the notes in full, why it works, the breakdowns and the drugs. Just scroll.</p>' +
+      '<p class="lead">Only this test — nothing from earlier tests or the pre-test. For each topic you missed or guessed: what you missed, the notes in full, why it works, the breakdowns and the drugs. Just scroll.</p>' +
       '<p style="margin:10px 0 0"><button class="pill" data-weak-close>← Back to the map</button> <a class="pill" href="Exam 2 Mastery Loop.dc.html">Mastery test →</a></p></div>';
     if (!plan.rank.length) { bdMode = saveBd; quiz = saveQuiz; return h + '<p class="lead">No weak topics in your last test. Nice work.</p>'; }
     h += '<nav class="glass wk-toc" style="padding:12px">' + plan.rank.map(function (t, i) { return '<a href="#weak-' + t + '">' + (i + 1) + '. ' + esc(byId[t].title) + '</a>'; }).join('') + '</nav>';
@@ -1084,13 +1082,13 @@
         R.looked.map(function (w) { var m = window.E2Say.meaning(w) || {}; return '<div><b>' + esc(w) + '</b>' + (m.full ? ' — ' + esc(m.full) : '') + (m.def ? '<br><span style="color:var(--color-neutral-300)">' + esc(m.def) + '</span>' : '') + '</div>'; }).join('') + '</div></div>';
     }
     plan.rank.forEach(function (tid, i) {
-      var t = byId[tid], st = plan.stat[tid] || { n: 0, miss: 0, recs: [] }, m = (plan.M[tid] || {}).m;
+      var t = byId[tid], st = plan.stat[tid];
       current = { type: 'topic', id: tid };
       var nodeIds = [], drugIds = [];
       (nodesFor[tid] || []).concat([].concat.apply([], st.recs.map(function (r) { return r.nodes || []; }))).forEach(function (n) { if (nodeById[n] && nodeIds.indexOf(n) < 0) nodeIds.push(n); });
       st.recs.forEach(function (r) { (r.drugs || []).forEach(function (d) { if (drugIds.indexOf(d) < 0) drugIds.push(d); }); });
       h += '<article class="glass wk-topic" id="weak-' + tid + '"><div class="kicker">' + (i + 1) + ' of ' + plan.rank.length + ' · Chapter ' + esc(t.ch) + ' · ' + esc(t.chTitle) + '</div><h2>' + esc(t.title) + '</h2>' +
-        '<div class="wk-stat">' + (st.n ? st.miss + ' of ' + st.n + ' missed or guessed last test' : 'Weak from earlier tests') + (m != null ? ' · mastery ' + Math.round(m * 100) + '%' : '') + '</div>';
+        '<div class="wk-stat">' + st.miss + ' of ' + st.n + ' missed or guessed on this test</div>';
       if (st.recs.length) {
         h += '<div class="wk-sec">What you missed</div>' + st.recs.map(function (r) {
           var why = (r.why || []).map(function (k) { return REASON[k] || k; }).join(' · ');
@@ -1139,7 +1137,7 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610100100"></script>
-<script src="say.js?v=202610100100"></script>
+<script src="nav.js?v=202610100200"></script>
+<script src="say.js?v=202610100200"></script>
 </body>
 </html>
