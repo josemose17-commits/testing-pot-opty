@@ -8,6 +8,31 @@
 <link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021900">
 <style>
   body { padding-bottom: 96px; }
+  body.weak-mode main > :not(#weak) { display: none !important; }
+  #weak { display: flex; flex-direction: column; gap: 18px; }
+  #weak .wk-head h1 { margin: 2px 0 6px; }
+  #weak .wk-toc { display: flex; flex-wrap: wrap; gap: 6px; }
+  #weak .wk-toc a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); color: inherit; text-decoration: none; font-size: 13.5px; }
+  #weak .wk-topic { padding: 16px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 12px; border-top: 3px solid var(--color-accent-2-500); }
+  #weak .wk-topic > h2 { margin: 0; font-size: clamp(21px, 4.5vw, 28px); }
+  #weak .wk-stat { font-size: 13px; color: var(--color-neutral-400); margin-top: -8px; }
+  #weak .wk-sec { font-size: 11.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--color-accent-300); margin: 6px 0 -4px; padding-top: 10px; border-top: 1px solid var(--color-divider); }
+  #weak .wk-miss { padding: 12px 14px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 5px 12px; font-size: 14px; }
+  #weak .wk-miss .q { grid-column: 1 / -1; font-size: 15px; color: var(--color-neutral-100); margin-bottom: 4px; }
+  #weak .wk-miss > span:nth-child(even) { color: var(--color-neutral-400); font-size: 12.5px; }
+  #weak .wk-miss .ok { color: var(--color-accent-200); white-space: pre-line; }
+  #weak .wk-miss .yours { white-space: pre-line; }
+  #weak .wk-miss .rule { color: var(--color-accent-100); }
+  #weak .wk-drug { padding: 14px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+  #weak .wk-drug h3 { margin: 0; font-size: 18px; }
+  #weak .wk-drug .cls { font-size: 13px; color: var(--color-neutral-400); margin-top: -6px; }
+  #weak .wk-drug dl { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 6px 12px; margin: 0; }
+  #weak .wk-drug dt { font-size: 12px; color: var(--color-accent-300); text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
+  #weak .wk-drug dd { margin: 0; }
+  #weak .wk-drug ol, #weak .wk-drug ul { margin: 0; padding-left: 18px; }
+  @media (max-width: 520px) { #weak .wk-drug dl { grid-template-columns: 1fr; } #weak .wk-drug dt { padding-top: 6px; } #weak .wk-miss { grid-template-columns: 1fr; } }
+  #weak .wk-words { display: grid; gap: 6px; }
+  #weak .wk-words div { padding: 8px 12px; border-radius: 10px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); font-size: 14px; }
   .whylink { display: block; width: 100%; text-align: left; margin: 0 0 12px; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--color-accent-700); background: var(--color-accent-900); color: var(--color-accent-100); cursor: pointer; font: inherit; font-size: 14px; }
   .whylink:hover { border-color: var(--color-accent); }
   .whywrap { display: flex; flex-direction: column; gap: 12px; }
@@ -124,7 +149,7 @@
   .tabs button[aria-selected="true"] { background: var(--color-neutral-800); color: var(--color-text); }
   .tabs button[hidden] { display: none; }
   .pbody { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-  .pbody .notes { display: flex; flex-direction: column; gap: var(--space-6); }
+  .pbody .notes, #weak .notes { display: flex; flex-direction: column; gap: var(--space-6); }
   .pfoot { padding: 10px 16px; border-top: 1px solid var(--color-divider); display: flex; gap: 8px; justify-content: space-between; }
 
   .gw { border-bottom: 1px dotted var(--color-accent-400); cursor: help; }
@@ -313,6 +338,7 @@
   </details>
 
   <div id="map"><div class="loading">Loading the map…</div></div>
+  <section id="weak" hidden></section>
 </main>
 
 <div class="scrim" id="scrim"></div>
@@ -338,7 +364,7 @@
 
 <script src="data/info-topics.js?v=202610021900"></script>
 <script src="data/concept-nodes.js?v=202610022200"></script>
-<script src="data/basics.js?v=202610092300"></script>
+<script src="data/basics.js?v=202610100100"></script>
 <script src="data/concept-keys.js?v=202610022200"></script>
 <script src="data/notes-short/22.js?v=202610021900"></script>
 <script src="data/notes-short/23.js?v=202610021900"></script>
@@ -600,6 +626,8 @@
   }
   window.addEventListener('popstate', function () {
     var h = decodeURIComponent(location.hash.slice(1));
+    if (h === 'weak') { showWeak(); return; }
+    if (document.body.classList.contains('weak-mode')) hideWeak();
     if (h.indexOf('n-') === 0 && nodeById[h.slice(2)]) openNode(h.slice(2), true);
     else if (byId[h]) openTopic(h, true, true);
     else close(true);
@@ -995,15 +1023,123 @@
   try { if (localStorage.getItem('e2-refstrip') === '1') rs.open = true; } catch (e) {}
   rs.addEventListener('toggle', function () { try { localStorage.setItem('e2-refstrip', rs.open ? '1' : '0'); } catch (e) {} });
 
+  // ---------- Your weak areas, in full (from the last Mastery test) ----------
+  // Everything for each weak topic on one page: the questions you missed, the notes in full, why it
+  // works, the organ → molecule breakdowns fully open, and the drugs from those questions.
+  var REASON = { words: 'Didn’t know what a word means', drug: 'Didn’t know the drug', look: 'Didn’t know what to look for', 'do': 'Didn’t know what to do', mech: 'Didn’t understand the why', fact: 'Didn’t know the fact or value', cue: 'Missed a cue', prio: 'Wrong priority', read: 'Misread the question', second: 'Second-guessed', guess: 'Pure guess' };
+  var DRUG_FILES = ['data/drugs-cardio.js?v=202610022100', 'data/drugs-heme.js?v=202610022100', 'data/drugs-resp.js?v=202610022100', 'data/explain/drugs-1.js?v=202610040900', 'data/explain/drugs-2.js?v=202610040900', 'data/explain/drug-whys.js?v=202610040900', 'data/explain/drug-more.js?v=202610040900'];
+  var drugsLoaded = null;
+  function loadDrugs() {
+    if (drugsLoaded) return drugsLoaded;
+    drugsLoaded = DRUG_FILES.reduce(function (pr, src) {
+      return pr.then(function () { return new Promise(function (res) { var sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = res; document.body.appendChild(sc); }); });
+    }, Promise.resolve());
+    return drugsLoaded;
+  }
+  function weakPlan() {
+    var S = null; try { S = JSON.parse(localStorage.getItem('e2-mastery-v3') || 'null'); } catch (e) {}
+    if (!S || !S.report) return null;
+    var R = S.report, M = (S.mastery && S.mastery.topics) || {}, stat = {};
+    (R.recs || []).forEach(function (r) { (r.topics || []).forEach(function (t) {
+      var x = stat[t] || (stat[t] = { n: 0, miss: 0, loss: 0, recs: [] }); x.n++;
+      if (r.e < 1) { x.miss++; x.loss += 1 - r.e; x.recs.push(r); }
+    }); });
+    var rank = Object.keys(stat).filter(function (t) { return stat[t].miss && byId[t]; })
+      .map(function (t) { return [t, stat[t].loss * 2 + (1 - ((M[t] || {}).m || 0)) * 1.5]; })
+      .sort(function (a, b) { return b[1] - a[1]; }).map(function (x) { return x[0]; });
+    Object.keys(M).filter(function (t) { return rank.indexOf(t) < 0 && byId[t] && M[t].m != null && M[t].m < 0.6; })
+      .sort(function (a, b) { return M[a].m - M[b].m; }).forEach(function (t) { rank.push(t); });
+    return { R: R, M: M, stat: stat, rank: rank };
+  }
+  function lines(t) { return esc(t == null ? '' : t); }
+  function drugHtml(id) {
+    var D = window.DRUG_DATA || { drugs: [] }, d = D.drugs.filter(function (x) { return x.id === id; })[0];
+    if (!d) return '';
+    var X = (window.DRUG_EXPLAIN || {})[id] || {}, W = (window.DRUG_WHY || {}), MORE = (window.DRUG_MORE || {})[id] || {};
+    var row = function (k, v) { return v && v !== 'None.' ? '<dt>' + k + '</dt><dd>' + v + '</dd>' : ''; };
+    var se = function (list) { return (list || []).length ? '<ul>' + list.map(function (x) { return '<li><b>' + esc(x[0]) + '</b> — ' + esc(x[1]) + '</li>'; }).join('') + '</ul>' : ''; };
+    return '<div class="wk-drug"><h3>' + esc(d.n) + (d.b ? ' <span style="font-weight:400;color:var(--color-neutral-400);font-size:14px">(' + esc(d.b) + ')</span>' : '') + '</h3><div class="cls">' + esc(d.c || '') + '</div><dl>' +
+      row('Used for', lines(d.ind)) +
+      row('How it works', lines(d.moa) + (X.steps ? '<ol>' + X.steps.map(function (s2) { return '<li>' + esc(s2) + '</li>'; }).join('') + '</ol>' : '')) +
+      row('In plain words', lines(d.plain)) +
+      row('Side effects', se(d.se)) + row('Serious', se(d.sae)) + row('Black box', lines(d.bbw)) +
+      row('Don’t give if', lines(d.contra)) + row('Interactions', lines(d.inter)) +
+      row('Before giving', lines(d.pre)) + row('Hold if', lines(d.hold)) + row('Stop if', lines(d.stop)) +
+      row('Monitor', lines(d.mon)) + row('It’s working if', lines(d.work)) + row('Teach', lines(d.teach || MORE.teach)) +
+      row('If it goes wrong', lines(d.emerg || MORE.emerg)) + row('Trap', lines(d.trap || X.trap)) +
+      '</dl></div>';
+  }
+  function weakHtml(plan) {
+    if (!plan) return '<div class="wk-head"><div class="kicker">Mastery test</div><h1>Your weak areas, in full</h1><p class="lead">Take the Mastery test first. Afterwards this page shows everything for the topics you missed, in full, on one page.</p><p><a class="pill" href="Exam 2 Mastery Loop.dc.html">Go to the Mastery test →</a> <button class="pill" data-weak-close>← Back to the map</button></p></div>';
+    var R = plan.R, saveBd = bdMode, saveQuiz = quiz, saveCur = current;
+    bdMode = 'full'; quiz = false;
+    var when = new Date(R.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    var h = '<div class="wk-head"><div class="kicker">From Mastery test ' + esc(R.no) + ' · ' + esc(when) + ' · ' + esc(R.pct) + '%</div><h1>Your weak areas, in full</h1>' +
+      '<p class="lead">Everything for each topic you struggled with, open on one page: what you missed, the notes in full, why it works, the breakdowns and the drugs. Just scroll.</p>' +
+      '<p style="margin:10px 0 0"><button class="pill" data-weak-close>← Back to the map</button> <a class="pill" href="Exam 2 Mastery Loop.dc.html">Mastery test →</a></p></div>';
+    if (!plan.rank.length) { bdMode = saveBd; quiz = saveQuiz; return h + '<p class="lead">No weak topics in your last test. Nice work.</p>'; }
+    h += '<nav class="glass wk-toc" style="padding:12px">' + plan.rank.map(function (t, i) { return '<a href="#weak-' + t + '">' + (i + 1) + '. ' + esc(byId[t].title) + '</a>'; }).join('') + '</nav>';
+    if ((R.looked || []).length && window.E2Say) {
+      h += '<div class="glass" style="padding:14px"><div class="wk-sec" style="border:0;padding:0;margin:0 0 10px">Words you looked up during the test</div><div class="wk-words">' +
+        R.looked.map(function (w) { var m = window.E2Say.meaning(w) || {}; return '<div><b>' + esc(w) + '</b>' + (m.full ? ' — ' + esc(m.full) : '') + (m.def ? '<br><span style="color:var(--color-neutral-300)">' + esc(m.def) + '</span>' : '') + '</div>'; }).join('') + '</div></div>';
+    }
+    plan.rank.forEach(function (tid, i) {
+      var t = byId[tid], st = plan.stat[tid] || { n: 0, miss: 0, recs: [] }, m = (plan.M[tid] || {}).m;
+      current = { type: 'topic', id: tid };
+      var nodeIds = [], drugIds = [];
+      (nodesFor[tid] || []).concat([].concat.apply([], st.recs.map(function (r) { return r.nodes || []; }))).forEach(function (n) { if (nodeById[n] && nodeIds.indexOf(n) < 0) nodeIds.push(n); });
+      st.recs.forEach(function (r) { (r.drugs || []).forEach(function (d) { if (drugIds.indexOf(d) < 0) drugIds.push(d); }); });
+      h += '<article class="glass wk-topic" id="weak-' + tid + '"><div class="kicker">' + (i + 1) + ' of ' + plan.rank.length + ' · Chapter ' + esc(t.ch) + ' · ' + esc(t.chTitle) + '</div><h2>' + esc(t.title) + '</h2>' +
+        '<div class="wk-stat">' + (st.n ? st.miss + ' of ' + st.n + ' missed or guessed last test' : 'Weak from earlier tests') + (m != null ? ' · mastery ' + Math.round(m * 100) + '%' : '') + '</div>';
+      if (st.recs.length) {
+        h += '<div class="wk-sec">What you missed</div>' + st.recs.map(function (r) {
+          var why = (r.why || []).map(function (k) { return REASON[k] || k; }).join(' · ');
+          return '<div class="wk-miss"><div class="q">' + esc(r.q || '') + '</div><span>You</span><span class="yours">' + esc(r.your || '') + '</span><span>Correct</span><span class="ok">' + esc(r.correct || '') + '</span>' +
+            (why ? '<span>Why missed</span><span>' + esc(why) + '</span>' : '') + (r.rule ? '<span>Rule</span><span class="rule">' + esc(r.rule) + '</span>' : '') + '</div>';
+        }).join('');
+      }
+      h += '<div class="wk-sec">The notes, in full</div>' + picturesHtml(picsFor(tid, nodesFor[tid])) + '<div class="notes">' + t.html + '</div>';
+      var B = BASICS[tid] || [];
+      if (B.length) h += '<div class="wk-sec">Why it works</div><div class="whywrap">' + B.map(function (e) { return '<div class="whycard"><div class="says"><span>In the notes above</span>“' + esc(e.says) + '”</div><div class="because">' + esc(e.why) + '</div><div class="whyfoot"><span class="whysrc">' + esc(e.src) + '</span></div></div>'; }).join('') + '</div>';
+      if (nodeIds.length) h += '<div class="wk-sec">Organ → molecule</div>' + nodeIds.map(function (n) { return breakdownHtml(nodeById[n]); }).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:18px 0">');
+      var dh = drugIds.map(drugHtml).join('');
+      if (dh) h += '<div class="wk-sec">Drugs from the questions you missed</div>' + dh;
+      h += '</article>';
+    });
+    bdMode = saveBd; quiz = saveQuiz; current = saveCur;
+    return h;
+  }
+  var weakEl = document.getElementById('weak');
+  function showWeak() {
+    if (isOpen()) close(true);
+    document.body.classList.add('weak-mode'); weakEl.hidden = false;
+    weakEl.innerHTML = '<p class="lead">Loading your weak areas…</p>';
+    loadDrugs().then(function () {
+      weakEl.innerHTML = weakHtml(weakPlan());
+      weakEl.querySelectorAll('.wk-topic').forEach(function (a) {
+        var tid = a.id.slice(5);
+        (BASICS[tid] || []).forEach(function (e) { markAnchor(a.querySelector('.notes'), e.says); });
+      });
+      markWordsLater(weakEl, 200);
+      window.scrollTo(0, 0);
+    });
+  }
+  function hideWeak() { document.body.classList.remove('weak-mode'); weakEl.hidden = true; weakEl.innerHTML = ''; }
+  weakEl.addEventListener('click', function (e) {
+    if (e.target.closest('[data-weak-close]')) { hideWeak(); try { history.pushState(null, '', location.pathname + location.search); } catch (x) {} window.scrollTo(0, 0); return; }
+    var a = e.target.closest('a[href^="#weak-"]');
+    if (a) { e.preventDefault(); var el = document.getElementById(a.getAttribute('href').slice(1)); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+
   // ---------- Start ----------
   buildMap(); refresh();
   var h = decodeURIComponent(location.hash.slice(1));
   try { history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : '')); } catch (e) {}
-  if (h.indexOf('n-') === 0) openNode(h.slice(2), true); else if (byId[h]) openTopic(h, false, true);
+  if (h === 'weak') showWeak(); else if (h.indexOf('n-') === 0) openNode(h.slice(2), true); else if (byId[h]) openTopic(h, false, true);
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610092300"></script>
-<script src="say.js?v=202610092300"></script>
+<script src="nav.js?v=202610100100"></script>
+<script src="say.js?v=202610100100"></script>
 </body>
 </html>

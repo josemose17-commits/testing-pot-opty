@@ -16,8 +16,8 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610092300"></script>
-<script src="./say.js?v=202610092300"></script>
+<script src="./nav.js?v=202610100100"></script>
+<script src="./say.js?v=202610100100"></script>
 </head>
 <body>
 <x-dc>
@@ -139,6 +139,8 @@
 
           <sc-if value="{{ rp.hasStudy }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;flex-direction:column;gap:10px;">
+              <a class="btn btn-primary" href="Exam 2 Map.html#weak" style="align-self:flex-start;text-decoration:none;">Read all my weak areas in full →</a>
+              <div style="font-size:12.5px;color:var(--color-neutral-400);margin-top:-4px;">One page, nothing to tap open: what you missed, the notes in full, why it works, the breakdowns and the drugs, for every topic below.</div>
               <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What to study next — in this order</div>
               <sc-for list="{{ rp.study }}" as="s" hint-placeholder-count="3">
                 <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:12px;background:var(--color-surface);border:1px solid {{ s.bd }};">
