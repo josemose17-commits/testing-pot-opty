@@ -16,8 +16,8 @@
   @media (prefers-reduced-motion: reduce) { #dc-root > * { animation: none; } }
 </style>
 <script src="./support.js?v=202610022100"></script>
-<script src="./nav.js?v=202610100100"></script>
-<script src="./say.js?v=202610100100"></script>
+<script src="./nav.js?v=202610100300"></script>
+<script src="./say.js?v=202610100300"></script>
 </head>
 <body>
 <x-dc>
@@ -61,7 +61,7 @@
 <script src="data/drugs-heme.js?v=202610022100"></script>
 <script src="data/drugs-resp.js?v=202610022100"></script>
 <script src="data/glossary.js?v=202610022100"></script>
-<script src="data/extra-questions.js?v=202610022100"></script>
+<script src="data/extra-questions.js?v=202610100300"></script>
 <script src="data/explain/22.js?v=202610040900"></script>
 <script src="data/explain/23.js?v=202610040900"></script>
 <script src="data/explain/24.js?v=202610040900"></script>
@@ -140,7 +140,7 @@
           <sc-if value="{{ rp.hasStudy }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;flex-direction:column;gap:10px;">
               <a class="btn btn-primary" href="Exam 2 Map.html#weak" style="align-self:flex-start;text-decoration:none;">Read all my weak areas in full →</a>
-              <div style="font-size:12.5px;color:var(--color-neutral-400);margin-top:-4px;">One page, nothing to tap open: what you missed, the notes in full, why it works, the breakdowns and the drugs, for every topic below.</div>
+              <div style="font-size:12.5px;color:var(--color-neutral-400);margin-top:-4px;">One page, nothing to tap open, only from this test: what you missed, the notes in full, why it works, the breakdowns and the drugs, for every topic you missed.</div>
               <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);">What to study next — in this order</div>
               <sc-for list="{{ rp.study }}" as="s" hint-placeholder-count="3">
                 <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:12px;background:var(--color-surface);border:1px solid {{ s.bd }};">
@@ -538,17 +538,28 @@ const KW = {
   '30': /hypertensi|blood pressure|\bBP\b|\bPAD\b|peripheral arter|claudication|ankle-brachial|DVT|deep vein|VTE|thrombo|anticoag|heparin|warfarin|enoxaparin/i
 };
 const SKILLS = ['Drugs & mechanisms', 'Pathophysiology', 'Priority & safety', 'Recognizing cues'];
-// Study-guide topics inside each chapter, so the pre-test covers every one and the report scores each.
-const SUB = {
-  '22': [['Health promotion & smoking', /smok|vaccin|health promotion|prevent|exposure|cessation|nicotine|hookah|vap/i], ['Pack-years', /pack[- ]?year|packs/i], ['Respiratory aging changes', /older|aging|age-related|elderly|\d\d-year-old/i]],
-  '24': [['Asthma', /asthma|albuterol|SABA|peak flow|silent chest|status asthmaticus/i], ['COPD', /COPD|emphysema|bronchitis|pursed|barrel|88–92|tiotropium/i]],
-  '25': [['Pneumonia', /pneumonia|consolidat|infiltrat|aspiration|incentive spirometr/i]],
-  '27': [['Cardiac aging changes', /older|aging|age-related|elderly|orthostatic|\d\d-year-old/i]],
-  '28': [['ECG recording', /lead|electrode|artifact|telemetry|monitor|strip/i], ['ECG analysis', /P wave|QRS|PR interval|QT|ST segment|rhythm|sinus|fibrillation|tachycardia|bradycardia|heart block|SVT|asystole/i]],
-  '29': [['Heart failure', /heart failure|\bHF\b|BNP|daily weight|pulmonary edema|orthopnea|furosemide|digoxin|frothy/i]],
-  '30': [['Hypertension', /hypertens|blood pressure|BP \d|DASH|crisis/i], ['PAD', /\bPAD\b|peripheral arter|claudication|arterial|pedal pulse|bypass|ABI/i], ['DVT', /DVT|deep vein|VTE|thrombo|heparin|warfarin|enoxaparin|embol|anticoag|HIT/i]],
-  '34': [['Lab values & anemia types', /MCV|ferritin|reticulocyte|\bHgb\b|hemoglobin|CBC|\bANC\b|lab/i], ['Sickle cell', /sickle|vaso-occlusive|acute chest/i], ['Anemias — iron, B₁₂, folate', /iron|B₁₂|B12|pernicious|folic|folate|anemi/i], ['Leukemia — infection & bleeding risk', /leukemi|neutropen|ANC|platelet|bleeding precaution/i]]
+// The Exam 2 study guide: every item on it, by chapter, and the words that tie a question to it.
+// With "Everything" selected, every test asks each item at least once, in the exam's chapter mix (BP).
+const GUIDE = {
+  '22': [['Health promotion & maintenance', /smok|cigar|nicotine|\bvap(e|es|ing)\b|e-cigarette|hookah|cessation|vaccin|immuniz|health promotion|prevent|occupational|asbestos|radon|air pollution|secondhand|I PREPARE|5 As/i],
+         ['Calculating pack-years', /pack[- ]?years?|packs? (a|per) day/i],
+         ['Age-related respiratory changes', /older adult|aging|age-related|elderly|\b(6[5-9]|[7-9]\d)-year-old/i]],
+  '24': [['Asthma', /asthma|albuterol|SABA|peak flow|silent chest|status asthmaticus|montelukast|omalizumab|leukotriene|inhaled corticosteroid|spacer|metered-dose|\bMDI\b/i],
+         ['COPD', /COPD|emphysema|chronic bronchitis|pursed|barrel|88–92|tiotropium|cor pulmonale|roflumilast|theophylline/i]],
+  '25': [['Pneumonia', /pneumonia|consolidat|infiltrat|aspiration|incentive spirometr|sputum culture|blood cultures?/i]],
+  '27': [['Cardiovascular changes with aging', /older adult|aging|age-related|elderly|orthostatic|\b(6[5-9]|[7-9]\d)-year-old/i]],
+  '28': [['ECG recording', /\b(3|5|12)-lead|five-lead|electrode|artifact|telemetry|lead placement|small box|large box|ECG paper|25 mm|monitor technician|alarm/i],
+         ['ECG analysis', /P wave|QRS|PR interval|\bQT|ST segment|ST elevation|rhythm|sinus|fibrillation|flutter|tachycardia|bradycardia|heart block|\bSVT\b|asystole|\bPVC|torsades|cardioversion|defibrillat|pacemaker|pacing|adenosine|amiodarone|atropine|digoxin/i]],
+  '29': [['Heart failure', /heart failure|\bHF\b|HFrEF|HFpEF|BNP|daily weight|pulmonary edema|orthopnea|furosemide|digoxin|frothy|ejection fraction|sacubitril|ARNI|spironolactone|\bS3\b|preload|afterload/i]],
+  '30': [['Hypertension', /hypertens|\bHTN\b|DASH|antihypertensive|blood pressure (categor|reading|cuff)|BP (categor|reading|goal|target)|sodium (restrict|intake)/i],
+         ['PAD', /\bPAD\b|peripheral arter|claudication|arterial (ulcer|insufficien|occlusion|disease)|ankle-brachial|\bABI\b|pedal pulse|rest pain|bypass graft|cilostazol|atheroscler|\bstatin|hyperlipidemia|venous insufficien/i],
+         ['DVT', /\bDVT\b|deep vein|\bVTE\b|venous thromb|thrombo(embol|sis|phlebitis)|heparin|warfarin|enoxaparin|apixaban|rivaroxaban|\bDOAC|anticoag|\bHIT\b|\bINR\b|aPTT|pulmonary embol|compression (stocking|device)|venous insufficien/i]],
+  '34': [['Lab values (e.g., anemia types)', /\bMCV\b|\bMCH|ferritin|reticulocyte|\bHgb\b|hemoglobin|hematocrit|\bHct\b|\bCBC\b|\bANC\b|\blabs?\b|laborator|TIBC|serum iron|platelet count|\bWBC\b|microcytic|macrocytic|normocytic/i],
+         ['Sickle cell — patient education', /sickle|vaso-occlusive|acute chest|hydroxyurea|voxelotor|crizanlizumab/i],
+         ['Anemia: iron deficiency, pernicious, folic acid, B₁₂', /iron|B₁₂|B12|cobalamin|pernicious|intrinsic factor|folic|folate|anemi|ferrous|epoetin/i],
+         ['Leukemia', /leukemi|neutropen|\bANC\b|platelet|bleeding precaution|thrombocytopen|filgrastim|blast cells?|bone marrow|tumor lysis|chemotherapy/i]]
 };
+const GUIDE_N = Object.keys(GUIDE).reduce((a, c) => a + GUIDE[c].length, 0);
 // Ch 33 questions that test ch 34 study-guide topics (lab interpretation, neutropenia, bleeding risk).
 const CH33_FOR_34 = /ANC calculation|Lab interpretation|Neutropenic|Bleeding precautions|Prioritize clients|Compare|Select all that apply/;
 const REASONS = [
@@ -965,7 +976,7 @@ class Component extends DCLogic {
       if (!topics.length) chs.forEach(c => this.topicsFor(full, c).forEach(t => { if (!topics.includes(t)) topics.push(t); }));
       topics = topics.slice(0, 3);
       ['use', 'how', 'check', 'se', 'sae', 'rescue'].forEach(tpl => {
-        const item = { id: 'g|' + d.id + '|' + tpl, ch, fmt: 'drug', gen: true, drug: d.id, tpl, kind: tpl === 'se' ? 'sata' : 'single', drugs: [d], skill: SKILLS[0], topics, nodes: this.nodesFor(full, ch), txt: full, words: words(full + ' ' + (d.trap || '') + ' ' + (d.steps || []).join(' ')) };
+        const item = { id: 'g|' + d.id + '|' + tpl, ch, chs, fmt: 'drug', gen: true, drug: d.id, tpl, kind: tpl === 'se' ? 'sata' : 'single', drugs: [d], skill: SKILLS[0], topics, nodes: this.nodesFor(full, ch), txt: full, words: words(full + ' ' + (d.trap || '') + ' ' + (d.steps || []).join(' ')) };
         if (this.drugQ(item)) pool.push(item);
       });
     });
@@ -984,6 +995,7 @@ class Component extends DCLogic {
       });
     });
 
+    pool.forEach(x => { x.guide = []; (x.chs || [x.ch]).forEach(c => (GUIDE[c] || []).forEach((g, i) => { if (g[1].test(x.txt || '')) x.guide.push(c + ':' + i); })); });
     this.byId = {}; pool.forEach(x => { this.byId[x.id] = x; });
     const F = window.E2Focus, on = !!(F && F.active()), ids = on ? F.ids() : [];
     this.pool = on ? pool.filter(x => x.topics.some(t => ids.includes(t))) : pool;
@@ -992,6 +1004,8 @@ class Component extends DCLogic {
     this.focusLabel = on && !this.focusEmpty ? F.label() : 'Everything';
     this.byTopic = {}; this.pool.forEach(x => x.topics.forEach(t => { (this.byTopic[t] = this.byTopic[t] || []).push(x); }));
     this.counts = {}; this.pool.forEach(x => { this.counts[x.fmt] = (this.counts[x.fmt] || 0) + 1; });
+    this.guideMode = this.focusLabel === 'Everything';
+    this.byGuide = {}; this.pool.forEach(x => x.guide.forEach(k => { (this.byGuide[k] = this.byGuide[k] || []).push(x); }));
   }
 
   // ---------- Building a question to show ----------
@@ -1150,7 +1164,53 @@ class Component extends DCLogic {
     return caseBonus + Math.random() * 1.5 - (L.seen || 0) * 1.0 - (L.lastTest && L.lastTest === T.no - 1 ? 4 : 0) - (L.last === 1 && (L.seen || 0) >= 2 ? 2.5 : 0) + 6 * ((MIX[x.fmt] || 0.1) - (T.items.length ? share : 0));
   }
 
+  // ---------- Covering the study guide ----------
+  // How weak a study-guide item is, from the last answer to each of its questions.
+  guideNeed(S, k) {
+    const L = (this.byGuide[k] || []).map(x => S.log[x.id]).filter(L => L && L.seen && L.last != null);
+    if (!L.length) return 1.5;
+    return 0.35 + 2.3 * (1 - L.reduce((a, l) => a + l.last, 0) / L.length);
+  }
+  // A test's plan: chapters get their exam share (BP), every study-guide item gets at least one question,
+  // and a chapter's extra questions go to its weakest items. 40- and 60-question tests add one
+  // high-yield question from Ch 23 or 33 (not on the guide), taking turns.
+  guidePlan(S, len) {
+    const off = len >= 40 ? 1 : 0, n = len - off, chs = Object.keys(GUIDE), q = {}, left = {};
+    chs.forEach(c => { q[c] = GUIDE[c].length; });
+    for (let k = GUIDE_N; k < n; k++) {
+      const gap = c => BP[c] * n / 60 - q[c];
+      q[chs.slice().sort((a, b) => gap(b) - gap(a))[0]]++;
+    }
+    chs.forEach(c => {
+      const keys = GUIDE[c].map((g, i) => c + ':' + i).filter(k => (this.byGuide[k] || []).length);
+      keys.forEach(k => { left[k] = 1; });
+      for (let extra = q[c] - keys.length; extra > 0 && keys.length; extra--) {
+        left[keys.map(k => [k, this.guideNeed(S, k) / (left[k] + 0.5) + Math.random() * 0.3]).sort((a, b) => b[1] - a[1])[0][0]]++;
+      }
+    });
+    return { left, offAt: off ? 3 + Math.floor(Math.random() * (len - 6)) : -1, offCh: (S.testNo || 0) % 2 ? '23' : '33' };
+  }
+  pickGuide(S, T) {
+    if (!T.plan) T.plan = this.guidePlan(S, T.len);
+    const plan = T.plan, used = new Set(T.items.map(p => p.id)), best = items => items.map(x => [x, this.itemScore(S, T, x)]).sort((a, b) => b[1] - a[1])[0][0];
+    if (T.base === plan.offAt) {
+      const items = this.pool.filter(x => x.ch === plan.offCh && x.bank && !used.has(x.id));
+      if (items.length) return this.present(best(items));
+    }
+    const recent = new Set(T.items.slice(-2).map(p => p.gk).filter(Boolean));
+    const keys = Object.keys(plan.left).filter(k => plan.left[k] > 0 && this.byGuide[k].some(x => !used.has(x.id)));
+    if (!keys.length) return null;
+    const w = keys.map(k => [k, plan.left[k] * (recent.has(k) ? 0.15 : 1)]);
+    let r = Math.random() * w.reduce((a, x) => a + x[1], 0), k = w[0][0];
+    for (const [kk, ww] of w) { r -= ww; if (r <= 0) { k = kk; break; } }
+    plan.left[k]--;
+    const P = this.present(best(this.byGuide[k].filter(x => !used.has(x.id))));
+    P.ch = k.split(':')[0]; P.gk = k;
+    return P;
+  }
+
   pickBase(S, T) {
+    if (this.guideMode) { const P = this.pickGuide(S, T); if (P) return P; }
     const used = new Set(T.items.map(p => p.id));
     const asked = {}; T.items.forEach(p => ((this.byId[p.id] || {}).topics || []).forEach(t => { asked[t] = (asked[t] || 0) + 1; }));
     const recent = new Set(); T.items.slice(-2).forEach(p => ((this.byId[p.id] || {}).topics || []).forEach(t => recent.add(t)));
@@ -1194,7 +1254,8 @@ class Component extends DCLogic {
   // A follow-up: same topic or drug, as close as possible to what went wrong, in a different format when it can be.
   pickFollow(S, T, f) {
     const used = new Set(T.items.map(p => p.id)), W = new Set(f.words);
-    const near = this.pool.filter(x => !used.has(x.id) && x.id !== f.from && (x.topics.some(t => f.topics.includes(t)) || (x.drugs || []).some(d => f.drugs.includes(d.id))));
+    let near = this.pool.filter(x => !used.has(x.id) && x.id !== f.from && (x.topics.some(t => f.topics.includes(t)) || (x.drugs || []).some(d => f.drugs.includes(d.id))));
+    if (this.guideMode && ((this.byId[f.from] || {}).guide || []).length) { const g = near.filter(x => x.guide.length); if (g.length) near = g; }
     if (!near.length) return null;
     const scoreOf = x => {
       const L = S.log[x.id] || {};
@@ -1238,7 +1299,9 @@ class Component extends DCLogic {
     this.learn(S, it, e);
     const L = S.log[P.id] || (S.log[P.id] = { seen: 0 }); L.seen++; L.lastTest = T.no; L.last = e;
     const cap = Math.ceil(T.len * 0.6), depth = T.depth[P.id] || 0;
-    if (e < 1 && depth < 2 && T.followN + T.queue.length < cap) {
+    // Ch 23 and 33 are not on the study guide: a miss there gets no follow-ups, so they stay a few questions.
+    const offGuide = this.guideMode && !(it.guide || []).length && (P.ch === '23' || P.ch === '33');
+    if (e < 1 && depth < 2 && !offGuide && T.followN + T.queue.length < cap) {
       T.queue.push(this.makeFollow(S, T, P, 0));
       if ((T.scores[P.id] || 0) === 0 && T.conf[P.id] === 'sure' && P.kind !== 'recall') T.queue.push(this.makeFollow(S, T, P, 2));
     }
@@ -1261,7 +1324,8 @@ class Component extends DCLogic {
       let ws = 0, wt = 0; Object.keys(byCh).forEach(ch => { if (BP[ch]) { ws += BP[ch] * byCh[ch].s / byCh[ch].n; wt += BP[ch]; } });
       const pct = wt ? Math.round(100 * ws / wt) : Math.round(100 * raw / done.length);
       const looked = [...new Set([].concat(...Object.values(T.looked || {})))];
-      S.report = { at: Date.now(), no: T.no, n: done.length, base: T.base, follows: done.filter(p => T.follow[p.id]).length, pct, raw: Math.round(100 * raw / done.length), focus: T.focus, looked, recs: done.map(P => this.record(T, P)) };
+      const cov = new Set(); done.forEach(p => ((this.byId[p.id] || {}).guide || []).forEach(k => cov.add(k)));
+      S.report = { at: Date.now(), no: T.no, n: done.length, base: T.base, follows: done.filter(p => T.follow[p.id]).length, pct, raw: Math.round(100 * raw / done.length), focus: T.focus, looked, guide: T.plan ? cov.size : null, recs: done.map(P => this.record(T, P)) };
       S.history.push({ at: Date.now(), pct, n: done.length });
       S.test = null; S.phase = 'home';
     });
@@ -1310,7 +1374,7 @@ class Component extends DCLogic {
     v.toggleRecall = () => this.upd(S => { S.settings.recallFirst = !S.settings.recallFirst; });
     v.recallBg = rf ? 'var(--color-accent-900)' : 'transparent'; v.recallBd = rf ? A : N; v.recallFill = rf ? A : 'transparent';
     const fl = this.focusLabel || 'Everything';
-    v.focusNote = this.focusEmpty ? 'Your focus on the map has too few questions yet, so this test uses everything.' : fl === 'Everything' ? 'Testing everything, weighted to the Exam 2 blueprint.' : 'Following your focus — ' + fl + '.';
+    v.focusNote = this.focusEmpty ? 'Your focus on the map has too few questions yet, so this test uses everything.' : fl === 'Everything' ? 'Every test covers all ' + GUIDE_N + ' Exam 2 study-guide items, in the exam’s chapter mix.' : 'Following your focus — ' + fl + '.';
     v.focusLink = fl === 'Everything' ? 'Pick topics on the map' : 'Change on the map';
     v.canResume = !!S.test;
     v.resumeLabel = S.test ? 'Resume test — question ' + S.test.items.length : '';
@@ -1348,10 +1412,10 @@ class Component extends DCLogic {
       const prev = S.history.length > 1 ? S.history[S.history.length - 2] : null;
       const tstat = {};
       recs.forEach(r => r.topics.forEach(t => { const s = tstat[t] || (tstat[t] = { n: 0, miss: 0, loss: 0, recs: [] }); s.n++; if (r.e < 1) { s.miss++; s.loss += 1 - r.e; s.recs.push(r); } }));
-      const rank = Object.keys(tstat).filter(t => tstat[t].miss).map(t => [t, tstat[t].loss * 2 + (1 - ((M.topics[t] || {}).m || 0)) * 1.5]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-      Object.keys(M.topics).filter(t => !rank.includes(t) && M.topics[t].m != null && M.topics[t].m < 0.6 && this.byTopic[t]).sort((a, b) => M.topics[a].m - M.topics[b].m).forEach(t => { if (rank.length < 3) rank.push(t); });
+      // Only this test: cumulative mastery (earlier tests, the old pre-test) doesn't rank or add topics here.
+      const rank = Object.keys(tstat).filter(t => tstat[t].miss).sort((a, b) => tstat[b].loss - tstat[a].loss || tstat[b].miss - tstat[a].miss);
       const study = rank.slice(0, 5).map((t, i) => {
-        const s = tstat[t] || { n: 0, miss: 0, recs: [] }, m = (M.topics[t] || {}).m;
+        const s = tstat[t];
         const rc = {}; s.recs.forEach(r => (r.why || []).forEach(k => { rc[k] = (rc[k] || 0) + 1; }));
         const gaps = Object.keys(rc).sort((a, b) => rc[b] - rc[a]).slice(0, 2).map(k => RLABEL[k].split(' (')[0].toLowerCase());
         const rules = [...new Set(s.recs.map(r => r.rule).filter(Boolean))].slice(0, 2).map(t => ({ t }));
@@ -1360,12 +1424,12 @@ class Component extends DCLogic {
         const links = [{ label: 'Study it on the Map →', href: 'Exam 2 Map.html#' + t }]
           .concat(nodes.map(n => ({ label: 'Breakdown: ' + NODE_NAME[n], href: 'Exam 2 Map.html#n-' + n })))
           .concat(drugs.filter(d => this.drugById[d]).map(d => ({ label: 'Drug card: ' + this.drugById[d].n, href: 'Exam 2 Drug Cards.dc.html#drug-' + d })));
-        return { n: i + 1, title: this.topicTitle(t) + ' · Ch ' + t.slice(0, 2), stat: (s.n ? s.miss + ' of ' + s.n + ' missed or guessed' : 'not tested this time') + (m != null ? ' · mastery ' + Math.round(m * 100) + '%' : ''), gap: gaps.length ? 'Mostly: ' + gaps.join('; ') + '.' : '', hasGap: gaps.length > 0, rules, links, bd: i === 0 ? 'var(--color-accent-500)' : 'var(--color-neutral-800)' };
+        return { n: i + 1, title: this.topicTitle(t) + ' · Ch ' + t.slice(0, 2), stat: s.miss + ' of ' + s.n + ' missed or guessed', gap: gaps.length ? 'Mostly: ' + gaps.join('; ') + '.' : '', hasGap: gaps.length > 0, rules, links, bd: i === 0 ? 'var(--color-accent-500)' : 'var(--color-neutral-800)' };
       });
       const verdict = R.pct >= 90 ? 'Exam-ready on what this test covered.' : R.pct >= 75 ? 'Close — tighten the topics below.' : 'The topics below are where the points are.';
       v.rp = {
         when: 'Test ' + R.no + ' · ' + new Date(R.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
-        pct: R.pct, sub: 'exam-weighted · ' + R.raw + '% raw · ' + R.n + ' questions (' + R.follows + ' follow-ups)',
+        pct: R.pct, sub: 'exam-weighted · ' + R.raw + '% raw · ' + R.n + ' questions (' + R.follows + ' follow-ups)' + (R.guide != null ? ' · covered ' + R.guide + ' of ' + GUIDE_N + ' study-guide items' : ''),
         verdict, detail: (prev ? (R.pct - prev.pct >= 0 ? '+' : '') + (R.pct - prev.pct) + ' points vs your last test. ' : '') + (missed.length ? missed.length + ' to work on — study them in the order below, then take the test again. It will lean toward these.' : 'Nothing missed or guessed — take another test to confirm it holds.'),
         study, hasStudy: study.length > 0,
         problems: missed.slice().sort((a, b) => a.e - b.e).slice(0, this.state.allProblems ? 999 : 5).map(r => ({ topic: this.topicTitle(r.topics[0]) + ' · Ch ' + r.ch, fmt: FMT_LABEL[r.fmt] || '', scoreLabel: r.sc >= 1 ? 'Right, but guessed' : r.sc > 0 ? 'Partly right — ' + Math.round(r.sc * 100) + '%' : 'Missed', q: r.q, your: r.your, correct: r.correct, gap: (r.why || []).map(k => RLABEL[k]).join('; '), hasGap: (r.why || []).length > 0, rule: r.rule, hasRule: !!r.rule })),
@@ -1396,7 +1460,7 @@ class Component extends DCLogic {
         return { bg: isC ? 'var(--color-accent-900)' : 'transparent', bd: isC ? 'var(--color-accent-300)' : (sel ? 'var(--color-neutral-300)' : N), mr: multi ? '4px' : '50%', mf: sel ? (isC ? A : 'var(--color-neutral-400)') : 'transparent' };
       };
       const note = (sel, isC, i) => !ck ? { n: i == null ? '' : i + 1, nfg: 'var(--color-neutral-500)' } : { n: isC ? (sel ? 'Correct' : 'Missed') : (sel ? 'Your pick' : ''), nfg: isC ? 'var(--color-accent-200)' : 'var(--color-neutral-300)' };
-      const q = { q: P.q, kindLabel: isRecall ? 'Active recall — answer from memory' : KIND_LABEL[P.kind], fmt: FMT_LABEL[it.fmt] || '', topic: (it.topics || [])[0] ? this.topicTitle(it.topics[0]) + ' · Ch ' + P.ch : 'Ch ' + P.ch,
+      const q = { q: P.q, kindLabel: isRecall ? 'Active recall — answer from memory' : KIND_LABEL[P.kind], fmt: FMT_LABEL[it.fmt] || '', topic: (it.topics || [])[0] ? this.topicTitle(it.topics[0]) + ' · Ch ' + it.topics[0].slice(0, 2) : 'Ch ' + P.ch,
         isFollow: !!T.follow[P.id], followLabel: T.follow[P.id] || '', hidden, hideHint: P.kind === 'sata' ? 'which of them could be right, and how many?' : 'what would you choose, and why?',
         reveal: () => this.upd(S => { S.test.revealed[P.id] = true; }),
         isChoice: !hidden && (P.kind === 'single' || P.kind === 'sata'), isOrder: P.kind === 'order', isMatrix: P.kind === 'matrix', isCloze: P.kind === 'cloze', isBow: P.kind === 'bow', isRecall };
