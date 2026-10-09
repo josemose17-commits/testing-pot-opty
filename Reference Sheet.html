@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04160e">
+<title>Reference Sheet</title>
+<link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021900">
+<style>
+  body { padding-bottom: 96px; }
+  main { max-width: 1000px; margin: 0 auto; padding: clamp(18px, 3.5vw, 40px) 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .kicker { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent-300); }
+  h1 { font-size: clamp(28px, 5.5vw, 44px); margin: 4px 0 0; }
+  h2 { font-size: clamp(22px, 4vw, 30px); margin: 8px 0 0; }
+  h3 { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
+  .lead { color: var(--color-neutral-300); max-width: 70ch; margin: 0; }
+  .glass { border-radius: var(--radius-lg); background: var(--color-surface); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--shadow-md); padding: 16px; }
+  .toc { display: flex; flex-wrap: wrap; gap: 6px; }
+  .toc a { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); color: inherit; text-decoration: none; font-size: 14px; }
+  .toc a:hover { border-color: var(--color-accent-700); }
+  p { margin: 0 0 8px; }
+  ul { margin: 0; padding-left: 20px; }
+  li { margin: 4px 0; }
+  .muted { color: var(--color-neutral-400); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 10px; }
+  .tech { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); }
+  .tech b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .tech .say { display: block; margin-top: 6px; padding: 6px 10px; border-radius: 10px; font-size: 14px; background: var(--color-accent-900); color: var(--color-accent-100); border-left: 3px solid var(--color-accent); }
+  .tech.bad { border-color: #5a2a2a; }
+  .tech.bad .say { background: #2a1414; color: #f3c9c9; border-left-color: #d46a6a; }
+  .tech .fix { display: block; margin-top: 6px; font-size: 13.5px; color: var(--color-accent-200); }
+  .steps { counter-reset: s; list-style: none; padding: 0; display: grid; gap: 8px; }
+  .steps li { counter-increment: s; position: relative; padding: 10px 12px 10px 44px; border-radius: 12px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); margin: 0; }
+  .steps li::before { content: counter(s); position: absolute; left: 12px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--color-accent); color: #04160e; font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+  .rule { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--color-accent-700); background: var(--color-accent-900); }
+  .rule b { color: var(--color-accent-100); }
+  .q { padding: 14px; border-radius: 14px; background: var(--color-neutral-900); border: 1px solid var(--color-divider); }
+  .q p.stem { font-weight: 500; }
+  .q ol { list-style: upper-alpha; padding-left: 22px; }
+  .q button { font: inherit; color: inherit; margin-top: 8px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--color-accent-700); background: none; cursor: pointer; }
+  .q .ans { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--color-accent-900); }
+  .q.open .ans { display: block; }
+  .src { font-size: 12.5px; color: var(--color-neutral-500); }
+  .src a { color: var(--color-accent-300); }
+  section { scroll-margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="kicker">Reference sheet · supports your med-surg chapters</div>
+    <h1>Reference Sheet</h1>
+    <p class="lead">Background from earlier courses that your med-surg book assumes you already know. Not tied to one exam: it applies on every exam and at every bedside.</p>
+  </header>
+
+  <nav class="toc glass" aria-label="On this sheet">
+    <a href="#tc">Therapeutic communication</a>
+  </nav>
+
+  <!-- ============ THERAPEUTIC COMMUNICATION ============ -->
+  <section id="tc">
+    <div>
+      <div class="kicker">Fundamentals of Nursing · Ch. 2</div>
+      <h2>Therapeutic communication</h2>
+    </div>
+
+    <div class="glass">
+      <h3>What it is</h3>
+      <p><b>Therapeutic communication</b> is the specialized way nurses talk with patients to build a <b>therapeutic (healing) relationship</b>. It uses both words and body language, and it keeps the focus on the <b>patient's</b> needs and feelings, not the nurse's.</p>
+      <p>It came from nursing theorist <b>Hildegard Peplau</b> (Theory of Interpersonal Relations, 1950s). Use it in <b>every</b> patient encounter, not just with psych patients.</p>
+      <p class="muted">Why it matters in med-surg: anxious, scared or angry patients don't take in teaching, don't report symptoms and don't follow the plan. Good communication is how you get an accurate assessment and safe discharge teaching.</p>
+    </div>
+
+    <div class="glass rule">
+      <h3>How to pick the answer on an exam</h3>
+      <ul>
+        <li><b>Pick</b> the response that keeps the focus on the <b>patient's feelings or concerns</b> and invites them to say more (open-ended, reflecting, sharing an observation, offering self).</li>
+        <li><b>Rule out</b> anything that is a <b>"why"</b> question, <b>false reassurance</b> ("don't worry", "everything will be fine"), <b>advice</b> ("if I were you…"), <b>changing the subject</b>, <b>defending</b> yourself or staff, <b>judging</b> or <b>arguing</b>.</li>
+        <li>If the patient is in <b>physical danger</b> (chest pain, can't breathe, suicidal), safety comes first. Act, then communicate.</li>
+      </ul>
+    </div>
+
+    <div class="glass">
+      <h3>Therapeutic techniques (use these)</h3>
+      <div class="grid">
+        <div class="tech"><b>Open-ended questions</b>Questions that can't be answered yes/no, so the patient tells their story.<span class="say">"Tell me what's been worrying you."</span></div>
+        <div class="tech"><b>Active listening</b>Show interest with words and body language: eye contact, nodding, short prompts.<span class="say">"Go on…"</span></div>
+        <div class="tech"><b>Using silence</b>Give the patient time to think and process. Let <b>them</b> break the silence.<span class="say">(Nurse stays quiet and present while the patient gathers their thoughts.)</span></div>
+        <div class="tech"><b>Reflecting / restating</b>Repeat back what the patient said so they hear their own words and know you're listening.<span class="say">"You feel like no one is telling you what's going on."</span></div>
+        <div class="tech"><b>Clarifying</b>Ask follow-up questions when the message is vague, so you both understand the same thing.<span class="say">"Where exactly is the pain? Does it spread anywhere?"</span></div>
+        <div class="tech"><b>Sharing observations</b>Say what you notice about the patient's appearance or mood.<span class="say">"I noticed you're crying. Would you like to share what's making you sad?"</span></div>
+        <div class="tech"><b>Sharing feelings</b>Encourage the patient to put their feelings into words; make it safe to do so.<span class="say">"How are you feeling about the diagnosis?"</span></div>
+        <div class="tech"><b>Sharing empathy</b>Show you understand and share what the patient feels (not just feel sorry for them, which is sympathy).<span class="say">"That sounds really frightening."</span></div>
+        <div class="tech"><b>Sharing hope</b>Offer a sense of possibility, but keep it <b>factual</b>. Being present and listening is a way to share hope.<span class="say">"I'll stay with you, and we'll take this one step at a time."</span></div>
+        <div class="tech"><b>Sharing humor</b>Only when the <b>patient</b> leads with it; often not appropriate.<span class="say">(Family shares a funny story; nurse listens and shares a related one.)</span></div>
+        <div class="tech"><b>Using touch</b>Can comfort, but some patients find it unsettling. <b>Ask first</b> and respect cultural norms.<span class="say">"Is it okay if I hold your hand?"</span></div>
+        <div class="tech"><b>Offering self</b>Being present: sitting with the patient, spending time, with no strings attached.<span class="say">"I'll sit with you for a while."</span></div>
+        <div class="tech"><b>Asking relevant questions</b>Gather what you need before helping the patient decide, without overwhelming them.<span class="say">"How long were you in the hospital last time, and what was it for?"</span></div>
+        <div class="tech"><b>Providing information</b>Teach at every encounter and invite questions.<span class="say">"This is your metoprolol. It slows your heart rate. What questions do you have?"</span></div>
+        <div class="tech"><b>Focusing</b>Help the patient pick one concern or goal to work on.<span class="say">"You mentioned several worries. Which one matters most to you right now?"</span></div>
+      </div>
+    </div>
+
+    <div class="glass">
+      <h3>Nontherapeutic techniques (avoid these)</h3>
+      <div class="grid">
+        <div class="tech bad"><b>Interrogating ("why" questions)</b>Makes the patient defensive and they stop talking.<span class="say">"Why didn't you take your medication like I told you?"</span><span class="fix">Better: "Tell me what made it hard to take your medication."</span></div>
+        <div class="tech bad"><b>False reassurance</b>Comfort that isn't based on facts. It brushes off the patient's fear.<span class="say">"Don't worry, everything will be fine."</span><span class="fix">Better: let them voice the fear, then offer realistic hope.</span></div>
+        <div class="tech bad"><b>Giving advice</b>Your personal opinion takes away the patient's own decision.<span class="say">"If it were me, I wouldn't see that provider."</span><span class="fix">Better: give facts and help them weigh their options.</span></div>
+        <div class="tech bad"><b>Changing the subject</b>Tells the patient their concern doesn't matter.<span class="say">Patient talks about chest pain; nurse asks, "What insurance do you have?"</span><span class="fix">Better: stay on the patient's topic.</span></div>
+        <div class="tech bad"><b>Automatic responses</b>Ready-made phrases said without thought (clichés, stereotypes, empty promises).<span class="say">"I'll be right back" (and never comes back).</span><span class="fix">Better: be specific and follow through.</span></div>
+        <div class="tech bad"><b>Judgmental responses</b>Approving or disapproving puts the nurse above the patient.<span class="say">"You have lung cancer because you smoked for 40 years."</span></div>
+        <div class="tech bad"><b>Defensive responses</b>Defending yourself, staff or the hospital instead of hearing the complaint.<span class="say">"I didn't do anything!" / "We're just short-staffed."</span><span class="fix">Better: listen for the deeper concern behind the criticism.</span></div>
+        <div class="tech bad"><b>Arguing / challenging</b>Implies the patient is lying or wrong, and destroys trust.<span class="say">Patient raises their voice about the diet; nurse raises theirs too.</span></div>
+        <div class="tech bad"><b>Attacking</b>Criticizing, dominating or manipulating. If the patient felt attacked, apologize and rebuild.<span class="say">"You came in here drunk and started hitting people."</span></div>
+        <div class="tech bad"><b>Passive or aggressive responses</b>Avoiding the issue, or provoking a fight. Use <b>assertive</b> communication instead.<span class="say">Patient apologizes for soiling the bed again; nurse says, "Yeah, yeah, I know."</span></div>
+        <div class="tech bad"><b>Not listening / not present</b>Being distracted, like scrolling on a phone during the encounter.<span class="say">(Nurse charts and doesn't look up while the patient talks.)</span></div>
+      </div>
+    </div>
+
+    <div class="glass">
+      <h3>Body language (nonverbal)</h3>
+      <ul>
+        <li>Keep words and body language <b>congruent</b> (matching). If they don't match, the listener believes the <b>nonverbal</b> message.</li>
+        <li><b>Eye contact</b> reads as honest and respectful, especially with bad news. In some cultures it's disrespectful, so <b>ask</b> about the patient's preferences.</li>
+        <li><b>Head nodding</b> shows acceptance. <b>Touch</b> can comfort (and helps with a blind patient), but respect boundaries and culture.</li>
+      </ul>
+    </div>
+
+    <div class="glass">
+      <h3>Checking that it worked: the feedback loop</h3>
+      <ol class="steps">
+        <li><b>Reflect on the response.</b> Restate what the patient said, so they know you heard them and keep talking.</li>
+        <li><b>Compare the response to your goal.</b> If what the patient says or does matches what you meant to get across, it worked.</li>
+        <li><b>Revise the message if it didn't work</b>, then check again. Keep going until the patient can repeat the instructions back.</li>
+      </ol>
+      <p style="margin-top:10px">After teaching, check learning with <b>teach-back</b> (patient restates it in their own words), <b>return demonstration</b> (patient shows you, e.g. drawing up insulin) or questions. "Do you understand?" is <b>not</b> enough: patients often say yes.</p>
+      <p>Then <b>document</b>: what you taught, how, the patient's response, materials given, any barriers, and what still needs teaching.</p>
+    </div>
+
+    <div class="glass">
+      <h3>Interpreters</h3>
+      <ul>
+        <li>Use a <b>certified medical interpreter</b> (National Board of Certification for Medical Interpreters).</li>
+        <li><b>Not family</b>: they may not know medical terms and can mistranslate. <b>Not other staff</b>: it can violate the patient's privacy.</li>
+        <li>Hospitals that take federal money (Medicare, Medicaid) <b>must</b> provide one (Title VI of the Civil Rights Act).</li>
+      </ul>
+    </div>
+
+    <div class="glass">
+      <h3>Barriers to communication</h3>
+      <div class="grid">
+        <div class="tech"><b>Physical</b>Noise, alarms, no privacy (thin walls), time pressure, distance, broken equipment.<span class="fix">Fix: close the door, silence alarms, find a private space, follow through on time.</span></div>
+        <div class="tech"><b>Emotional</b><b style="display:inline">Fear</b> (doesn't hear you because of what's coming), <b style="display:inline">pride</b> (won't ask for help, then falls), <b style="display:inline">anger</b>.<span class="fix">Fix: address the emotion first, then teach. De-escalate anger.</span></div>
+        <div class="tech"><b>Perceptual</b>Past experiences, beliefs, triggers (e.g. a trauma survivor who feels dominated), and the nurse's own biases and stereotypes.<span class="fix">Fix: self-awareness; manage expectations ("you'll still have pain after knee surgery").</span></div>
+        <div class="tech"><b>Cultural</b>Different norms for eye contact, touch, family roles.<span class="fix">Fix: <b style="display:inline">cultural competence</b> (understanding the patient's context) plus <b style="display:inline">cultural humility</b> (ongoing self-reflection).</span></div>
+      </div>
+      <p style="margin-top:10px"><b>Emotional intelligence</b> (controlling and expressing emotions well) helps you get past barriers: self-awareness, self-management, social awareness and relationship management.</p>
+      <p>For sensory barriers, <b>ask the patient how they prefer to learn</b> (large print, Braille, audio, electronic) before teaching.</p>
+    </div>
+
+    <div class="glass">
+      <h3>Motivational interviewing (MI)</h3>
+      <p>A counseling approach for <b>behavior change</b> (quitting smoking, low-sodium diet, taking meds). Show empathy, point out the gap between what the patient does now and what they want, and accept that <b>ambivalence</b> (mixed feelings) is normal.</p>
+      <ol class="steps">
+        <li><b>Engaging</b>: build the relationship with active listening and nonverbal cues.</li>
+        <li><b>Focusing</b>: pick a clear direction and goal together.</li>
+        <li><b>Evoking</b>: draw out the patient's <b>own</b> reasons to change.</li>
+        <li><b>Planning</b>: small, achievable <b>SMART</b> goals (Specific, Measurable, Attainable, Relevant, Timely).</li>
+      </ol>
+    </div>
+
+    <div class="glass">
+      <h3>Professional communication</h3>
+      <ul>
+        <li><b>Empathy</b> vs <b>sympathy</b>: sympathy is feeling sorry for someone; empathy is understanding and sharing their feelings while treating them as able to make their own decisions.</li>
+        <li><b>Assertiveness</b>: confident and respectful. Speak up for patients who can't (unconscious, nonverbal, no advocate) until the concern is addressed.</li>
+        <li><b>Courtesy and names</b>: introduce yourself, verify identity, and call patients what they prefer ("Please call me Tom").</li>
+      </ul>
+    </div>
+
+    <div class="glass">
+      <h3>Check yourself: pick the best response</h3>
+      <div class="grid" id="quiz"></div>
+    </div>
+
+    <p class="src">Source: <a href="https://openstax.org/books/fundamentals-nursing/pages/2-introduction" target="_blank" rel="noopener">Fundamentals of Nursing</a> (OpenStax), Chapter 2 Communication, sections 2.1, 2.3, 2.4 and 2.5, licensed CC BY 4.0. Example nurse statements for the techniques the book describes without a quote, and the practice questions, are written for this sheet.</p>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var Q = [
+    { s: "A patient newly diagnosed with heart failure says, \"I don't know how I'm going to tell my kids.\" Which response is best?",
+      o: ["\"Don't worry, kids are more resilient than you think.\"", "\"Why haven't you told them yet?\"", "\"Tell me more about what worries you about telling them.\"", "\"If I were you, I'd wait until you're home.\""],
+      a: 2, why: "C is open-ended and keeps the focus on the patient's concern. A is false reassurance, B is a \"why\" question (interrogating), D is giving advice." },
+    { s: "A patient is crying quietly after hearing their biopsy results. What should the nurse do first?",
+      o: ["Say, \"Everything is going to be okay.\"", "Sit with the patient and say, \"I noticed you're crying. I'll stay with you for a while.\"", "Ask, \"Why are you so upset?\"", "Start teaching about the treatment options."],
+      a: 1, why: "B shares an observation and offers self. A is false reassurance, C is a \"why\" question, D changes the subject before the patient is ready to learn (an emotional barrier)." },
+    { s: "A patient says angrily, \"You nurses never answer the call light!\" Which response is most therapeutic?",
+      o: ["\"We're very short-staffed today.\"", "\"That's not true. I came as fast as I could.\"", "\"It sounds like you waited a long time. Tell me what happened.\"", "\"Other patients need help too.\""],
+      a: 2, why: "C reflects the feeling and invites the patient to say more. A and D are defensive, B is arguing." },
+    { s: "A patient who speaks only Spanish needs discharge teaching. Their adult daughter offers to interpret. What should the nurse do?",
+      o: ["Accept the daughter's offer, since she knows the patient best.", "Ask a bilingual nursing assistant from the unit to interpret.", "Arrange a certified medical interpreter.", "Give the patient written instructions in English."],
+      a: 2, why: "Use a certified medical interpreter. Family may mistranslate medical terms, and other staff can breach privacy. Written English instructions don't solve the language barrier." },
+    { s: "The nurse has finished teaching a patient how to give enoxaparin injections. Which is the best way to evaluate learning?",
+      o: ["Ask, \"Do you understand how to do it?\"", "Have the patient demonstrate the injection.", "Give the patient a pamphlet to read at home.", "Document that teaching was done."],
+      a: 1, why: "Return demonstration shows the patient can actually do it. \"Do you understand?\" invites a yes without proof. A pamphlet and documentation don't evaluate anything." },
+    { s: "A patient with COPD says, \"I know I should quit smoking, but it's the only thing that calms me down.\" Which response uses motivational interviewing?",
+      o: ["\"You need to quit right away.\"", "\"Your COPD is from smoking, you know.\"", "\"Smoking calms you, and you also want to breathe more easily. What would quitting mean for you?\"", "\"Lots of people quit. You'll be fine.\""],
+      a: 2, why: "C acknowledges the ambivalence and evokes the patient's own reason to change. A is advice, B is judgmental, D is false reassurance." }
+  ];
+  function render(box, list) { list.forEach(function (q, i) {
+    var d = document.createElement('div');
+    d.className = 'q';
+    d.innerHTML = '<p class="stem">' + (i + 1) + '. ' + q.s + '</p><ol>' + q.o.map(function (o) { return '<li>' + o + '</li>'; }).join('') + '</ol>' +
+      '<button type="button">Show answer</button><div class="ans"><b>Answer: ' + 'ABCD'[q.a] + '.</b> ' + q.why + '</div>';
+    d.querySelector('button').addEventListener('click', function () {
+      d.classList.toggle('open');
+      this.textContent = d.classList.contains('open') ? 'Hide answer' : 'Show answer';
+    });
+    box.appendChild(d);
+  }); }
+  render(document.getElementById('quiz'), Q);
+})();
+</script>
+<script src="nav.js?v=202610092300"></script>
+<script src="say.js?v=202610092300"></script>
+</body>
+</html>

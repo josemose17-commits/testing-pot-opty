@@ -8,6 +8,17 @@
 <link rel="stylesheet" href="_ds/nocturne-35f0a9b3-313f-4c7b-8efd-c00cd545fa18/styles.css?v=202610021900">
 <style>
   body { padding-bottom: 96px; }
+  .whylink { display: block; width: 100%; text-align: left; margin: 0 0 12px; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--color-accent-700); background: var(--color-accent-900); color: var(--color-accent-100); cursor: pointer; font: inherit; font-size: 14px; }
+  .whylink:hover { border-color: var(--color-accent); }
+  .whywrap { display: flex; flex-direction: column; gap: 12px; }
+  .whyhint { margin: 0; font-size: 13.5px; color: var(--color-neutral-300); }
+  .whycard { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--color-divider); background: var(--color-neutral-900); display: flex; flex-direction: column; gap: 8px; }
+  .whycard .says { font-size: 14px; color: var(--color-neutral-200); border-left: 3px solid var(--color-accent-2-500); padding-left: 10px; font-style: italic; }
+  .whycard .says span { display: block; font-style: normal; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-2-300); margin-bottom: 2px; }
+  .whycard .because { font-size: 15px; line-height: 1.55; }
+  .whyfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .whysrc { font-size: 12px; color: var(--color-neutral-500); }
+  mark.why-mark { background: rgba(250, 204, 21, .32); color: inherit; border-radius: 3px; box-shadow: 0 0 0 2px rgba(250, 204, 21, .32); }
   main { max-width: 1240px; margin: 0 auto; padding: clamp(18px, 3.5vw, 40px) 16px 24px; display: flex; flex-direction: column; gap: 16px; }
   .kicker { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent-300); }
   h1 { font-size: clamp(28px, 5.5vw, 44px); margin: 4px 0 0; }
@@ -314,6 +325,7 @@
     <div class="row" style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="p-focus"></button></div>
     <div class="tabs" role="tablist" id="p-tabs">
       <button role="tab" data-tab="notes">Notes</button>
+      <button role="tab" data-tab="why">Why it works</button>
       <button role="tab" data-tab="breakdown">Organ → molecule</button>
       <button role="tab" data-tab="words">Words</button>
       <button role="tab" data-tab="links">Connections</button>
@@ -326,6 +338,7 @@
 
 <script src="data/info-topics.js?v=202610021900"></script>
 <script src="data/concept-nodes.js?v=202610022200"></script>
+<script src="data/basics.js?v=202610092300"></script>
 <script src="data/concept-keys.js?v=202610022200"></script>
 <script src="data/notes-short/22.js?v=202610021900"></script>
 <script src="data/notes-short/23.js?v=202610021900"></script>
@@ -563,7 +576,8 @@
     document.getElementById('p-title').textContent = t.title;
     tabs.querySelector('[data-tab="notes"]').hidden = false;
     tabs.querySelector('[data-tab="breakdown"]').hidden = !nodesFor[id];
-    if (!keepTab || (tab === 'breakdown' && !nodesFor[id])) tab = 'notes';
+    tabs.querySelector('[data-tab="why"]').hidden = !BASICS[id];
+    if (!keepTab || (tab === 'breakdown' && !nodesFor[id]) || (tab === 'why' && !BASICS[id])) tab = 'notes';
     var wasOpen = isOpen();
     setFocusBtn(); renderTab(wasOpen ? 0 : OPEN_MS); show(arguments[2]);
   }
@@ -573,6 +587,7 @@
     document.getElementById('p-meta').textContent = n.kind === 'mech' ? 'Mechanism' : 'Breakdown · chapter ' + n.ch;
     document.getElementById('p-title').textContent = n.name;
     tabs.querySelector('[data-tab="notes"]').hidden = true;
+    tabs.querySelector('[data-tab="why"]').hidden = true;
     tabs.querySelector('[data-tab="breakdown"]').hidden = false;
     var wasOpen = isOpen();
     tab = 'breakdown'; setFocusBtn(); renderTab(wasOpen ? 0 : OPEN_MS); show(arguments[1]);
@@ -603,6 +618,53 @@
   document.getElementById('p-prev').addEventListener('click', function () { step(-1); });
   document.getElementById('p-next').addEventListener('click', function () { step(1); });
 
+  // ---------- Why it works: the basic science behind lines in these notes (data/basics.js) ----------
+  var BASICS = window.BASICS || {};
+  function whyLink(id) {
+    var n = (BASICS[id] || []).length;
+    return n ? '<button class="whylink" data-gotab="why">💡 Why it works · ' + n + ' line' + (n > 1 ? 's' : '') + ' in these notes explained</button>' : '';
+  }
+  function whyHtml(id) {
+    var list = BASICS[id] || [];
+    return '<div class="whywrap"><p class="whyhint">The reason behind lines that are already in these notes, from your A&amp;P, chemistry, microbiology, pharmacology and psychology books. Nothing new to memorize: it is here so the notes make sense.</p>' +
+      list.map(function (e, i) {
+        return '<div class="whycard"><div class="says"><span>In your notes</span>“' + esc(e.says) + '”</div><div class="because">' + esc(e.why) + '</div>' +
+          '<div class="whyfoot"><span class="whysrc">' + esc(e.src) + '</span><button class="pill" data-jump="' + i + '">See it in the notes →</button></div></div>';
+      }).join('') + '</div>';
+  }
+  // Highlights a quoted line in the rendered notes, across bold/italic tags, and opens any
+  // collapsed paragraph it sits in.
+  function markAnchor(root, text) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), parts = [], full = '';
+    while (walker.nextNode()) { parts.push({ n: walker.currentNode, at: full.length }); full += walker.currentNode.nodeValue; }
+    var at = full.indexOf(text);
+    if (at < 0) { at = full.toLowerCase().indexOf(text.toLowerCase()); }
+    if (at < 0) return null;
+    var end = at + text.length, first = null;
+    parts.forEach(function (p) {
+      var a = p.at, b = p.at + p.n.nodeValue.length;
+      if (b <= at || a >= end) return;
+      var node = p.n, from = Math.max(at, a) - a, to = Math.min(end, b) - a;
+      if (to < node.nodeValue.length) node.splitText(to);
+      if (from > 0) node = node.splitText(from);
+      var m = document.createElement('mark'); m.className = 'why-mark';
+      node.parentNode.insertBefore(m, node); m.appendChild(node);
+      if (!first) first = m;
+    });
+    for (var el = first && first.parentElement; el && el !== root; el = el.parentElement) if (el.tagName === 'DETAILS') el.open = true;
+    return first;
+  }
+  body.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-gotab]');
+    if (g) { tab = g.dataset.gotab; renderTab(); return; }
+    var j = e.target.closest('[data-jump]');
+    if (!j || !current || current.type !== 'topic') return;
+    var entry = (BASICS[current.id] || [])[+j.dataset.jump]; if (!entry) return;
+    tab = 'notes'; renderTab();
+    var m = markAnchor(body.querySelector('.notes') || body, entry.says);
+    if (m) setTimeout(function () { m.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 30);
+  });
+
   function renderTab(delay) {
     tabs.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === tab); });
     hidePop(); body.scrollTop = 0; delay = delay || 0;
@@ -610,9 +672,12 @@
     var nodes = t ? (nodesFor[t.id] || []).map(function (n) { return nodeById[n]; }) : [nodeById[current.id]];
     if (tab === 'notes' && t) {
       var hasShort = !!(window.NOTES_SHORT || {})[t.id];
-      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + (hasShort ? bdToolbar('notes') : '') + picturesHtml(picsFor(t.id, nodesFor[t.id])) + videosHtml(vidsFor(t.id, null)) + '<div class="notes">' + t.html + '</div></div>';
+      body.innerHTML = '<div class="bdwrap' + (quiz && hasShort ? ' quiz' : '') + '">' + whyLink(t.id) + (hasShort ? bdToolbar('notes') : '') + picturesHtml(picsFor(t.id, nodesFor[t.id])) + videosHtml(vidsFor(t.id, null)) + '<div class="notes">' + t.html + '</div></div>';
       if (hasShort && bdMode === 'quick') shortenNotes(body.querySelector('.notes'), t.id);
       markWordsLater(body.querySelector('.notes'), delay);
+    } else if (tab === 'why' && t) {
+      body.innerHTML = whyHtml(t.id);
+      markWordsLater(body, delay);
     } else if (tab === 'breakdown') {
       body.innerHTML = '<div class="bdwrap' + (quiz ? ' quiz' : '') + '">' + bdToolbar() + (t ? '' : picturesHtml(picsFor(null, [current.id])) + videosHtml(vidsFor(null, [current.id]))) + nodes.map(breakdownHtml).join('<hr style="border:0;border-top:1px solid var(--color-divider);margin:26px 0">') + '</div>';
       markWordsLater(body, delay);
@@ -938,7 +1003,7 @@
   window.addEventListener('storage', function (e) { if (e.key === 'e2-focus' || e.key === 'e2-focus-saved') refresh(); });
 })();
 </script>
-<script src="nav.js?v=202610080100"></script>
-<script src="say.js?v=202610080100"></script>
+<script src="nav.js?v=202610092300"></script>
+<script src="say.js?v=202610092300"></script>
 </body>
 </html>

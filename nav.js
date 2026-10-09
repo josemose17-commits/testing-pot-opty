@@ -5,7 +5,8 @@
     ['index.html', 'Home', 'M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z'],
     ['Exam 2 Map.html', 'Map', 'M6 6h.01M18 6h.01M12 18h.01M6 6l6 12 6-12M6 6h12'],
     ['Exam 2 Drug Cards.dc.html', 'Drugs', 'M10.5 4.5a4.95 4.95 0 0 1 7 7l-6 6a4.95 4.95 0 0 1-7-7Zm-3 3 7 7'],
-    ['Exam 2 Mastery Loop.dc.html', 'Mastery', 'M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5']
+    ['Exam 2 Mastery Loop.dc.html', 'Mastery', 'M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5'],
+    ['Reference Sheet.html', 'Ref', 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5']
   ];
   var here = decodeURIComponent(location.pathname.split('/').pop() || 'index.html');
   var root = location.pathname.indexOf('/offline/') >= 0 ? '../' : '';
@@ -89,7 +90,7 @@
   // Browsers keep a page for a few minutes, so a phone can show yesterday's version after an update.
   // version.json is never cached: if it names a newer build than this script, reload once to pick it up.
   // Bump BUILD here and in version.json together on every release.
-  var BUILD = '202610080100';
+  var BUILD = '202610092300';
   window.addEventListener('load', function () {
     if (!window.fetch || location.protocol === 'file:') return;
     fetch(root + 'version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (v) {
